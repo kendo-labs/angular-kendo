@@ -1,0 +1,6 @@
+<h1>Home Page</h1>
+<div id="grid" data-kendo data-role="grid" data-editable="true" data-pageable="{ refresh: true, pageSizes: true }"
+     data-model="model" data-bind="source: things" 
+     data-columns="[{ field: 'ProductName', title: 'Name'}, 
+                    { field: 'Supplier.SupplierName', title: 'Supplier'}, { field: 'Category.CategoryName', title: 'Category' }]">
+</div>
