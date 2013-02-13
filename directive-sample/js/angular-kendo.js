@@ -1,9 +1,10 @@
-// angular.module("kendo.config", []).value("kendo.config", {});
+// add a namespace for the kendo directive
 angular.module("kendo.directives", []);
-// angular.module("kendo", [ "kendo.directives", "kendo.config" ]);
 
+// simple directive just binds or inits any element with a data-kendo attr
 angular.module("kendo.directives").directive("kendo", function() {
 
+  // init or bind depending on whether or not a bind attr was specified
   var initOrBind = function(scope, element, attrs) {
     if (attrs.bind) {
       kendo.bind(element, scope[attrs.model]);
@@ -16,12 +17,15 @@ angular.module("kendo.directives").directive("kendo", function() {
   return {
     require: "?ngModel",
     link: function(scope, element, attrs, ngModel) {
-      // check for a bind and pass the model if necessary
+      // if this element is also bound to a model
       if (ngModel) {
+        // delay the binding until model render which gives
+        // angular enough time to update the DOM prior
         ngModel.$render(function() {
           initOrBind(scope, element, attrs);
         });
       }
+      // otherwise bind away
       else {
         initOrBind(scope, element, attrs);
       }
