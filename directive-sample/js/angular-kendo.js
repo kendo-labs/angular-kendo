@@ -1,3 +1,5 @@
+"use strict";
+
 // add a namespace for the kendo directive
 angular.module("kendo.directives", []);
 
@@ -16,6 +18,7 @@ angular.module("kendo.directives").directive("kendo", function() {
 
   return {
     require: "?ngModel",
+    transclude: true,
     link: function(scope, element, attrs, ngModel) {
       // if this element is also bound to a model
       if (ngModel) {
