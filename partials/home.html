@@ -1,0 +1,73 @@
+<h3>Kendo Grid</h3>
+<h4>
+  A grid bound to some remote data
+</h4>
+<pre>
+&lt;div id=&quot;grid&quot; data-kendo data-role=&quot;grid&quot; data-editable=&quot;true&quot; 
+  data-pageable=&quot;{ refresh: true, pageSizes: true }&quot;
+  data-model=&quot;model&quot; data-bind=&quot;source: things&quot; 
+  data-columns=&quot;[{ field: &#039;ProductName&#039;, title: &#039;Name&#039;}, 
+                { field: &#039;Supplier.SupplierName&#039;, title: &#039;Supplier&#039;}, { field: &#039;Category.CategoryName&#039;, title: &#039;Category&#039; }]&quot;&gt;
+&lt;/div&gt;  
+</pre>  
+
+<div id="grid" data-kendo data-role="grid" data-editable="true" data-pageable="{ refresh: true, pageSizes: true }"
+     data-model="model" data-bind="source: things" 
+     data-columns="[{ field: 'ProductName', title: 'Name'}, 
+                    { field: 'Supplier.SupplierName', title: 'Supplier'}, { field: 'Category.CategoryName', title: 'Category' }]">
+</div>
+<h4>A grid created from a table of static data</h4>
+<pre>
+&lt;table data-kendo data-role=&quot;grid&quot; ng-transclude&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Product&lt;/th&gt;
+      &lt;th&gt;Supplier&lt;/th&gt;
+      &lt;th&gt;Category&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Chai&lt;/td&gt;
+      &lt;td&gt;Exotic Liquids&lt;/td&gt;
+      &lt;td&gt;Beverages&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Chang&lt;/td&gt;
+      &lt;td&gt;Exotic Liquids&lt;/td&gt;
+      &lt;td&gt;Beverages&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Aniseed Syrup&lt;/td&gt;
+      &lt;td&gt;Exotic Liquids&lt;/td&gt;
+      &lt;td&gt;Condiments&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+<table data-kendo data-role="grid" ng-transclude>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Supplier</th>
+      <th>Category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Chai</td>
+      <td>Exotic Liquids</td>
+      <td>Beverages</td>
+    </tr>
+    <tr>
+      <td>Chang</td>
+      <td>Exotic Liquids</td>
+      <td>Beverages</td>
+    </tr>
+    <tr>
+      <td>Aniseed Syrup</td>
+      <td>Exotic Liquids</td>
+      <td>Condiments</td>
+    </tr>
+  </tbody>
+</table>

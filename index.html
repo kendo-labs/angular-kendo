@@ -1,0 +1,40 @@
+<!doctype html>
+<html ng-app="SampleApp">
+<head>
+  <meta charset="utf-8">
+  <title>My AngularJS App</title>
+  <link href="http://cdn.kendostatic.com/2012.3.1315/styles/kendo.common.min.css" rel="stylesheet">
+  <link href="http://cdn.kendostatic.com/2012.3.1315/styles/kendo.bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+<body>
+ 
+  <div class="navbar navbar-static-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a href="#" class="brand">AngularJS / Kendo UI</a>
+        <ul class="nav">
+          <li><a href="#">Home</a></li>
+          <li><a href="#other">Some Other Page</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div ng-view></div>
+  </div>
+
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+  -->
+
+  <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+  <script src="js/angular.js"></script>
+  <script src="http://cdn.kendostatic.com/2012.3.1315/js/kendo.all.min.js"></script>
+  <script src="js/angular-kendo.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/controllers.js"></script>
+
+</body>
+</html>
