@@ -18,6 +18,7 @@ angular.module("kendo.directives").directive("kendo", function() {
 
   return {
     require: "?ngModel",
+    restrict: "A,E",
     transclude: true,
     link: function(scope, element, attrs, ngModel) {
       // if this element is also bound to a model

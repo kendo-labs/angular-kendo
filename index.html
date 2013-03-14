@@ -7,22 +7,50 @@
   <link href="http://cdn.kendostatic.com/2012.3.1315/styles/kendo.bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="directive-sample/css/bootstrap.min.css">
 </head>
+<style>
+  .buffer {
+    margin-top: 20px;
+  }
+
+  .body {
+    margin-top: 20px;
+  }
+
+  .sidebar {
+    top: 40px;
+  }
+
+  
+</style>
 <body>
  
   <div class="navbar navbar-static-top">
     <div class="navbar-inner">
       <div class="container">
-        <a href="#" class="brand">AngularJS / Kendo UI</a>
-        <ul class="nav">
-          <li><a href="#">Home</a></li>
-          <li><a href="#other">Some Other Page</a></li>
-        </ul>
+        <a href="#" class="brand">
+          <img class="logo" src="directive-sample/css/img/angular-kendo.png" alt="">
+          <h1 style="display: inline">Angular Kendo</h1>
+        </a>
       </div>
     </div>
   </div>
 
-  <div class="container">
-    <div ng-view></div>
+  <div class="container body">
+    <div class="span3 sidebar">
+        <ul class="nav nav-list">
+          <li class="nav-header">Getting Started</li>
+          <li class="active"><a href="#overview">Overview</a></li>
+          <li><a href="#installation">Installation</a></li>
+          <li><a href="#simple">Simple Widget Creation</a></li>
+          <li><a href="#dom">Creation From Existing Elements</a></li>
+          <li class="nav-header">Remote Data</li>
+          <li><a href="#datasource">Kendo UI DataSource</a></li>
+          <li><a href="#resource">Angular Resources</a></li>
+        </ul>
+      </div>
+    <div class="span8">
+     <ng-include src="'directive-sample/partials/home.html'" autoscroll></ng-include>  
+    </div>
   </div>
 
   <!-- In production use:
@@ -32,7 +60,7 @@
   <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
   <script src="http://cdn.kendostatic.com/2012.3.1315/js/kendo.all.min.js"></script>
-  <script src="directive-sample/js/angular-kendo.js"></script>
+  <script src="angular-kendo.js"></script>
   <script src="directive-sample/js/app.js"></script>
   <script src="directive-sample/js/controllers.js"></script>
 
