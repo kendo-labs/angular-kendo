@@ -1,4 +1,4 @@
-<a name="overview"><h2>Overview</h2></a>
+<h2>Getting Started</h2>
 
 <p>
   Angular-Kendo is a passthrough to the Kendo UI declarative initialization framework.  It essentially runs any element with the matched <code>data-kendo</code> attribute though the Kendo UI bindings.
@@ -6,7 +6,7 @@
 
 <p>This allows you to get the full benefit of Kendo UI, using only markup and angular style directives.</p>
 
-<a name="installation"><h3>Installation</h3></a>
+<h3><span id="installation"></span>Installation</h3>
 
 <p>To use Angular-Kendo, you need to include the <angular-kendo.js</code> file in your page <strong>BELOW</strong> Angular and Kendo UI.</p>
 
@@ -26,7 +26,7 @@
 var app = angular.module(&#039;your-angular-app&#039;, [&quot;kendo.directives&quot;]);  
 </pre>
 
-<a name="simple"><h3>Simple widget creation</h3></a>
+<h3><span id="simple"></span>Simple widget creation</h3>
 <p>
   Any widget can be created using declarative intialization as long as it contains the <code>data-kendo</code> attribute.  The attribute doesn't have to have a value, it just has to be present.  When this attribute is placed on an element, Angular will hand it off to Kendo UI to bind or initialize it as needed based on it's <code>data-</code> attributes.
 </p>
@@ -38,7 +38,7 @@ var app = angular.module(&#039;your-angular-app&#039;, [&quot;kendo.directives&q
 <p class="buffer">
   Angular-Kendo does not support using custom HTML elements.  This is because Kendo UI expects certain elements to be used in the creation of certain widgets (e.g. an input when creating an AutoComplete), so the HTML element that is mutated has merit in the initialization process.
 </p>
-<a name="dom"><h3>Creation From Existing Elements</h3></a>
+<h3><span id="dom"></span>Creation From Existing Elements</h3>
 <p>Angular-Kendo supports initialization from existing DOM structure the same way that Kendo UI does.  The only difference is that you <b>must</b> include the <code>ng-transclude</code> tag on the element in order for the children of that element to be seen by Kendo UI.  This is due to the fact that by default, Angular does not copy the children of an element in a directive.</p>
 <h4>Dropdown List</h4>
 <pre>
@@ -61,11 +61,11 @@ var app = angular.module(&#039;your-angular-app&#039;, [&quot;kendo.directives&q
   </option>
 </select>
 
-<a name="remote"><h2>Remote Data Sources</h2></a>
+<h2>Remote Data Sources</h2>
 
 <p>Angular-Kendo provides flexiblity in the use of either a Kendo UI DataSource, or Angular resources.  Keep in mind that some of the widgets, such as the grid, are designed to work with the Kendo UI DataSource and will not have the same seemless integeration with a generic Angular resource out-of-the box.</p>
 
-<a name="datasource"><h3>Kendo UI DataSource</h3></a>
+<h3><span id="datasource"></span>Kendo UI DataSource</h3>
 
 <p>Since Kendo UI has to be able to see the JavaScript object that it is binding to, you need to specify which object on the scope this widget is bound to by setting the <code>data-model</code> attribute.</p>
 
@@ -89,7 +89,7 @@ function HomeCtrl($scope) {
 <pre>
 &lt;div id=&quot;grid&quot; data-kendo data-role=&quot;grid&quot; data-editable=&quot;true&quot; 
   data-pageable=&quot;{ refresh: true, pageSizes: true }&quot;
-  data-model=&quot;model&quot; data-bind=&quot;source: things&quot; 
+  data-model=&quot;model&quot; data-bind=&quot;source: products&quot; 
   data-columns=&quot;[{ field: &#039;ProductName&#039;, title: &#039;Name&#039;}, 
                  { field: &#039;Supplier.SupplierName&#039;,  title: &#039;Supplier&#039;}, 
                  { field: &#039;Category.CategoryName&#039;, title: &#039;Category&#039; }]&quot;&gt;
@@ -97,7 +97,8 @@ function HomeCtrl($scope) {
 </pre>
 <div id="grid" data-kendo data-role="grid" data-editable="true" 
   data-pageable="{ refresh: true, pageSizes: true }"
-  data-model="model" data-bind="source: things" 
+  data-model="model" data-bind="source: products" 
   data-columns="[{ field: 'ProductName', title: 'Name'}, 
                  { field: 'Supplier.SupplierName',  title: 'Supplier'}, 
                  { field: 'Category.CategoryName', title: 'Category' }]">
+</div>
