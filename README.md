@@ -2,44 +2,41 @@
 
 ## About angular-kendo
 
-angular-kendo is a directive for AngularJS that allows you to passthrough data attributes to Kendo UI declarative initialization, allowing you to take full advantage of AngularJS directives and resources.
+angular-kendo is a directive for AngularJS that runs an element through Kendo UI declarative initialization, allowing you to take full advantage of Kendo UI within the context of an AngularJS Application.
 
 ## Compatibility and Requirements
 
-Packaged App Bootstrap was designed to work with Kendo UI Complete and [Chrome Packaged Apps](http://developer.chrome.com/apps/about_apps.html)
+angular-kendo was designed to work with Kendo UI Web / DataViz and AngularJS version 1.0.4.  Version 1.0.3 of AngularJS is not supported t[hanks to this bug](https://github.com/angular/angular.js/issues/1627) that is fixed in 1.0.4.
 
-Chrome Packaged App currently depends on the following libraries:
+angular-kendo currently depends on the following libraries:
 
 - [jQuery](http://www.jquery.com) v1.8.2
 - [Kendo UI](http://www.kendoui.com) vCurrent
+- [AngularJS](http://www.angularjs.org) v1.0.4
 
-Packaged App Bootstrap has not been tested against any other versions of these libraries. You may find that versions other than these are compatible with [Project Name], but we make no claims to support those version, nor can we troubleshoot issues that arise when using those versions.
+angular-kendo has not been tested against any other versions of these libraries. You may find that versions other than these are compatible with angular-kendo, but we make no claims to support those version, nor can we troubleshoot issues that arise when using those versions.
 
 ## Source Code and Downloads
 
-The bootstrap is a boilerplate project for a packaged application. Simply downloading or cloning this project is sufficient.
+This repository contains both the full and minified version of angular-kendo.
 
 ## Documentation
 
-Check out the following videos and articles for working with the Packaged App Bootstrap.
-
-[Your First Chrome Packaged App](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&ved=0CDsQFjAB&url=http%3A%2F%2Fa.shinynew.me%2Fpost%2F37664042253&ei=2ZM_UYuuEpLU9ASXqIHgCw&usg=AFQjCNEMhzMVHZ2fTInD4lK5rB1YRKDIrQ&bvm=bv.43287494,d.eWU)
-[Packaged Apps And The CSP Delimma](http://a.shinynew.me/post/37199320546/chrome-packaged-apps-and-the-csp-dilemma)
-[Building Chrome Packaged Apps](http://www.kendoui.com/blogs/teamblog/posts/12-12-06/video_building_chrome_packaged_apps.aspx)
+Full documentation can be found on the [gh-pages site](http://kendo-labs.github.com/angular-kendo/) for this repo.
 
 ## How to Contribute
 
-If you would like to contribute to Packaged App Bootstrap's source code, please read the [guidelines for pull requests and contributions](LINK TO YOUR PROJECTS CONTRIBUTING.md HERE). Following these guidelines will help make your contributions easier to bring in to the next release.
+If you would like to contribute to angular-kendo's source code, please read the [guidelines for pull requests and contributions](CONTRIBUTING.MD). Following these guidelines will help make your contributions easier to bring in to the next release.
 
 ## Getting Help
 
-Check out Google's [offfical Packaged App site](http://developer.chrome.com/apps/about_apps.html) and [API reference](http://developer.chrome.com/apps/api_index.html).  StackOverflow probably wouldn't hurt either.
+StackOverflow is a good place to start, but be sure to read the [documentation for Kendo UI](http://docs.kendoui.com), and of course the [AngularJS documentation](http://docs.angularjs.org/api/)
 
-As a part of Kendo UI Labs, Packaged App Bootstrap is intended to be a community-run project, and not an official part of any Kendo UI SKU (Web, DataViz, Mobile or Complete). As such, this project is not a supported part of Kendo UI, and is not covered under the support agreements for Kendo UI license holders. Please do not create support requests for this project, as these will be immediately closed and you'll be directed to post your question on a community forum.
+As a part of Kendo UI Labs, angular-kendo is intended to be a community-run project, and not an official part of any Kendo UI SKU (Web, DataViz, Mobile or Complete). As such, this project is not a supported part of Kendo UI, and is not covered under the support agreements for Kendo UI license holders. Please do not create support requests for this project, as these will be immediately closed and you'll be directed to post your question on a community forum.
 
 ## Release Notes
 
-For change logs and release notes, see the [changelog](changelog.md) file.
+For change logs and release notes, see the [changelog](CHANGELOG.MD) file.
 
 ## MIT License
 
