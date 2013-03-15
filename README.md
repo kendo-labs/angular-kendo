@@ -26,7 +26,7 @@ Full documentation can be found on the [gh-pages site](http://kendo-labs.github.
 
 ## How to Contribute
 
-If you would like to contribute to angular-kendo's source code, please read the [guidelines for pull requests and contributions](/kendo-labs/angular-kendo/blob/master/CONTRIBUTING.MD). Following these guidelines will help make your contributions easier to bring in to the next release.
+If you would like to contribute to angular-kendo's source code, please read the [guidelines for pull requests and contributions](CONTRIBUTING.MD). Following these guidelines will help make your contributions easier to bring in to the next release.
 
 ## Getting Help
 
@@ -36,7 +36,7 @@ As a part of Kendo UI Labs, angular-kendo is intended to be a community-run proj
 
 ## Release Notes
 
-For change logs and release notes, see the [changelog](/kendo-labs/angular-kendo/blob/master/CHANGELOG.MD) file.
+For change logs and release notes, see the [changelog](CHANGELOG.MD) file.
 
 ## MIT License
 
