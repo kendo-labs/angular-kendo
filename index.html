@@ -2,7 +2,7 @@
 <html ng-app="SampleApp">
 <head>
   <meta charset="utf-8">
-  <title>My AngularJS App</title>
+  <title>Angular Kendo</title>
   <link href="http://cdn.kendostatic.com/2012.3.1315/styles/kendo.common.min.css" rel="stylesheet">
   <link href="http://cdn.kendostatic.com/2012.3.1315/styles/kendo.bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="directive-sample/css/bootstrap.min.css">
@@ -13,18 +13,22 @@
   }
 
   .body {
-    margin-top: 20px;
+    margin-top: 140px;
   }
 
   .sidebar {
-    top: 40px;
+    top: 150px;
+    position: fixed;
+    width: 180px;
   }
 
+  h3 { position:relative; }
+  h3 span { position:absolute; top:-140px;}
   
 </style>
 <body>
  
-  <div class="navbar navbar-static-top">
+  <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
       <div class="container">
         <a href="#" class="brand">
@@ -35,21 +39,21 @@
     </div>
   </div>
 
-  <div class="container body" ng-controller="HomeCtrl">
-    <div class="span3 fixed">
-        <ul class="nav nav-list">
+  <div class="container body">
+    <div class="row">
+      <div class="span3">
+        <ul class="nav nav-list sidebar">
           <li class="nav-header">Getting Started</li>
-          <li class="active"><a href="#overview">Overview</a></li>
-          <li><a href="#installation">Installation</li>
+          <li class="active"><a href="#installation">Installation</a></li>
           <li><a href="#simple">Simple Widget Creation</a></li>
           <li><a href="#dom">Creation From Existing Elements</a></li>
           <li class="nav-header">Remote Data</li>
           <li><a href="#datasource">Kendo UI DataSource</a></li>
-          <li><a href="#resource">Angular Resources</a></li>
         </ul>
       </div>
-    <div class="span8">
-     <ng-include src="'directive-sample/partials/home.html'" autoscroll></ng-include>  
+      <div class="span9">
+       <ng-include src="'directive-sample/partials/home.html'" autoscroll ng-controller="HomeCtrl"></ng-include>  
+      </div>
     </div>
   </div>
 
