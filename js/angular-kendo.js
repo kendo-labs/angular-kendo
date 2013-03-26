@@ -46,6 +46,11 @@
                 // bind the kendo widget to element and get a reference on the widget
                 widget = element[kendoWidget](options).data(kendoWidget);
 
+                // cleanup after ourselves
+                scope.$on( '$destroy', function() {
+                  widget.destroy();
+                });
+
                 // if ngModel is on the element, we setup bidi data binding
                 if (ngModel) {
                   if( !widget.value ) {
@@ -118,12 +123,12 @@
     function toDataSource(ds) {
       if( ds instanceof kendo.data.DataSource ) {
         return ds;
-      } else if( angular.isObject(ds) ) {
-        return new kendo.data.DataSource(ds);
       } else if( angular.isArray(ds) ) {
         return new kendo.data.DataSource({
           data: ds
         });
+      } else if( angular.isObject(ds) ) {
+        return new kendo.data.DataSource(ds);
       } else {
         throw new Error('kendo-source must be a kendo datasource object');
       }
