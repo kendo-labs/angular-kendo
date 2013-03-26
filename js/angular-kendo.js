@@ -14,7 +14,7 @@
   // here we create a directive for each kendo widgets
   angular.forEach( widgets, function(kendoWidget) {
       directives.directive(kendoWidget, [ '$parse', '$timeout', function($parse, $timeout) {
-\          return {
+          return {
             restrict: 'ACE',
             transclude: true,
             require: ['?ngModel','?kendoSource', kendoWidget],
