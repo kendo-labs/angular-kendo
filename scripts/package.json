@@ -1,0 +1,8 @@
+{
+    "name": "angular-kendo-server",
+    "version": "0.1.0",
+    "dependencies": {
+        "express": "3.x",
+		"express-resource": "1.x"
+    }
+}
