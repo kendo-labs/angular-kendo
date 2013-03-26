@@ -14,21 +14,21 @@
   // here we create a directive for each kendo widgets
   angular.forEach( widgets, function(kendoWidget) {
       directives.directive(kendoWidget, [ '$parse', '$timeout', function($parse, $timeout) {
-          var options;
-          return {
+\          return {
             restrict: 'ACE',
             transclude: true,
-            require: ['?ngModel','?kendoSource'],
+            require: ['?ngModel','?kendoSource', kendoWidget],
             controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
               // The options expression is evaluated once
-              options = angular.copy($scope.$eval($attrs[kendoWidget])) || {};
+              this.options = angular.copy($scope.$eval($attrs[kendoWidget])) || {};
               $transclude(function(clone){
                 $element.append(clone);
               });
             }],
             link: function(scope, element, attrs, ctrls) {
               var ngModel = ctrls[0],
-                  kendoSource = ctrls[1], widget;
+                  kendoSource = ctrls[1], widget,
+                  options = ctrls[2].options;
 
               // bind kendo widget to element only once interpolation on attributes is done
               $timeout( function() {
