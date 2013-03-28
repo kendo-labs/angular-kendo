@@ -1,14 +1,14 @@
 <h2>Getting Started</h2>
 
 <p>
-  Angular-Kendo is a passthrough to the Kendo UI [declarative initialization](http://docs.kendoui.com/howto/declarative_initialization) framework.  It essentially runs any element with the matched <code>data-kendo</code> attribute though the Kendo UI bindings.
+  Angular-Kendo is a library providing AngularJS directives for the Kendo UI widgets that are well integrated with the AngularJS lifecycle.
 </p>
 
 <p>This allows you to get the full benefit of Kendo UI, using only markup and angular style directives.</p>
 
 <h3><span id="installation"></span>Installation</h3>
 
-<p>To use Angular-Kendo, you need to include the <angular-kendo.js</code> file in your page <strong>BELOW</strong> Angular and Kendo UI.</p>
+<p>To use Angular-Kendo, you need to include the <code>angular-kendo.js</code> file in your page <strong>BELOW</strong> Angular and Kendo UI.</p>
 
 <p>Don't forget that Kendo UI depends on jQuery, so you are going to need that too.</p>
 
@@ -16,40 +16,42 @@
 &lt;script src=&quot;js/jquery-1.8.2.min.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;js/angular-1.0.4.min.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;js/kendo.all.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/underscore-min.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;js/angular-kendo.js&quot;&gt;&lt;/script&gt;
 </pre>
 
 <h4>Include The Directive</h4>
-<p>You need to pass the <code>kendo.directives</code> module into your application module as a dependency.</p>
+<p>You need to pass the <code>kendo</code> module into your application module as a dependency.</p>
 
 <pre>
-var app = angular.module(&#039;your-angular-app&#039;, [&quot;kendo.directives&quot;]);  
+var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo&#039;]);  
 </pre>
 
 <h3><span id="simple"></span>Simple widget creation</h3>
 <p>
-  Any widget can be created using [declarative intialization] as long as it contains the <code>data-kendo</code> attribute.  The attribute doesn't have to have a value, it just has to be present.  When this attribute is placed on an element, Angular will hand it off to Kendo UI to bind or initialize it as needed based on it's <code>data-</code> attributes.
+  Any widget can be created using a directive (attribute or class). There is one directive per Kendo UI widget and they are named using a dash-separated version of the Kendo UI widget name. For example, the <code>DateTimePicker</code> Kendo UI widget becomes a <code>kendo-date-time-picker</code> attribute that you can apply on an input element.  The attribute doesn't have to have a value, it just has to be present.  When this attribute is placed on an element, the directive will bind the appropriate Kendo UI widget to the element with options that can be provided as <code>data-</code> attributes or passed as an object in the widget's attribute.
 </p>
 <h4>Calendar</h4>
-<pre>
-&lt;div data-kendo data-role=&quot;calendar&quot;&gt;&lt;/div&gt;
+<pre class="ng-non-bindable">
+&lt;div kendo-calendar ng-model=&quot;dateOfEvent&quot;&gt;&lt;/div&gt;
 </pre>
-<div data-kendo data-role="calendar"></div>     
+<div kendo-calendar ng-model="dateOfEvent"></div> {{dateOfEvent | date}}
 <p class="buffer">
   Angular-Kendo does not support using custom HTML elements.  This is because Kendo UI expects certain elements to be used in the creation of certain widgets (e.g. an input when creating an AutoComplete), so the HTML element that is mutated has merit in the initialization process.
 </p>
 <h3><span id="dom"></span>Creation From Existing Elements</h3>
-<p>Angular-Kendo supports initialization from existing DOM structure the same way that Kendo UI does.  The only difference is that you <b>must</b> include the <code>ng-transclude</code> tag on the element in order for the children of that element to be seen by Kendo UI.  This is due to the fact that by default, Angular does not copy the children of an element in a directive.</p>
+<p>Angular-Kendo supports initialization from existing DOM structure the same way that Kendo UI does.</p>
 <h4>Dropdown List</h4>
-<pre>
-&lt;ul data-kendo data-role=&quot;dropdownlist&quot; ng-transclude&gt;
+<pre class="ng-non-bindable">
+&lt;ul kendo-drop-down-list ng-model=&quot;choice&quot; &gt;
   &lt;li&gt;Foo&lt;/li&gt;
   &lt;li&gt;Bar&lt;/li&gt;
   &lt;li&gt;Baz&lt;/li&gt;
-&lt;/ul&gt;  
+&lt;/ul&gt;
+&lt;span ng-show=&quot;choice&quot;&gt;{{choice}} was chosen!&lt;/span&gt;
 </pre>
     
-<select data-kendo data-role="dropdownlist" ng-transclude>
+<select kendo-drop-down-list ng-model="choice">
   <option>
     Foo
   </option>
@@ -59,7 +61,7 @@ var app = angular.module(&#039;your-angular-app&#039;, [&quot;kendo.directives&q
   <option>
     Baz
   </option>
-</select>
+</select> <span ng-show="choice">{{choice}} was chosen!</span>
 
 <h2>Remote Data Sources</h2>
 
@@ -67,38 +69,55 @@ var app = angular.module(&#039;your-angular-app&#039;, [&quot;kendo.directives&q
 
 <h3><span id="datasource"></span>Kendo UI DataSource</h3>
 
-<p>Since Kendo UI has to be able to see the JavaScript object that it is binding to, you need to specify which object on the scope this widget is bound to by setting the <code>data-model</code> attribute.</p>
+<p>In order to provide a Kendo DataSource to a widget, a <code>kendo-source</code> attribute directive is provided. You can pass it a DataSource object or an array and it will make sure a <code>kendo.data.DataSource</code> is created that the widget can use. This directive would eventually be able to receive a $resource and wrap it inside a Kendo DataSource</p>
 
 <p>Using a Kendo UI DataSource is just as easy as creating one off of the <code>$scope</code> object in the controller.</p>
 
 <h4>Controller</h4>
 <pre>
 function HomeCtrl($scope) {
-  $scope.model = kendo.observable({
-    things: new kendo.data.DataSource({
-      transport: {
-        read: &quot;directive-sample/data/products.json&quot;
-      },
-      pageSize: 5
-    })
+  $scope.things = new kendo.data.DataSource({
+    transport: {
+      read: &quot;directive-sample/data/products.json&quot;
+    },
+    pageSize: 5
   });
+
+  // to demonstrate event hanlding
+  $scope.rowSelected = function(e) {
+    var grid = e.sender;
+    var selectedRows = grid.select();
+    for (var i = 0; i &lt; selectedRows.length; i++) {
+      $scope.selectedItem = grid.dataItem(selectedRows[i]);
+      break;
+    }
+  }
 }
 </pre>
 
 <h4>HTML</h4>
 <pre>
-&lt;div id=&quot;grid&quot; data-kendo data-role=&quot;grid&quot; data-editable=&quot;true&quot; 
-  data-pageable=&quot;{ refresh: true, pageSizes: true }&quot;
-  data-model=&quot;model&quot; data-bind=&quot;source: products&quot; 
-  data-columns=&quot;[{ field: &#039;ProductName&#039;, title: &#039;Name&#039;}, 
-                 { field: &#039;Supplier.SupplierName&#039;,  title: &#039;Supplier&#039;}, 
-                 { field: &#039;Category.CategoryName&#039;, title: &#039;Category&#039; }]&quot;&gt;
-&lt;/div&gt;  
+&lt;div kendo-grid kendo-source=&quot;things&quot; data-selectable=&quot;row&quot; 
+  data-pageable=&#039;{ &quot;refresh&quot;: true, &quot;pageSizes&quot;: true }&#039;
+  data-columns=&#039;[{ &quot;field&quot;: &quot;ProductName&quot;, &quot;title&quot;: &quot;Name&quot;}, 
+                 { &quot;field&quot;: &quot;Supplier.SupplierName&quot;,  title: &quot;Supplier&quot;}, 
+                 { &quot;field&quot;: &quot;Category.CategoryName&quot;, title: &quot;Category&quot; }]&#039;
+  on-change=&quot;rowSelected(kendoEvent)&quot; on-data-bound=&quot;selectedItem = null&quot;&gt;&lt;/div&gt;  
 </pre>
-<div id="grid" data-kendo data-role="grid" data-editable="true" 
-  data-pageable="{ refresh: true, pageSizes: true }"
-  data-model="model" data-bind="source: products" 
-  data-columns="[{ field: 'ProductName', title: 'Name'}, 
-                 { field: 'Supplier.SupplierName',  title: 'Supplier'}, 
-                 { field: 'Category.CategoryName', title: 'Category' }]">
+<div kendo-grid kendo-source="things" data-selectable="row" 
+  data-pageable='{ "refresh": true, "pageSizes": true }'
+  data-columns='[{ "field": "ProductName", "title": "Name"}, 
+                 { "field": "Supplier.SupplierName", "title": "Supplier"}, 
+                 { "field": "Category.CategoryName", "title": "Category" }]'
+  on-change="rowSelected(kendoEvent)" >
+</div>
+<div ng-show="selectedItem">
+  <h3>{{selectedItem.ProductName}} <small>(Product ID: {{selectedItem.ProductID}})</small></h3>
+  <p><strong>Quantity in stock: </strong>{{selectedItem.UnitsInStock}}</p>
+  <p><strong>Price per unit: </strong>{{selectedItem.UnitPrice | currency}}</p>
+  <p><strong>Value of stock: </strong>{{selectedItem.UnitsInStock * selectedItem.UnitPrice | currency}}</p>
+</div>
+<div class="alert alert-block">
+  <h4>Note</h4>
+  The <code>data-</code> attributes currently expect objects and arrays to be sent as valid JSON.
 </div>
