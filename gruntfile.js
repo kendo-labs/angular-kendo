@@ -11,13 +11,33 @@ module.exports = function(grunt) {
         src: '<%= pkg.name %>.js',
         dest: '<%= pkg.name %>.min.js'
       }
+    },
+    docco: {
+      build: {
+        src: [ '<%= pkg.name %>.js' ],
+        options: {
+          css: 'app/css/docco.css',
+          output: 'docs/'
+        }
+      }
+    },
+    copy: {
+      main: {
+        files: [
+          { src: ['docs/angular-kendo.html'], dest: 'app/partials/docs.html', filter: 'isFile' }, // includes files in path
+        ]
+      }
     }
   });
 
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
+  grunt.loadNpmTasks('grunt-docco');
+
+  grunt.loadNpmTasks('grunt-contrib-copy');
+
   // Default task(s).
-  grunt.registerTask('default', ['uglify']);
+  grunt.registerTask('default', ['uglify', 'docco', 'copy']);
 
 };
