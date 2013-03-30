@@ -1,12 +1,15 @@
-(function(angular, _, jQuery, kendo) {
+(function(angular, jQuery, kendo) {
   "use strict";
   var main = angular.module('kendo', ['kendo.directives', 'kendo.services']);
   var directives = angular.module('kendo.directives', []);
   var services = angular.module('kendo.services', []);
 
-  var widgets = _.filter(_.keys(jQuery.fn), function(prop){
-    return !!prop.match(/^kendo(?:(?!Mobile))/);
-  });
+  var widgets = [];
+  for (var prop in jQuery.fn) {
+    if (prop.match(/^kendo(?:(?!Mobile))/)) {
+      widgets.push(prop);
+    }
+  }
 
   // setting up a value service containing the names of available kendo widgets
   services.value('kendoWidgets', widgets);
@@ -136,4 +139,4 @@
 
   }]);
 
-})(angular, _, jQuery, kendo);
+})(angular, jQuery, kendo);
