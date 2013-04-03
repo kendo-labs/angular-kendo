@@ -32,10 +32,10 @@
             // Parse the directive for attributes, elements and classes.
             restrict: 'ACE',
             transclude: true,
-            require: ['?ngModel','?kendoSource'],
+            require: ['?ngModel','?kendoSource', kendoWidget],
             controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
               // The options expression is evaluated once
-              options = angular.copy($scope.$eval($attrs[kendoWidget])) || {};
+              this.options = angular.copy($scope.$eval($attrs[kendoWidget])) || {};
               $transclude(function(clone){
                 $element.append(clone);
               });
@@ -44,7 +44,9 @@
               // Widgets may be bound to the ng-model.
               var ngModel = ctrls[0],
               // They may also specify their datasource as an object on the scope.
-                  kendoSource = ctrls[1], widget;
+                  kendoSource = ctrls[1], widget,
+              // Getting a reference on the options object defined in the controller
+                  options = ctrls[2].options;
 
               // Bind kendo widget to element only once interpolation on attributes is done.
               $timeout( function() {
