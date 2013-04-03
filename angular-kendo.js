@@ -65,6 +65,11 @@
                 // Bind the kendo widget to the element and store a reference to the widget.
                 widget = element[kendoWidget](options).data(kendoWidget);
 
+                // Cleanup after ourselves
+                scope.$on( '$destroy', function() {
+                  widget.destroy();
+                });
+
                 // if ngModel is on the element, we setup bi-directional data binding
                 if (ngModel) {
                   if( !widget.value ) {
@@ -88,16 +93,24 @@
             }
           };
 
+          // Simplistic reduce function
+          function reduce(obj, cb, memo) {
+            angular.forEach(obj, function(value, key) {
+              memo = cb.call(value, memo, value, key);
+            });
+            return memo;
+          }
+
           // Create an event handler function for each on-* attribute on the element and add to dest.
           function addEventHandlers(dest, scope, attrs) {
-            
-            var eventHandlers = $.map(attrs, function(memo, att) {
+            var memo,
+                eventHandlers = reduce(attrs, function(memo, attValue, att) {
               var match = att.match(/^on(.+)/), eventName, fn;
               if( match ) {
-                // Lowercase the first letter. For consitancy.
+                // Lowercase the first letter to match the event name kendo expects.
                 eventName = match[1].charAt(0).toLowerCase() + match[1].slice(1);
                 // Parse the expression.
-                fn = $parse(attrs[att]);
+                fn = $parse(attValue);
                 // Add a kendo event listener to the memo.
                 memo[eventName] = function(e) {
                   // Make sure this gets invoked in the angularjs lifecycle.
@@ -108,7 +121,7 @@
                 };
               }
               return memo;
-            });
+            }, {});
 
             // mix the eventHandlers in the options object
             angular.extend(dest, eventHandlers);
