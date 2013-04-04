@@ -138,9 +138,33 @@
      </div>
     <section>
       <h1>DataViz</h1>
-      <div kendo-radial-gauge ng-model="value"></div>
-      <input kendo-slider data-min="0" data-max="100" ng-model="value"/>
-      <div kendo-chart data-series="{{series}}"/>
+      
+      <div class="row">
+        <div class="span6">
+          <h4>Radial Gauge</h4>
+          <pre class="ng-non-bindable">
+&lt;div kendo-radial-gauge ng-model=&quot;value&quot;&gt;&lt;/div&gt;
+&lt;div kendo-slider data-min=&quot;0&quot; data-max=&quot;100&quot; ng-model=&quot;value&quot;&gt;&lt;/div&gt;
+          </pre>
+          <div>
+            <div kendo-radial-gauge ng-model="value"></div>
+            <div class="row">
+              <input kendo-slider data-min="0" data-max="100" data-large-step="20" ng-model="value" class="span4 offset1"/>
+            </div>
+          </div>
+        </div>
+        <div class="span6">
+          <h4>Pie Chart</h4>
+          <pre class="ng-non-bindable">
+&lt;div kendo-chart data-series=&quot;{{series}}&quot;&gt;&lt;/div&gt;
+          </pre>
+          <div>
+            <div kendo-chart data-series="{{series}}"/>
+          </div>
+        </div>
+      </div>
+      
+      
     </section>
   </div>
 </div>

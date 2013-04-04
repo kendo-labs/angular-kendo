@@ -10,16 +10,12 @@
   // Create a new kendo module and pass in the directives and services
   var main = angular.module('kendo', ['kendo.directives', 'kendo.services']);
 
-  var widgets = [];
-
   // Iterate over the $.fn object to get the Kendo UI widgets adding
-  // them to the 'widgets' array.
-  // TODO: This is HIDEOUS. how do we iterate the $.fn object without underscore?
-  for(var item in $.fn) {
-    if ($.fn.hasOwnProperty(item) && !!item.match(/^kendo(?:(?!Mobile))/)) {
-      widgets.push(item);
-    }
-  }
+  // them to the 'widgets' array. 
+  var widgets = filter(jQuery.fn, function(value, key) {
+    // only add the keys that start by "kendo" but not "kendoMobile"
+    return !!key.match(/^kendo(?:(?!Mobile))/);
+  },[], true);
 
   // Set up a value service containing the names of available Kendo UI Widgets.
   services.value('kendoWidgets', widgets);
@@ -27,7 +23,6 @@
   // Loop through the array of widget names and dynamically create a directive for each one.
   angular.forEach( widgets, function(kendoWidget) {
       directives.directive(kendoWidget, [ '$parse', '$timeout', function($parse, $timeout) {
-          var options;
           return {
             // Parse the directive for attributes, elements and classes.
             restrict: 'ACE',
@@ -52,7 +47,10 @@
               $timeout( function() {
                 
                 // Mixin the data that's set on the element in the options
-                angular.extend(options, element.data());
+                filter(element.data(), function(value, key) {
+                  // don't add the angular data items in the options: kendo's deepCopyOne doesn't like it.
+                  return key.charAt(0) !== '$';
+                }, options);
                 
                 // If the kendo-source directive is present, use it to create or retrieve an instance of the Kendo UI DataSource.
                 if( kendoSource ) {
@@ -92,14 +90,6 @@
               });           
             }
           };
-
-          // Simplistic reduce function
-          function reduce(obj, cb, memo) {
-            angular.forEach(obj, function(value, key) {
-              memo = cb.call(value, memo, value, key);
-            });
-            return memo;
-          }
 
           // Create an event handler function for each on-* attribute on the element and add to dest.
           function addEventHandlers(dest, scope, attrs) {
@@ -170,5 +160,36 @@
     }
 
   }]);
+
+  // Simplistic reduce function
+  function reduce(obj, cb, memo) {
+    angular.forEach(obj, function(value, key) {
+      memo = cb.call(value, memo, value, key);
+    });
+    return memo;
+  }
+
+  // Simplistic filter function
+  function filter(obj, cb, dest, pushKey) {
+    // determine if will want to push to dest
+    var push = dest && angular.isArray(dest) || angular.isArray(obj);
+    
+    // determine if the filtered output will be an array or an object
+    dest = dest || (push ? [] : {});
+    
+    angular.forEach(obj, function(value, key) {
+      // for each item in obj, invoke the provided callback function
+      if( cb.call(value, value, key) ) {
+        // callback returned a truthy value, add to destination
+        if( push ) {
+          dest.push(pushKey? key : value);
+        } else {
+          dest[key] = value;
+        }
+      }
+    });
+    // return the destination object
+    return dest;
+  }
 
 })(angular, jQuery, kendo);
