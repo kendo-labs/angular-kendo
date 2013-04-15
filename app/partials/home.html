@@ -52,13 +52,12 @@
      <p>Angular-Kendo supports initialization from existing DOM structure the same way that Kendo UI does.</p>
      <h4>Dropdown List</h4>
      <pre class="ng-non-bindable">
-  &lt;ul kendo-drop-down-list ng-model=&quot;choice&quot; &gt;
-   &lt;li&gt;Foo&lt;/li&gt;
-   &lt;li&gt;Bar&lt;/li&gt;
-   &lt;li&gt;Baz&lt;/li&gt;
-  &lt;/ul&gt;
-  &lt;span ng-show=&quot;choice&quot;&gt;{{choice}} was chosen!&lt;/span&gt;
-     </pre>
+&lt;ul kendo-drop-down-list ng-model=&quot;choice&quot; &gt;
+ &lt;li&gt;Foo&lt;/li&gt;
+ &lt;li&gt;Bar&lt;/li&gt;
+ &lt;li&gt;Baz&lt;/li&gt;
+&lt;/ul&gt;
+&lt;span ng-show=&quot;choice&quot;&gt;{{choice}} was chosen!&lt;/span&gt;</pre>
          
      <select kendo-drop-down-list ng-model="choice">
        <option>
@@ -71,6 +70,34 @@
          Baz
        </option>
      </select> <span ng-show="choice">{{choice}} was chosen!</span>
+
+     <br />
+     <h2><span id="dom"></span>Refreshing A Widget</h2>
+     <p>Angular-Kendo supports re-initialization of widgets when changes are made to the configuration. When a <code>kendo-refresh</code> attribute is used, a watch is put on the expression it contains and if the value of the expression changes, the widget will be re-initialized.</p>
+     <h4>Chart</h4>
+     <pre class="ng-non-bindable">
+&lt;div kendo-chart data-title="Sales" data-series-defaults='{"type": "{{chartSettings.type}}"}' 
+     data-series="{{chartData}}"
+     kendo-refresh="chartSettings.type"&gt;&lt;/div&gt;</pre>
+
+    <label class="radio inline">
+      <input type="radio" name="chartType" value="column" ng-model="chartSettings.type"> Columns
+    </label>
+    <label class="radio inline">
+      <input type="radio" name="chartType" value="bar" ng-model="chartSettings.type"> Bars
+    </label>
+    <label class="radio inline">
+      <input type="radio" name="chartType" value="line" ng-model="chartSettings.type"> Lines 
+    </label>
+    <div kendo-chart data-title="Sales" data-series-defaults='{"type": "{{chartSettings.type}}"}' 
+         data-series="{{chartData}}"
+         data-category-axis='{
+            "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+            "majorGridLines": {
+                "visible": false
+            }
+         }'
+         kendo-refresh="chartSettings.type"></div>
 
      <br />
      <div class="page-header big-buffer">
@@ -108,7 +135,7 @@
      </pre>
 
      <h4>HTML</h4>
-     <pre>
+     <pre class="ng-non-bindable">
   &lt;div kendo-grid kendo-source=&quot;things&quot; data-selectable=&quot;row&quot; 
    data-pageable=&#039;{ &quot;refresh&quot;: true, &quot;pageSizes&quot;: true }&#039;
    data-columns=&#039;[{ &quot;field&quot;: &quot;ProductName&quot;, &quot;title&quot;: &quot;Name&quot;}, 
@@ -136,6 +163,47 @@
        The <code>data-</code> attributes currently expect objects and arrays to be sent as valid JSON.
      </p>
      </div>
+
+     <h3><span id="shared-datasource"></span>Shared DataSource</h3>
+
+     <p>The <code>kendo-source</code> attribute directive can also be used to wrap multiple kendo widgets and each widget will inherit the DataSource.</p>
+
+    <h4>Controller</h4>
+     <pre>
+  function HomeCtrl($scope) {
+   $scope.things = new kendo.data.DataSource({
+     transport: {
+       read: &quot;app/data/products.json&quot;
+     },
+     pageSize: 5
+   });
+     </pre>
+
+     <h4>HTML</h4>
+     <pre class="ng-non-bindable">
+&lt;div kendo-source="things"&gt;
+  &lt;div kendo-pager&gt;&lt;/div&gt;
+  &lt;div kendo-grid data-pageable="true"
+       data-columns='[{ "field": "ProductName", "title": "Name"}, 
+          { "field": "Supplier.SupplierName",  "title": "Supplier"}, 
+          { "field": "Category.CategoryName", "title": "Category" }]'&gt;
+  &lt;/div&gt;
+&lt;/div&gt;       
+     </pre>
+    <div kendo-source="things">
+      <div kendo-pager></div>
+      <div kendo-grid data-pageable="true"
+           data-columns='[{ "field": "ProductName", "title": "Name"}, 
+              { "field": "Supplier.SupplierName",  "title": "Supplier"}, 
+              { "field": "Category.CategoryName", "title": "Category" }]'>
+      </div>
+    </div> 
+
+     <div class="page-header big-buffer">
+       <h1>Refreshing A Widget</h1>   
+     </div>
+     
+
     <section>
       <h1>DataViz</h1>
       

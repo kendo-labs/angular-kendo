@@ -27,41 +27,37 @@
             // Parse the directive for attributes, elements and classes.
             restrict: 'ACE',
             transclude: true,
-            require: ['?ngModel','?kendoSource', kendoWidget],
+            require: ['?ngModel', kendoWidget],
             controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
-              // The options expression is evaluated once
-              this.options = angular.copy($scope.$eval($attrs[kendoWidget])) || {};
+              // Make the element's contents available to the kendo widget to allow creating some widgets from existing elements.
               $transclude(function(clone){
                 $element.append(clone);
               });
+
+              // TODO: add functions to allow other directives to register option decorators
             }],
             link: function(scope, element, attrs, ctrls) {
               // Widgets may be bound to the ng-model.
               var ngModel = ctrls[0],
-              // They may also specify their datasource as an object on the scope.
-                  kendoSource = ctrls[1], widget,
-              // Getting a reference on the options object defined in the controller
-                  options = ctrls[2].options;
+                  widget;
 
               // Bind kendo widget to element only once interpolation on attributes is done.
               $timeout( function() {
-                
-                // Mixin the data that's set on the element in the options
-                filter(element.data(), function(value, key) {
-                  // don't add the angular data items in the options: kendo's deepCopyOne doesn't like it.
-                  return key.charAt(0) !== '$';
-                }, options);
-                
-                // If the kendo-source directive is present, use it to create or retrieve an instance of the Kendo UI DataSource.
-                if( kendoSource ) {
-                  options.dataSource = kendoSource.getDataSource();
+
+                // create the kendo widget and bind it to the element.
+                widget = createWidget(scope, element, attrs, ctrls[1]);
+
+                // if kendo-refresh attribute is provided, rebind the kendo widget when 
+                // the watched value changes
+                if( attrs.kendoRefresh ) {
+                    // watch for changes on the expression passed in the kendo-refresh attribute
+                    scope.$watch(attrs.kendoRefresh, function(newValue, oldValue) {
+                        if(newValue !== oldValue) {
+                            // create the kendo widget and bind it to the element.
+                            widget = createWidget(scope, element, attrs, ctrls[1]);
+                        }
+                    }, true); // watch for object equality. Use native or simple values.
                 }
-                
-                // Add on-* event handlers to options.
-                addEventHandlers(options, scope, attrs);
-                
-                // Bind the kendo widget to the element and store a reference to the widget.
-                widget = element[kendoWidget](options).data(kendoWidget);
 
                 // Cleanup after ourselves
                 scope.$on( '$destroy', function() {
@@ -90,6 +86,64 @@
               });           
             }
           };
+
+          // Create the kendo widget with gathered options
+          function createWidget(scope, element, attrs, controller) {
+                // Create the options object
+                var options = gatherOptions(scope, element, attrs, controller);
+                
+                // Bind the kendo widget to the element and return a reference to the widget.
+                return element[kendoWidget](options).data(kendoWidget);
+          }
+
+          // Gather the options from defaults and from attributes
+          function gatherOptions(scope, element, attrs, controller) {
+            // TODO: add kendoDefaults value service and use it to get a base options object?
+            // var options = kendoDefaults[kendoWidget];
+
+            var dataSource;
+            // make a deep clone of the options object passed to the directive, if any.
+            var options = angular.copy(scope.$eval(attrs[kendoWidget])) || {};
+
+            // Mixin the data that's set on the element in the options
+            angular.forEach( element.data(), function(value, key) {
+              // Only add data items that were put as attributes since some items put by angular and kendo
+              // may have circular references and Kendo's deepCopyOne doesn't like that.
+              if( !!attrs[key] ) {
+                if( angular.isObject(value) ) {
+                  // Because this may be invoked on refresh (kendo-refresh) and that kendo may 
+                  // have modified the object put in the element's data,
+                  // we are parsing the attribute value to get the inital value of the object
+                  // and not the potentially modified one. 
+                  options[key] = JSON.parse(attrs[key]);
+                } else {
+                  // Natives are immutable so we can just put them in.
+                  options[key] = value;
+                }
+              }
+            });
+
+            // If no dataSource was provided, 
+            if( !options.dataSource ) {
+              // Check if one was set in the element's data or in its ancestors.
+              dataSource = element.inheritedData('$kendoDataSource');
+              if( dataSource ) {
+                options.dataSource = dataSource;
+              }
+            }
+
+            // Add on-* event handlers to options.
+            addEventHandlers(options, scope, attrs);
+
+            // TODO: invoke controller.decorateOptions to allow other directives (or directive extensions)
+            //       to modify the options before they get bound. This would provide an extention point for directives
+            //       that require special processing like compiling nodes generated by kendo so that angular data binding
+            //       can happen in kendo widget templates for example.
+            //controller.decorateOptions(options);
+
+            return options;
+
+          }
 
           // Create an event handler function for each on-* attribute on the element and add to dest.
           function addEventHandlers(dest, scope, attrs) {
@@ -124,39 +178,27 @@
   // ## The kendoSource directive allows setting the Kendo UI DataSource of a widget directly from the HTML.
   directives.directive('kendoSource', [function() {
     return {
+      // This is an attribute directive
       restrict: 'A',
-      controller: ['$scope', '$attrs', function($scope, $attrs) {
-        // Create the DataSource or return the current instance.
-        var dataSource = toDataSource($scope.$eval($attrs.kendoSource));
-        // Reference equality watch.
-        $scope.$watch($attrs.kendoSource, function(ds) {
-          dataSource = toDataSource(ds);
+      controller: ['$scope', '$attrs', '$element', function($scope, $attrs, $element) {
+        // Set $kendoDataSource in the element's data. 3rd parties can define their own dataSource creation
+        // directive and provide this data on the element.
+        $element.data('$kendoDataSource', toDataSource($scope.$eval($attrs.kendoSource)));
+
+        // Keep the element's data up-to-date with changes.
+        $scope.$watch($attrs.kendoSource, function(newDS, oldDS) {
+          if( newDS !== oldDS ) {
+            $element.data('$kendoDataSource', toDataSource(newDS));
+          }
         });
-                      
-        // TODO: Not sure what is happening here
-        this.getDataSource = function() {
-          return dataSource;
-        };
       }]
         
     };
 
     // Transforms the object into a Kendo UI DataSource.
     function toDataSource(ds) {
-    
+      // TODO: if ds is a $resource, wrap it in a kendo dataSource using an injected service
       return kendo.data.DataSource.create(ds);
-
-    //   if( ds instanceof kendo.data.DataSource ) {
-    //     return ds;
-    //   } else if( angular.isObject(ds) ) {
-    //     return new kendo.data.DataSource(ds);
-    //   } else if( angular.isArray(ds) ) {
-    //     return new kendo.data.DataSource({
-    //       data: ds
-    //     });
-    //   } else {
-    //     throw new Error('kendo-source must be a kendo datasource object');
-    //   }
     }
 
   }]);
