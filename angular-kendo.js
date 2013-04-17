@@ -10,11 +10,13 @@
   // Create a new kendo module and pass in the directives and services
   var main = angular.module('kendo', ['kendo.directives', 'kendo.services']);
 
-  // Iterate over the $.fn object to get the Kendo UI widgets adding
+  // Iterate over the kendo.ui object to get the Kendo UI widgets adding
   // them to the 'widgets' array. 
-  var widgets = filter(jQuery.fn, function(value, key) {
-    // only add the keys that start by "kendo" but not "kendoMobile"
-    return !!key.match(/^kendo(?:(?!Mobile))/);
+  var widgets = [];
+
+  angular.forEach(kendo.ui, function(value, key) {
+    // add all widgets
+    widgets.push("kendo" + key);
   },[], true);
 
   // Set up a value service containing the names of available Kendo UI Widgets.
