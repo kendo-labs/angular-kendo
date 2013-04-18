@@ -10,14 +10,18 @@
   // Create a new kendo module and pass in the directives and services
   var main = angular.module('kendo', ['kendo.directives', 'kendo.services']);
 
-  // Iterate over the kendo.ui object to get the Kendo UI widgets adding
+  // Iterate over the kendo.ui and kendo.dataviz.ui namespace objects to get the Kendo UI widgets adding
   // them to the 'widgets' array. 
   var widgets = [];
 
-  angular.forEach(kendo.ui, function(value, key) {
-    // add all widgets
-    widgets.push("kendo" + key);
-  },[], true);
+  angular.forEach([kendo.ui, kendo.dataviz && kendo.dataviz.ui], function(namespace) {
+    angular.forEach(namespace, function(value, key) {
+      // add all widgets
+      if( key.match(/^[A-Z]/) ){
+        widgets.push("kendo" + key);
+      }
+    });
+  });
 
   // Set up a value service containing the names of available Kendo UI Widgets.
   services.value('kendoWidgets', widgets);
@@ -211,29 +215,6 @@
       memo = cb.call(value, memo, value, key);
     });
     return memo;
-  }
-
-  // Simplistic filter function
-  function filter(obj, cb, dest, pushKey) {
-    // determine if will want to push to dest
-    var push = dest && angular.isArray(dest) || angular.isArray(obj);
-    
-    // determine if the filtered output will be an array or an object
-    dest = dest || (push ? [] : {});
-    
-    angular.forEach(obj, function(value, key) {
-      // for each item in obj, invoke the provided callback function
-      if( cb.call(value, value, key) ) {
-        // callback returned a truthy value, add to destination
-        if( push ) {
-          dest.push(pushKey? key : value);
-        } else {
-          dest[key] = value;
-        }
-      }
-    });
-    // return the destination object
-    return dest;
   }
 
 })(angular, jQuery, kendo);
