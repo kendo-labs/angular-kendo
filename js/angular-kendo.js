@@ -26,9 +26,12 @@
               });
             }],
             link: function(scope, element, attrs, ctrls) {
-              var ngModel = ctrls[0],
-                  kendoSource = ctrls[1], widget,
-                  options = ctrls[2].options;
+                var ngModel = ctrls[0],
+                    kendoSource = ctrls[1], widget,
+                    options = ctrls[2].options,
+                    columns,
+                    col,
+                    cmdClick;
 
               // bind kendo widget to element only once interpolation on attributes is done
               $timeout( function() {
@@ -40,6 +43,32 @@
                   options.dataSource = kendoSource.getDataSource();
                 }
                 
+                columns = options.columns || [];
+
+                // convert custom commands handler from string values to functions
+                for (var colIdx = 0, colLength = columns.length; colIdx < colLength; colIdx++) {
+                    col = columns[colIdx];
+
+                    if (col.command) {
+                        col.command = !_.isArray(col.command) ? [col.command] : col.command;
+                        
+                        for (var cmdIdx = 0, cmdLength = col.command.length; cmdIdx < cmdLength; cmdIdx++) {
+
+                            if (col.command[cmdIdx].click) {
+                                cmdClick = col.command[cmdIdx].click;
+
+                                // ensure that all functions are on the scope
+                                if (cmdClick.indexOf('scope.') === -1) {
+                                    cmdClick = 'scope.' + cmdClick;
+                                }
+
+                                // convert string value to funtion
+                                col.command[cmdIdx].click = eval(cmdClick);
+                            }
+                        }
+                    }
+                }
+
                 // add on-* event handlers to options
                 addEventHandlers(options, scope, attrs);
                 
