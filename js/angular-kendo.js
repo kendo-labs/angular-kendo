@@ -26,12 +26,12 @@
               });
             }],
             link: function(scope, element, attrs, ctrls) {
-              var ngModel = ctrls[0],
-                  kendoSource = ctrls[1], widget,
-                  options = ctrls[2].options,
-                  columns,
-                  col,
-                  cmdClick;
+                var ngModel = ctrls[0],
+                    kendoSource = ctrls[1], widget,
+                    options = ctrls[2].options,
+                    columns,
+                    col,
+                    cmdClick;
 
               // bind kendo widget to element only once interpolation on attributes is done
               $timeout( function() {
