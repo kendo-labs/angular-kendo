@@ -3,6 +3,25 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    concat: {
+      config: {
+        options: {
+          banner: "(function(angular) {",
+          footer: "}(angular));"
+        }
+      },
+      dist: {
+        src: ['src/main.js',
+              'src/services/widget.js',
+              'src/factories/utils.js',
+              'src/factories/widget.js',
+              'src/factories/directive.js',
+              'src/directives/widgets.js',
+              'src/directives/dataSource.js'],
+        dest: 'build/angular-kendo.js'
+      },
+
+    },
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
@@ -12,15 +31,15 @@ module.exports = function(grunt) {
         dest: '<%= pkg.name %>.min.js'
       }
     },
-    docco: {
-      build: {
-        src: [ '<%= pkg.name %>.js' ],
-        options: {
-          css: 'app/css/docco.css',
-          output: 'docs/'
-        }
-      }
-    },
+    // docco: {
+    //   build: {
+    //     src: [ '<%= pkg.name %>.js' ],
+    //     options: {
+    //       css: 'app/css/docco.css',
+    //       output: 'docs/'
+    //     }
+    //   }
+    // },
     copy: {
       main: {
         files: [
@@ -37,7 +56,9 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-copy');
 
+  grunt.loadNpmTasks('grunt-contrib-concat');
+
   // Default task(s).
-  grunt.registerTask('default', ['uglify', 'docco', 'copy']);
+  grunt.registerTask('default', ['concat']);
 
 };
