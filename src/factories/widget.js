@@ -13,7 +13,8 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
     angular.forEach( element.data(), function(value, key) {
       // Only add data items that were put as attributes since some items put by angular and kendo
       // may have circular references and Kendo's deepCopyOne doesn't like that.
-      if( !!attrs[key] ) {
+      // Also make sure not to add the widget object kendo puts in the data.
+      if( !!attrs[key] && key !== kendoWidget ) {
         if( angular.isObject(value) ) {
           // Because this may be invoked on refresh (kendo-refresh) and that kendo may 
           // have modified the object put in the element's data,
