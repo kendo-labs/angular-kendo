@@ -32,10 +32,10 @@ angular.module('kendo.directives').factory('utils',
     };
   }
 );
-angular.module('kendo.directives').factory('widgetFactory', ['utils', function(utils) {
+angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', function(utils, $parse) {
 
   // Gather the options from defaults and from attributes
-  var gatherOptions = function(scope, element, attrs, controller, kendoWidget) {
+  var gatherOptions = function(scope, element, attrs, kendoWidget) {
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
@@ -47,7 +47,8 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
     angular.forEach( element.data(), function(value, key) {
       // Only add data items that were put as attributes since some items put by angular and kendo
       // may have circular references and Kendo's deepCopyOne doesn't like that.
-      if( !!attrs[key] ) {
+      // Also make sure not to add the widget object kendo puts in the data.
+      if( !!attrs[key] && key !== kendoWidget ) {
         if( angular.isObject(value) ) {
           // Because this may be invoked on refresh (kendo-refresh) and that kendo may 
           // have modified the object put in the element's data,
@@ -110,10 +111,10 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
   };
 
   // Create the kendo widget with gathered options
-  var create = function(scope, element, attrs, controller, kendoWidget) {
+  var create = function(scope, element, attrs, kendoWidget) {
 
     // Create the options object
-    var options = gatherOptions(scope, element, attrs, controller, kendoWidget);
+    var options = gatherOptions(scope, element, attrs, kendoWidget);
 
     // Bind the kendo widget to the element and return a reference to the widget.
     return element[kendoWidget](options).data(kendoWidget);
@@ -125,9 +126,9 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
 
 }]);
 
-angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
-  function(widgetFactory) {
-    var create = function($parse, $timeout, kendoWidget) {
+angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$parse', '$timeout',
+  function(widgetFactory, $parse, $timeout) {
+    var create = function(kendoWidget) {
 
       return {
         // Parse the directive for attributes and classes
@@ -144,22 +145,15 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           // TODO: add functions to allow other directives to register option decorators
         }],
 
-        link: function(scope, element, attrs, ctrls) {
+        link: function(scope, element, attrs, ngModel) {
 
-          // Widgets may be bound to the ng-model.
-          if (ctrl) {
-            var ngModel = ctrls[0],
-            ctrl = ctrls[1]
-          }
-          
           var widget;
 
-          // Q: Why is there a timeout here with no duration? Docs indicate it is 0 by default.
           // Bind kendo widget to element only once interpolation on attributes is done.
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.
-            widget = widgetFactory.create(scope, element, attrs, ctrl, kendoWidget);
+            widget = widgetFactory.create(scope, element, attrs, kendoWidget);
 
             // if kendo-refresh attribute is provided, rebind the kendo widget when 
             // the watched value changes
@@ -168,7 +162,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
               scope.$watch(attrs.kendoRefresh, function(newValue, oldValue) {
                 if(newValue !== oldValue) {
                   // create the kendo widget and bind it to the element.
-                  widget = widgetFactory.create(scope, element, attrs, ctrl, kendoWidget);
+                  widget = widgetFactory.create(scope, element, attrs, kendoWidget);
                 }
               }, true); // watch for object equality. Use native or simple values.
             }
@@ -213,9 +207,9 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 
   // loop through all the widgets and create a directive
   angular.forEach(widgets, function(widget) {
-    angular.module('kendo.directives').directive(widget, ['$parse', '$timeout', 'directiveFactory',
-      function($parse, $timeout, directiveFactory) {
-        return directiveFactory.create($parse, $timeout, widget);
+    angular.module('kendo.directives').directive(widget, ['directiveFactory',
+      function(directiveFactory) {
+        return directiveFactory.create(widget);
       }
     ]);
   });

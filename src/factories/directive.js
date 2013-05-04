@@ -1,6 +1,6 @@
-angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
-  function(widgetFactory) {
-    var create = function($parse, $timeout, kendoWidget) {
+angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$parse', '$timeout',
+  function(widgetFactory, $parse, $timeout) {
+    var create = function(kendoWidget) {
 
       return {
         // Parse the directive for attributes and classes
@@ -17,22 +17,15 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           // TODO: add functions to allow other directives to register option decorators
         }],
 
-        link: function(scope, element, attrs, ctrls) {
+        link: function(scope, element, attrs, ngModel) {
 
-          // Widgets may be bound to the ng-model.
-          if (ctrl) {
-            var ngModel = ctrls[0],
-            ctrl = ctrls[1]
-          }
-          
           var widget;
 
-          // Q: Why is there a timeout here with no duration? Docs indicate it is 0 by default.
           // Bind kendo widget to element only once interpolation on attributes is done.
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.
-            widget = widgetFactory.create(scope, element, attrs, ctrl, kendoWidget);
+            widget = widgetFactory.create(scope, element, attrs, kendoWidget);
 
             // if kendo-refresh attribute is provided, rebind the kendo widget when 
             // the watched value changes
@@ -41,7 +34,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
               scope.$watch(attrs.kendoRefresh, function(newValue, oldValue) {
                 if(newValue !== oldValue) {
                   // create the kendo widget and bind it to the element.
-                  widget = widgetFactory.create(scope, element, attrs, ctrl, kendoWidget);
+                  widget = widgetFactory.create(scope, element, attrs, kendoWidget);
                 }
               }, true); // watch for object equality. Use native or simple values.
             }

@@ -1,7 +1,7 @@
-angular.module('kendo.directives').factory('widgetFactory', ['utils', function(utils) {
+angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', function(utils, $parse) {
 
   // Gather the options from defaults and from attributes
-  var gatherOptions = function(scope, element, attrs, controller, kendoWidget) {
+  var gatherOptions = function(scope, element, attrs, kendoWidget) {
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
@@ -77,10 +77,10 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
   };
 
   // Create the kendo widget with gathered options
-  var create = function(scope, element, attrs, controller, kendoWidget) {
+  var create = function(scope, element, attrs, kendoWidget) {
 
     // Create the options object
-    var options = gatherOptions(scope, element, attrs, controller, kendoWidget);
+    var options = gatherOptions(scope, element, attrs, kendoWidget);
 
     // Bind the kendo widget to the element and return a reference to the widget.
     return element[kendoWidget](options).data(kendoWidget);
