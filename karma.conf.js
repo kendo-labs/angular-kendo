@@ -18,7 +18,7 @@ files = [
   'src/factories/directive.js',
   'src/directives/widgets.js',
   'src/directives/dataSource.js',
-  'test/spec/**/*.js'
+  'test/spec/**/*Spec.js'
 ];
 
 // list of files to exclude
@@ -26,7 +26,7 @@ exclude = [];
 
 // test results reporter to use
 // possible values: dots || progress || growl
-reporters = ['progress'];
+reporters = ['dots'];
 
 // web server port
 port = 8080;
