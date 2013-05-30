@@ -22,6 +22,9 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           var widget;
 
           // Bind kendo widget to element only once interpolation on attributes is done.
+          // Using a $timeout with no delay simply makes sure the function will be executed next in the event queue
+          // after the current $digest cycle is finished. Other directives on the same element (select for example)
+          // will have been processed, and interpolation will have happened on the attributes.
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.

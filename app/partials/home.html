@@ -76,8 +76,8 @@
      <p>Angular-Kendo supports re-initialization of widgets when changes are made to the configuration. When a <code>kendo-refresh</code> attribute is used, a watch is put on the expression it contains and if the value of the expression changes, the widget will be re-initialized.</p>
      <h4>Chart</h4>
      <pre class="ng-non-bindable">
-&lt;div kendo-chart data-title="Sales" data-series-defaults='{"type": "{{chartSettings.type}}"}' 
-     data-series="{{chartData}}"
+&lt;div kendo-chart data-title="'Visits: 2012'" data-series-defaults="{type: chartSettings.type}"
+     data-series="chartData"
      kendo-refresh="chartSettings.type"&gt;&lt;/div&gt;</pre>
 
     <label class="radio inline">
@@ -89,14 +89,14 @@
     <label class="radio inline">
       <input type="radio" name="chartType" value="line" ng-model="chartSettings.type"> Lines 
     </label>
-    <div kendo-chart data-title="Sales" data-series-defaults='{"type": "{{chartSettings.type}}"}' 
-         data-series="{{chartData}}"
-         data-category-axis='{
-            "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-            "majorGridLines": {
-                "visible": false
+    <div kendo-chart data-title="'Visits: 2012'" data-series-defaults="{type: chartSettings.type}"
+         data-series="chartData"
+         data-category-axis="{
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            majorGridLines: {
+                visible: false
             }
-         }'
+         }"
          kendo-refresh="chartSettings.type"></div>
 
      <br />
@@ -143,11 +143,11 @@
                   { &quot;field&quot;: &quot;Category.CategoryName&quot;, title: &quot;Category&quot; }]&#039;
    on-change=&quot;rowSelected(kendoEvent)&quot; &gt;&lt;/div&gt;  
      </pre>
-     <div kendo-grid kendo-source="things" data-selectable="row" 
-       data-pageable='{ "refresh": true, "pageSizes": true }'
-       data-columns='[{ "field": "ProductName", "title": "Name"}, 
-                      { "field": "Supplier.SupplierName", "title": "Supplier"}, 
-                      { "field": "Category.CategoryName", "title": "Category" }]'
+     <div kendo-grid kendo-source="things" data-selectable="row"
+       data-pageable="{ 'refresh': true, 'pageSizes': true }"
+       data-columns="[{ 'field': 'ProductName', 'title': 'Name'},
+                      { 'field': 'Supplier.SupplierName', 'title': 'Supplier'}, 
+                      { 'field': 'Category.CategoryName', 'title': 'Category' }]"
        on-change="rowSelected(kendoEvent)" >
      </div>
      <div ng-show="selectedItem">
@@ -184,18 +184,18 @@
 &lt;div kendo-source="things"&gt;
   &lt;div kendo-pager&gt;&lt;/div&gt;
   &lt;div kendo-grid data-pageable="true"
-       data-columns='[{ "field": "ProductName", "title": "Name"}, 
-          { "field": "Supplier.SupplierName",  "title": "Supplier"}, 
-          { "field": "Category.CategoryName", "title": "Category" }]'&gt;
+       data-columns="[{ field: 'ProductName', title: 'Name'},
+          { field: 'Supplier.SupplierName',  title: 'Supplier'},
+          { field: 'Category.CategoryName', title: 'Category' }]"&gt;
   &lt;/div&gt;
 &lt;/div&gt;       
      </pre>
     <div kendo-source="things">
       <div kendo-pager></div>
       <div kendo-grid data-pageable="true"
-           data-columns='[{ "field": "ProductName", "title": "Name"}, 
-              { "field": "Supplier.SupplierName",  "title": "Supplier"}, 
-              { "field": "Category.CategoryName", "title": "Category" }]'>
+           data-columns="[{ field: 'ProductName', title: 'Name'},
+        { field: 'Supplier.SupplierName',  title: 'Supplier'},
+        { field: 'Category.CategoryName', title: 'Category' }]">
       </div>
     </div> 
 
@@ -219,10 +219,10 @@
         <div class="span6">
           <h4>Pie Chart</h4>
           <pre class="ng-non-bindable">
-&lt;div kendo-chart data-series=&quot;{{series}}&quot;&gt;&lt;/div&gt;
+&lt;div kendo-chart data-series=&quot;series&quot;&gt;&lt;/div&gt;
           </pre>
           <div>
-            <div kendo-chart data-series="{{series}}"/>
+            <div kendo-chart data-series="series"/>
           </div>
         </div>
       </div>

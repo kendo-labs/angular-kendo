@@ -15,15 +15,18 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', 
       // may have circular references and Kendo's deepCopyOne doesn't like that.
       // Also make sure not to add the widget object kendo puts in the data.
       if( !!attrs[key] && key !== kendoWidget ) {
-        if( angular.isObject(value) ) {
-          // Because this may be invoked on refresh (kendo-refresh) and that kendo may 
-          // have modified the object put in the element's data,
-          // we are parsing the attribute value to get the inital value of the object
-          // and not the potentially modified one. 
-          options[key] = JSON.parse(attrs[key]);
-        } else {
-          // Natives are immutable so we can just put them in.
-          options[key] = value;
+
+        // Evaluate the angular expression and put its result in the widget's options object.
+        // Here we make a copy because the kendo widgets make changes to the objects passed in the options
+        // and kendo-refresh would not be able to refresh with the initial values otherwise.
+        options[key] = angular.copy(scope.$eval(attrs[key]));
+
+        // If the expression resolves to undefined, treat the attribute as a string
+        // We run the risk of colliding with legitimate model values put in the scope, but the advantage is
+        // that the user will be able to use attributes like data-selectable="row" instead of
+        // data-selectable="'row'" for attributes that accept a string.
+        if(options[key] === undefined) {
+          options[key] = attrs[key];
         }
       }
     });
