@@ -11,6 +11,7 @@ angular-kendo was designed to work with Kendo UI Web / DataViz and AngularJS ver
 angular-kendo currently depends on the following libraries:
 
 - [jQuery](http://www.jquery.com) v1.8.2
+- [Underscore](http://underscorejs.org)
 - [Kendo UI](http://www.kendoui.com) vCurrent
 - [AngularJS](http://www.angularjs.org) v1.0.4
 
