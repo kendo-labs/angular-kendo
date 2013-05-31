@@ -24,6 +24,16 @@ This repository contains both the full and minified version of angular-kendo.
 
 Full documentation can be found on the [gh-pages site](http://kendo-labs.github.com/angular-kendo/) for this repo.
 
+## Running unit tests
+### Setup
+Run the following commands before running test-cases for the first time:
+
+1. `npm install` - This will install Bower globally and Karma test runner locally.
+2. `bower install` - This will install components that are needed to run test-cases.
+
+### Running
+Tests can be run using following command: `karma start`
+
 ## How to Contribute
 
 If you would like to contribute to angular-kendo's source code, please read the [guidelines for pull requests and contributions](CONTRIBUTING.md). Following these guidelines will help make your contributions easier to bring in to the next release.
