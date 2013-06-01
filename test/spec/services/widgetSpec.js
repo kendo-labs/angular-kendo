@@ -5,13 +5,18 @@ describe('services widget', function () {
 
     it('should have collected Kendo widget names', function () {
         inject(function (widgets) {
-            //check for a few widgets
-            expect(widgets).toContain('kendoGrid');
-            expect(widgets).toContain('kendoPager');
-            expect(widgets).toContain('kendoPopup');
-            expect(widgets).toContain('kendoAutoComplete');
-            expect(widgets).toContain('kendoWindow');
-            expect(widgets).toContain('kendoSelect');
+            var widgetsArr = [];
+
+            angular.forEach([kendo.ui, kendo.dataviz && kendo.dataviz.ui], function(namespace) {
+                angular.forEach(namespace, function(value, key) {
+                    // add all widgets
+                    if( key.match(/^[A-Z]/) ){
+                        widgetsArr.push("kendo" + key);
+                    }
+                });
+            });
+
+            expect(widgetsArr).toEqual(widgets);
         });
     });
 });
