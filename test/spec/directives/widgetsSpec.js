@@ -155,15 +155,78 @@ ddescribe('Widgets Directive', function () {
     });
     // kendoListView
     // kendoMenu
+
     // kendoMultiSelect
+    it('should create kendoMultiSelect widget', function () {
+        inject(function ($rootScope, $compile, $timeout) {
+            $rootScope.data = [
+                { text: "Black", value: "1" },
+                { text: "Orange", value: "2" },
+                { text: "Grey", value: "3" }
+            ];
+
+            $rootScope.opts = {
+                dataTextField: "text",
+                dataValueField: "value"
+            };
+
+            var element = $compile('<div><input id="multiSelect" kendo-multi-select="opts" kendo-source="data"></div>')($rootScope);
+            $rootScope.$apply();
+            $timeout.flush();
+            var dataRole = element.find('#multiSelect').data('role');
+            expect(dataRole).toBe('multiselect');
+        });
+    });
+
     // kendoNumericTextBox
+    it('should create kendoNumericTextBox widget', function () {
+        inject(function ($rootScope, $compile, $timeout) {
+            var element = $compile('<div><input id="numericTextBox" kendo-numeric-text-box min="0" max="100" step="1"></div>')($rootScope);
+            $rootScope.$apply();
+            $timeout.flush();
+            var dataRole = element.find('#numericTextBox').data('role');
+            expect(dataRole).toBe('numerictextbox');
+        });
+    });
+
     // kendoPager
     // kendoPanelBar
     // kendoRangeSlider
+
     // kendoSlider
+    it('should create kendoSlider widget', function () {
+        inject(function ($rootScope, $compile, $timeout) {
+            $rootScope.opts = {
+                increaseButtonTitle: "Right",
+                decreaseButtonTitle: "Left",
+                min: -10,
+                max: 10,
+                smallStep: 2,
+                largeStep: 1
+            };
+
+            var element = $compile('<div><input id="slider" kendo-slider="opts"></div>')($rootScope);
+            $rootScope.$apply();
+            $timeout.flush();
+            var dataRole = element.find('#slider').data('role');
+            expect(dataRole).toBe('slider');
+        });
+    });
+
     // kendoSplitter
     // kendoTabStrip
+
     // kendoTimePicker
+    it('should create kendoTimePicker widget', function () {
+        inject(function ($rootScope, $compile, $timeout) {
+            var element = $compile('<div><input id="timePicker" kendo-time-picker></div>')($rootScope);
+            $rootScope.$apply();
+            $timeout.flush();
+            var dataRole = element.find('#timePicker').data('role');
+            expect(dataRole).toBe('timepicker');
+        });
+    });
+
     // kendoTooltip
     // kendoTreeView
     // kendoUpload
