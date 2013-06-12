@@ -27,8 +27,8 @@ module.exports = function(grunt) {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
       build: {
-        src: '<%= pkg.name %>.js',
-        dest: '<%= pkg.name %>.min.js'
+        src: 'build/angular-kendo.js',
+        dest: 'build/<%= pkg.name %>.min.js'
       }
     },
     // docco: {
@@ -59,6 +59,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
 
   // Default task(s).
-  grunt.registerTask('default', ['concat']);
+  grunt.registerTask('default', ['concat', 'uglify']);
 
 };

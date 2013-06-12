@@ -1,7 +1,8 @@
-angular.module('kendo.directives').factory('widgetFactory', ['utils', function(utils) {
+angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', function(utils, $parse) {
 
   // Gather the options from defaults and from attributes
   var gatherOptions = function($parse, scope, element, attrs, controller, kendoWidget) {
+
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
@@ -13,16 +14,20 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
     angular.forEach( element.data(), function(value, key) {
       // Only add data items that were put as attributes since some items put by angular and kendo
       // may have circular references and Kendo's deepCopyOne doesn't like that.
-      if( !!attrs[key] ) {
-        if( angular.isObject(value) ) {
-          // Because this may be invoked on refresh (kendo-refresh) and that kendo may 
-          // have modified the object put in the element's data,
-          // we are parsing the attribute value to get the inital value of the object
-          // and not the potentially modified one. 
-          options[key] = JSON.parse(attrs[key]);
-        } else {
-          // Natives are immutable so we can just put them in.
-          options[key] = value;
+      // Also make sure not to add the widget object kendo puts in the data.
+      if( !!attrs[key] && key !== kendoWidget ) {
+
+        // Evaluate the angular expression and put its result in the widget's options object.
+        // Here we make a copy because the kendo widgets make changes to the objects passed in the options
+        // and kendo-refresh would not be able to refresh with the initial values otherwise.
+        options[key] = angular.copy(scope.$eval(attrs[key]));
+
+        // If the expression resolves to undefined, treat the attribute as a string
+        // We run the risk of colliding with legitimate model values put in the scope, but the advantage is
+        // that the user will be able to use attributes like data-selectable="row" instead of
+        // data-selectable="'row'" for attributes that accept a string.
+        if(options[key] === undefined) {
+          options[key] = attrs[key];
         }
       }
     });
@@ -76,10 +81,17 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
   };
 
   // Create the kendo widget with gathered options
+<<<<<<< HEAD
   var create = function($parse, scope, element, attrs, controller, kendoWidget) {
 
     // Create the options object
     var options = gatherOptions($parse, scope, element, attrs, controller, kendoWidget);
+=======
+  var create = function(scope, element, attrs, kendoWidget) {
+
+    // Create the options object
+    var options = gatherOptions(scope, element, attrs, kendoWidget);
+>>>>>>> 8b555489a8ef379f7ae9d46e9c8db4cd57c3ed7c
 
     // Bind the kendo widget to the element and return a reference to the widget.
     return element[kendoWidget](options).data(kendoWidget);

@@ -1,0 +1,9 @@
+{
+  "name": "angular-kendo",
+  "version": "0.0.9",
+  "devDependencies": {
+    "jquery": "~1.9.1",
+    "angular-mocks": "~1.0.7",
+    "kendo-ui": "~2013.1.319"
+  }
+}
