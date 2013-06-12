@@ -81,17 +81,10 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', 
   };
 
   // Create the kendo widget with gathered options
-<<<<<<< HEAD
   var create = function($parse, scope, element, attrs, controller, kendoWidget) {
 
     // Create the options object
     var options = gatherOptions($parse, scope, element, attrs, controller, kendoWidget);
-=======
-  var create = function(scope, element, attrs, kendoWidget) {
-
-    // Create the options object
-    var options = gatherOptions(scope, element, attrs, kendoWidget);
->>>>>>> 8b555489a8ef379f7ae9d46e9c8db4cd57c3ed7c
 
     // Bind the kendo widget to the element and return a reference to the widget.
     return element[kendoWidget](options).data(kendoWidget);

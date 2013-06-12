@@ -37,11 +37,8 @@ angular.module('kendo.directives').factory('utils',
 angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', function(utils, $parse) {
 
   // Gather the options from defaults and from attributes
-<<<<<<< HEAD
   var gatherOptions = function($parse, scope, element, attrs, controller, kendoWidget) {
-=======
-  var gatherOptions = function(scope, element, attrs, kendoWidget) {
->>>>>>> 8b555489a8ef379f7ae9d46e9c8db4cd57c3ed7c
+
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
@@ -120,17 +117,10 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', 
   };
 
   // Create the kendo widget with gathered options
-<<<<<<< HEAD
   var create = function($parse, scope, element, attrs, controller, kendoWidget) {
 
     // Create the options object
     var options = gatherOptions($parse, scope, element, attrs, controller, kendoWidget);
-=======
-  var create = function(scope, element, attrs, kendoWidget) {
-
-    // Create the options object
-    var options = gatherOptions(scope, element, attrs, kendoWidget);
->>>>>>> 8b555489a8ef379f7ae9d46e9c8db4cd57c3ed7c
 
     // Bind the kendo widget to the element and return a reference to the widget.
     return element[kendoWidget](options).data(kendoWidget);
@@ -163,15 +153,6 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 
         link: function(scope, element, attrs, ngModel) {
 
-<<<<<<< HEAD
-          // Widgets may be bound to the ng-model.
-          if (ctrl) {
-            var ngModel = ctrls[0],
-            ctrl = ctrls[1];
-          }
-
-=======
->>>>>>> 8b555489a8ef379f7ae9d46e9c8db4cd57c3ed7c
           var widget;
 
           // Bind kendo widget to element only once interpolation on attributes is done.
@@ -181,11 +162,8 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.
-<<<<<<< HEAD
             widget = widgetFactory.create($parse, scope, element, attrs, ctrl, kendoWidget);
-=======
-            widget = widgetFactory.create(scope, element, attrs, kendoWidget);
->>>>>>> 8b555489a8ef379f7ae9d46e9c8db4cd57c3ed7c
+
 
             // if kendo-refresh attribute is provided, rebind the kendo widget when 
             // the watched value changes
