@@ -3,37 +3,52 @@
 <head>
   <meta charset="utf-8">
   <title>Angular Kendo</title>
+  <link href="app/components/google-code-prettify-lite/prettify.css" rel="stylesheet">
+  <link rel="stylesheet" href="app/components/pure/build/pure-min.css">
   <link href="http://cdn.kendostatic.com/2013.1.319/styles/kendo.common.min.css" rel="stylesheet">
-  <link href="http://cdn.kendostatic.com/2013.1.319/styles/kendo.bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="app/css/bootstrap.min.css">
+  <link href="http://cdn.kendostatic.com/2013.1.319/styles/kendo.default.min.css" rel="stylesheet">
   <link rel="stylesheet" href="app/css/site.css">
 </head>
 <body>
- 
-  <div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-      <div class="container">
-        <a href="#" class="brand">Angular Kendo</a>
-        <ul class="nav">
-          <li><a href="#home">Use</a></li>
-          <li><a href="#docs">Anotated Source</a></li>
-        </ul>
-      </div>
+  <a href="https://github.com/kendo-labs/angular-kendo"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
+  <div class="pure-g demo-section">
+    <div class="pure-u-1-6">
+      <img src="app/css/img/angular-kendo.png" class="logo">  
     </div>
-  </div>
-
-  <div class="body" ng-view>
-    
+    <div class="pure-u-5-6">
+      <h1>Angular Kendo</h1>
+      <p class="subtitle">The missing UI framework for AngularJS</p>
+    </div>
+    <div class="pure-u-1">
+      <ul kendo-menu>
+        <li>
+          Web Widgets
+          <ul>
+            <li>Grid</li>
+          </ul>
+        </li>
+        <li>
+          Data Vizualization
+          <ul>
+            <li>Bar</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="pure-u">
+      <div class="container" ng-view></div>  
+    </div>
   </div>
 
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular.min.js"></script>
   -->
 
+  <script src="app/components/google-code-prettify-lite/prettify.js"></script>
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular.min.js"></script>
   <script src="http://cdn.kendostatic.com/2013.1.319/js/kendo.all.min.js"></script>
-  <script src="angular-kendo.js"></script>
+  <script src="build/angular-kendo.js"></script>
   <script src="app/js/app.js"></script>
   <script src="app/js/controllers.js"></script>
 

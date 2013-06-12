@@ -1,5 +1,7 @@
 html,body {
   height: 100%;
+  margin: auto;
+  width: 960px;
 }
 
 .buffer {
@@ -10,12 +12,9 @@ html,body {
   margin-top: 60px;
 }
 
-.body {
-  margin-top: 40px;
+.content {
   min-height: 100%;
   width: 940px;
-  margin-left: auto;
-  margin-right: auto;
   padding: 20px;
 }
 
@@ -25,10 +24,123 @@ html,body {
   width: 180px;
 }
 
-.banner {
-  margin-top: -30px;
-  padding: 50px;
+.subtitle {
+  margin-top: -20px;
 }
 
 h3 { position:relative; }
 h3 span { position:absolute; top:-140px; }
+
+.menu {
+  margin-top: 50px;
+}
+
+.info {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.demo-section
+{
+    margin: 0 auto 15px auto;
+    padding: 10px;
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    background: -moz-linear-gradient(top,  rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.07) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.01)), color-stop(100%,rgba(0,0,0,0.07)));
+    background: -webkit-linear-gradient(top,  rgba(0,0,0,0.01) 0%,rgba(0,0,0,0.07) 100%);
+    background: -o-linear-gradient(top,  rgba(0,0,0,0.01) 0%,rgba(0,0,0,0.07) 100%);
+    background: -ms-linear-gradient(top,  rgba(0,0,0,0.01) 0%,rgba(0,0,0,0.07) 100%);
+    background: linear-gradient(to bottom,  rgba(0,0,0,0.01) 0%,rgba(0,0,0,0.07) 100%);
+}
+
+.demo-section-overlay {
+    margin: 0 -10px -10px -10px;
+    background: #ebebeb;
+    padding: 0 10px;
+}
+
+.demo-section > .title {
+    margin: 5px 0 15px 0;
+    text-align: center;
+}
+
+/* pretty print overrides */
+.prettyprint {
+overflow-x:auto
+}
+
+.prettyprint,.details-list dl {
+border-radius:2px
+}
+
+.code-sample .prettyprint,.details-list dl {
+padding:10px;
+background:#fbfbfb;
+border:0
+}
+
+.code-sample.code pre {
+display:block;
+padding:0
+}
+
+pre .nocode {
+background-color:transparent;
+color:#000
+}
+
+pre .str,pre .atv {
+color:#e25000
+}
+
+pre .kwd {
+color:#03f
+}
+
+pre .com {
+color:#666
+}
+
+pre .typ {
+color:#000
+}
+
+pre .lit {
+color:#066
+}
+
+pre .pun {
+color:#333
+}
+
+pre .pln {
+color:#42545a
+}
+
+pre .tag {
+color:#06c
+}
+
+pre .atn {
+color:#66f
+}
+
+pre .dec {
+color:#c00
+}
+
+ol.linenums {
+margin-top:0;
+margin-bottom:0;
+color:#333
+}
+
+pre.prettyprint {
+  border: none;
+}

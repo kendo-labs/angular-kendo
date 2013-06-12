@@ -1,0 +1,20 @@
+{
+  "name": "google-code-prettify-lite",
+  "repo": "bhurlow/google-code-prettify-lite",
+  "description": "Just the js and css of the google prettify lib ",
+  "version": "0.0.0",
+  "keywords": [
+    "syntax",
+    "highlight"
+  ],
+  "main": "prettify.js",
+  "gitHead": "6b22fa2488f4842a9a7e291430182196215b6fd6",
+  "readme": "google-code-prettify-lite\n=========================\n\nUnofficial github mirror of the the google code prettify lib with all the fluff cut out. Added component.json file for bower integration",
+  "readmeFilename": "README.md",
+  "_id": "google-code-prettify-lite@1.0.0",
+  "commit": "6b22fa2488f4842a9a7e291430182196215b6fd6",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bhurlow/google-code-prettify-lite.git"
+  }
+}

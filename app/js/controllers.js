@@ -1,5 +1,5 @@
 function HomeCtrl($scope) {
-  $scope.things = new kendo.data.DataSource({
+  $scope.products = new kendo.data.DataSource({
     transport: {
       read: "app/data/products.json"
     },
@@ -15,6 +15,10 @@ function HomeCtrl($scope) {
       break;
     }
   };
+
+  $scope.things = new kendo.data.DataSource({
+    data: ["Thing 1", "Thing 2", "Thing 3"]
+  });
 
   $scope.chartSettings = {
     type: 'line'
@@ -58,6 +62,9 @@ function HomeCtrl($scope) {
     }]
   }];
 
+  $scope.$on('$viewContentLoaded', function() {
+    prettyPrint();
+  });
   
 }
 

@@ -4,7 +4,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 
       return {
         // Parse the directive for attributes and classes
-        restrict: 'AC',
+        restrict: 'ACE',
         transclude: true,
         require: '?ngModel',
         controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
@@ -22,9 +22,9 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           // Widgets may be bound to the ng-model.
           if (ctrl) {
             var ngModel = ctrls[0],
-            ctrl = ctrls[1]
+            ctrl = ctrls[1];
           }
-          
+
           var widget;
 
           // Q: Why is there a timeout here with no duration? Docs indicate it is 0 by default.
@@ -32,7 +32,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.
-            widget = widgetFactory.create(scope, element, attrs, ctrl, kendoWidget);
+            widget = widgetFactory.create($parse, scope, element, attrs, ctrl, kendoWidget);
 
             // if kendo-refresh attribute is provided, rebind the kendo widget when 
             // the watched value changes

@@ -1,54 +1,78 @@
-<div class="container">
-  <div class="row">
-    <div class="span12">
-     <div class="page-header">
-       <h1>Getting Started</h1>
-     </div>
+<div class="page-header">
+  <h1>Getting Started</h1>
+</div>
 
-     <h2><span id="installation"></span>Installation</h2>
+<h2><span id="installation"></span>Installation</h2>
 
-     <p>To use Angular-Kendo, you need to include the <code>angular-kendo.js</code> file in your page <strong>BELOW</strong> Angular and Kendo UI.</p>
+<p>To use Angular-Kendo, you need to include the <code>angular-kendo.js</code> file in your page <strong>BELOW</strong> Angular and Kendo UI.  Don't forget that Kendo UI depends on jQuery, so you are going to need that too:</p>
 
+<pre class="prettyprint">
+&lt;script src=&quot;js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/angular-1.0.5.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/kendo.all.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/angular-kendo.js&quot;&gt;&lt;/script&gt;
+</pre>
 
-     <p>Don't forget that Kendo UI depends on jQuery, so you are going to need that too.</p>
+<p>Pass the <code>kendo</code> module into your app as a dependency:</p>
 
-     <pre>
-  &lt;script src=&quot;js/jquery.min.js&quot;&gt;&lt;/script&gt;
-  &lt;script src=&quot;js/angular-1.0.5.min.js&quot;&gt;&lt;/script&gt;
-  &lt;script src=&quot;js/kendo.all.min.js&quot;&gt;&lt;/script&gt;
-  &lt;script src=&quot;js/angular-kendo.js&quot;&gt;&lt;/script&gt;
-     </pre>
+<pre class="prettyprint">
+var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo&#039;]);  
+</pre>
 
-     <br />
-     <h3>Include The Directive</h3>
-     <p>You need to pass the <code>kendo</code> module into your application module as a dependency.</p>
+<p>And you're done! Now you can use the Angular directives for Kendo UI to create and use widgets.</p>
 
-     <pre>
-  var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo&#039;]);  
-     </pre>
+<div class="">
+  <h2><span id="simple"></span>Simple widget creation</h2>
 
-     <br />
-     <h2><span id="simple"></span>Simple widget creation</h2>
-     <p>
-       Any widget can be created using a directive (attribute or class). There is one directive per Kendo UI widget and they are named using a dash-separated version of the Kendo UI widget name. For example, the <code>DateTimePicker</code> Kendo UI widget becomes a <code>kendo-date-time-picker</code> attribute that you can apply on an input element.  The attribute doesn't have to have a value, it just has to be present.  When this attribute is placed on an element, the directive will bind the appropriate Kendo UI widget to the element with options that can be provided as <code>data-</code> attributes or passed as an object in the widget's attribute.
-     </p>
-     <br />
-     <h4>Calendar</h4>
-     <pre class="ng-non-bindable">
+  <p>Any widget can be created using a directive (attribute or class). There is one directive per Kendo UI widget and they are named using a dash-separated version of the Kendo UI widget name. For example, the <code>DateTimePicker</code> Kendo UI widget becomes a <code>kendo-date-time-picker</code> attribute that you can apply on an input element.  The attribute doesn't have to have a value, it just has to be present.</p>
+      
+  <div kendo-tab-strip>
+    <ul>
+      <li class="k-state-active">Sample</li>
+      <li>Code</li>
+    </ul>
+    <div>
+      <h3>Kendo UI Calendar</h3>
+      <div kendo-calendar></div><span> {{dateOfEvent | date}}</span>
+    </div>
+    <div>
+      <pre class="prettyprint ng-non-bindable">
   &lt;div kendo-calendar ng-model=&quot;dateOfEvent&quot;&gt;&lt;/div&gt;
-  &lt;span&gt; {{dateOfEvent | date}} &lt;/span&gt;
-     </pre>
-     <div kendo-calendar ng-model="dateOfEvent"></div><span> {{dateOfEvent | date}}</span>
-     <br>
-     <div class="buffer alert alert-info">
-       <p>
-         <span class="label label-info">Note: </span>
-         Angular-Kendo does not support using custom HTML elements.  This is because Kendo UI expects certain elements to be used in the creation of certain widgets (e.g. an input when creating an AutoComplete), so the HTML element that is mutated has merit in the initialization process.
-       </p>  
-     </div>
+      </pre>
+    </div>
+  </div>
+   
+  <div class="k-block k-info-colored info">
+   <p><strong>Note: </strong></span>
+     Angular-Kendo does not support using custom HTML elements.  This is because Kendo UI expects certain elements to be used in the creation of certain widgets (e.g. an input when creating an AutoComplete), so the HTML element that is mutated has merit in the initialization process.</p>  
+  </div>  
+</div>
 
-     <br />
-     <h2><span id="dom"></span>Creation From Existing Elements</h2>
+
+<h2><span id="dom"></span>Configuration With Data Attributes</h2>
+<p>You can specify options for the widget configuration by using <code>data-</code> attributes.</p>
+<div kendo-tab-strip>
+  <ul>
+    <li class="k-state-active">Sample</li>
+    <li>Code</li>
+  </ul>
+  <div>
+    <h3>Kendo UI Editor</h3>
+    <div kendo-editor data-tools='[ "bold", "italic", "underline", "separator", "strikethrough", "fontName", "fontSize", "foreColor", "backColor", "justifyLeft", "justifyCenter", "justifyRight", "justifyFull", "insertUnorderedList", "insertOrderedList", "indent", "outdent", "formatBlock", "createLink", "unlink", "insertImage"]'></div>
+  </div>
+  <div>
+    <pre class="prettyprint">
+&lt;div kendo-editor data-tools=&#039;[ &quot;bold&quot;, &quot;italic&quot;, &quot;underline&quot;, &quot;separator&quot;, &quot;strikethrough&quot;, &quot;fontName&quot;, &quot;fontSize&quot;, &quot;foreColor&quot;, &quot;backColor&quot;, &quot;justifyLeft&quot;, &quot;justifyCenter&quot;, &quot;justifyRight&quot;, &quot;justifyFull&quot;, &quot;insertUnorderedList&quot;, &quot;insertOrderedList&quot;, &quot;indent&quot;, &quot;outdent&quot;, &quot;formatBlock&quot;, &quot;createLink&quot;, &quot;unlink&quot;, &quot;insertImage&quot;]&#039;&gt;&lt;/div&gt;
+    </pre>
+  </div>
+</div>
+
+<h2>Configuration Using Scope</h2>
+
+<p>You can alternatively configure Kendo UI widgets on the scope and then specify the <code>data-options</code> attribute.</p>
+
+<select kendo-drop-down-list kendo-source='things'></select>
+
      <p>Angular-Kendo supports initialization from existing DOM structure the same way that Kendo UI does.</p>
      <h4>Dropdown List</h4>
      <pre class="ng-non-bindable">
@@ -143,7 +167,7 @@
                   { &quot;field&quot;: &quot;Category.CategoryName&quot;, title: &quot;Category&quot; }]&#039;
    on-change=&quot;rowSelected(kendoEvent)&quot; &gt;&lt;/div&gt;  
      </pre>
-     <div kendo-grid kendo-source="things" data-selectable="row" 
+     <div kendo-grid kendo-source="products" data-selectable="row" 
        data-pageable='{ "refresh": true, "pageSizes": true }'
        data-columns='[{ "field": "ProductName", "title": "Name"}, 
                       { "field": "Supplier.SupplierName", "title": "Supplier"}, 
@@ -190,7 +214,7 @@
   &lt;/div&gt;
 &lt;/div&gt;       
      </pre>
-    <div kendo-source="things">
+    <div kendo-source="products">
       <div kendo-pager></div>
       <div kendo-grid data-pageable="true"
            data-columns='[{ "field": "ProductName", "title": "Name"}, 

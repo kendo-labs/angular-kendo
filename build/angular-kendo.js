@@ -1,5 +1,7 @@
+'use strict';
+
 // declare all the module
-angular.module("kendo.directives", []);
+angular.module('kendo.directives', []);
 angular.module('kendo.directives', [], function($provide){
 
   // Iterate over the kendo.ui and kendo.dataviz.ui namespace objects to get the Kendo UI widgets adding
@@ -35,7 +37,7 @@ angular.module('kendo.directives').factory('utils',
 angular.module('kendo.directives').factory('widgetFactory', ['utils', function(utils) {
 
   // Gather the options from defaults and from attributes
-  var gatherOptions = function(scope, element, attrs, controller, kendoWidget) {
+  var gatherOptions = function($parse, scope, element, attrs, controller, kendoWidget) {
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
@@ -71,7 +73,7 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
     }
 
     // Add on-* event handlers to options.
-    addEventHandlers(options, scope, attrs);
+    addEventHandlers($parse, options, scope, attrs);
 
     // TODO: invoke controller.decorateOptions to allow other directives (or directive extensions)
     //       to modify the options before they get bound. This would provide an extention point for directives
@@ -84,7 +86,7 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
   };
 
   // Create an event handler function for each on-* attribute on the element and add to dest.
-  var addEventHandlers = function(dest, scope, attrs) {
+  var addEventHandlers = function($parse, dest, scope, attrs) {
     var memo,
         eventHandlers = utils.reduce(attrs, function(memo, attValue, att) {
       var match = att.match(/^on(.+)/), eventName, fn;
@@ -110,10 +112,10 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', function(u
   };
 
   // Create the kendo widget with gathered options
-  var create = function(scope, element, attrs, controller, kendoWidget) {
+  var create = function($parse, scope, element, attrs, controller, kendoWidget) {
 
     // Create the options object
-    var options = gatherOptions(scope, element, attrs, controller, kendoWidget);
+    var options = gatherOptions($parse, scope, element, attrs, controller, kendoWidget);
 
     // Bind the kendo widget to the element and return a reference to the widget.
     return element[kendoWidget](options).data(kendoWidget);
@@ -131,7 +133,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 
       return {
         // Parse the directive for attributes and classes
-        restrict: 'AC',
+        restrict: 'ACE',
         transclude: true,
         require: '?ngModel',
         controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
@@ -149,9 +151,9 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           // Widgets may be bound to the ng-model.
           if (ctrl) {
             var ngModel = ctrls[0],
-            ctrl = ctrls[1]
+            ctrl = ctrls[1];
           }
-          
+
           var widget;
 
           // Q: Why is there a timeout here with no duration? Docs indicate it is 0 by default.
@@ -159,7 +161,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.
-            widget = widgetFactory.create(scope, element, attrs, ctrl, kendoWidget);
+            widget = widgetFactory.create($parse, scope, element, attrs, ctrl, kendoWidget);
 
             // if kendo-refresh attribute is provided, rebind the kendo widget when 
             // the watched value changes
