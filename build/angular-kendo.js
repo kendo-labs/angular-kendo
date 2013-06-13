@@ -37,7 +37,7 @@ angular.module('kendo.directives').factory('utils',
 angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', function(utils, $parse) {
 
   // Gather the options from defaults and from attributes
-  var gatherOptions = function($parse, scope, element, attrs, controller, kendoWidget) {
+  var gatherOptions = function($parse, scope, element, attrs, kendoWidget) {
 
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
@@ -117,10 +117,10 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', 
   };
 
   // Create the kendo widget with gathered options
-  var create = function($parse, scope, element, attrs, controller, kendoWidget) {
+  var create = function($parse, scope, element, attrs, kendoWidget) {
 
     // Create the options object
-    var options = gatherOptions($parse, scope, element, attrs, controller, kendoWidget);
+    var options = gatherOptions($parse, scope, element, attrs, kendoWidget);
 
     // Bind the kendo widget to the element and return a reference to the widget.
     return element[kendoWidget](options).data(kendoWidget);
@@ -162,7 +162,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.
-            widget = widgetFactory.create($parse, scope, element, attrs, ctrl, kendoWidget);
+            widget = widgetFactory.create($parse, scope, element, attrs, kendoWidget);
 
 
             // if kendo-refresh attribute is provided, rebind the kendo widget when 

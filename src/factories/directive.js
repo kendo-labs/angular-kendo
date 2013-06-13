@@ -28,7 +28,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.
-            widget = widgetFactory.create($parse, scope, element, attrs, ctrl, kendoWidget);
+            widget = widgetFactory.create($parse, scope, element, attrs, kendoWidget);
 
 
             // if kendo-refresh attribute is provided, rebind the kendo widget when 
