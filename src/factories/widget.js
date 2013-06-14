@@ -6,35 +6,29 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', 
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
-    var dataSource;
+    var dataSource, role = attrs[kendoWidget];
+
+    // check the data-source attribute
+    dataSource = scope.$eval(attrs.source);
+
+    // get the base widget that we are working with there
+    var roles = kendo.rolesFromNamespaces([]);
+    var widget = roles[kendoWidget.substring(5).toLowerCase()];
+
     // make a deep clone of the options object passed to the directive, if any.
-    var options = angular.copy(scope.$eval(attrs[kendoWidget])) || {};
+    var options = $.extend(true, {}, scope[role], {});
 
-    // Mixin the data that's set on the element in the options
-    angular.forEach( element.data(), function(value, key) {
-      // Only add data items that were put as attributes since some items put by angular and kendo
-      // may have circular references and Kendo's deepCopyOne doesn't like that.
-      // Also make sure not to add the widget object kendo puts in the data.
-      if( !!attrs[key] && key !== kendoWidget ) {
-
-        // Evaluate the angular expression and put its result in the widget's options object.
-        // Here we make a copy because the kendo widgets make changes to the objects passed in the options
-        // and kendo-refresh would not be able to refresh with the initial values otherwise.
-        options[key] = angular.copy(scope.$eval(attrs[key]));
-
-        // If the expression resolves to undefined, treat the attribute as a string
-        // We run the risk of colliding with legitimate model values put in the scope, but the advantage is
-        // that the user will be able to use attributes like data-selectable="row" instead of
-        // data-selectable="'row'" for attributes that accept a string.
-        if(options[key] === undefined) {
-          options[key] = attrs[key];
-        }
-      }
-    });
+    // parse out the options with Kendo UI using the base widget as the lookup for options
+    options = $.extend({}, kendo.parseOptions(element[0], widget.fn.options), options);
 
     // If no dataSource was provided, 
     if( !options.dataSource ) {
+      // check to see if was passed as data-source
+      if (dataSource) {
+        options.dataSource = dataSource;
+      }
       // Check if one was set in the element's data or in its ancestors.
+      // this clobber data-source but somebody has to win.
       dataSource = element.inheritedData('$kendoDataSource');
       if( dataSource ) {
         options.dataSource = dataSource;
