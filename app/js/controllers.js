@@ -17,8 +17,21 @@ function HomeCtrl($scope) {
   };
 
   $scope.things = new kendo.data.DataSource({
-    data: ["Thing 1", "Thing 2", "Thing 3"]
+    data: [{ name: "Thing 1", id: 1 },
+           { name: "Thing 2", id: 2 },
+           { name: "Thing 3", id: 3 }]
   });
+
+  $scope.thingsOptions = {
+    dataSource: new kendo.data.DataSource({
+      data: [{ name: "Thing 1", id: 1 },
+             { name: "Thing 2", id: 2 },
+             { name: "Thing 3", id: 3 }]
+    }),
+    dataTextField: "name",
+    dataValueField: "id",
+    optionLabel: "Select A Thing"
+  };
 
   $scope.chartSettings = {
     type: 'line'
