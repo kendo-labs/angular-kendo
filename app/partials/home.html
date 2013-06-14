@@ -2,6 +2,10 @@
   <h1>Getting Started</h1>
 </div>
 
+<p>Kendo UI is a comprehensive HTML5/JavaScript framework for moden web and mobile app development.  It consists of 17 widgets for web, a core framework, a mobile suite, and a complete Data Vizualization solution.</p>
+
+<p>The Angular Kendo project aims to provide deep integration between Kendo UI Web/DataViz and AngularJS.</p>
+
 <h2><span id="installation"></span>Installation</h2>
 
 <p>To use Angular-Kendo, you need to include the <code>angular-kendo.js</code> file in your page <strong>BELOW</strong> Angular and Kendo UI.  Don't forget that Kendo UI depends on jQuery, so you are going to need that too:</p>
@@ -21,35 +25,134 @@ var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo&#039;]);
 
 <p>And you're done! Now you can use the Angular directives for Kendo UI to create and use widgets.</p>
 
-<div class="">
-  <h2><span id="simple"></span>Simple widget creation</h2>
 
-  <p>Any widget can be created using a directive (attribute or class). There is one directive per Kendo UI widget and they are named using a dash-separated version of the Kendo UI widget name. For example, the <code>DateTimePicker</code> Kendo UI widget becomes a <code>kendo-date-time-picker</code> attribute that you can apply on an input element.  The attribute doesn't have to have a value, it just has to be present.</p>
+<h2><span id="simple"></span>Basic Use</h2>
+
+<p>Any widget can be created using a directive (attribute or class). There is one directive per Kendo UI widget and they are named using a dash-separated version of the Kendo UI widget name. For example, the <code>DateTimePicker</code> Kendo UI widget becomes a <code>kendo-date-time-picker</code> attribute that you can apply on an input element.  The attribute doesn't have to have a value, it just has to be present.</p>
       
-  <div kendo-tab-strip>
-    <ul>
-      <li class="k-state-active">Sample</li>
-      <li>Code</li>
-    </ul>
-    <div>
-      <h3>Kendo UI Calendar</h3>
-      <div kendo-calendar></div><span> {{dateOfEvent | date}}</span>
-    </div>
-    <div>
-      <pre class="prettyprint ng-non-bindable">
-  &lt;div kendo-calendar ng-model=&quot;dateOfEvent&quot;&gt;&lt;/div&gt;
-      </pre>
-    </div>
+<h3>Dead Simple Widget Creation</h3>
+<hr>
+
+<div class="pure-g">
+
+  <div class="pure-u-2-3">
+    <h4>Code</h4>
+    <pre class="prettyprint ng-non-bindable">
+&lt;select kendo-drop-down-list&gt;
+  &lt;option value=&quot;1&quot;&gt;Thing 1&lt;/option&gt;
+  &lt;option value=&quot;2&quot;&gt;Thing 2&lt;/option&gt;
+  &lt;option value=&quot;3&quot;&gt;Thing 3&lt;/option&gt;
+&lt;/select&gt;
+    </pre>
   </div>
-   
-  <div class="k-block k-info-colored info">
-   <p><strong>Note: </strong></span>
-     Angular-Kendo does not support using custom HTML elements.  This is because Kendo UI expects certain elements to be used in the creation of certain widgets (e.g. an input when creating an AutoComplete), so the HTML element that is mutated has merit in the initialization process.</p>  
-  </div>  
+
+  <div class="pure-u-1-3">
+    <h4>Demo</h4>
+    <select kendo-drop-down-list>
+      <option value="1">Thing 1</option>
+      <option value="2">Thing 2</option>
+      <option value="3">Thing 3</option>
+    </select>
+  </div>
+
 </div>
 
+<h3>Configuring Widget Options (data- Attributes)</h3>
+<hr>
 
-<h2><span id="dom"></span>Configuration With Data Attributes</h2>
+<p>You can specify any widget configuration attributes with <code>data-</code>attributes.  Your data source should exist in the controller as that is the only place the directive will look for the <code>data-source</code> attribute.
+
+<div class="pure-g">
+
+  <div class="pure-u-2-3">
+    <h4>Code</h4>
+    <pre class="prettyprint ng-non-bindable">
+// controller
+function HomeCtrl($scope) {
+  $scope.things = new kendo.data.DataSource({
+    data: [{ name: &quot;Thing 1&quot;, id: 1 },
+           { name: &quot;Thing 2&quot;, id: 2 },
+           { name: &quot;Thing 3&quot;, id: 3 }]
+  });
+}
+
+// markup
+&lt;select kendo-drop-down-list
+        data-option-label=&quot;Select A Thing&quot;
+        data-text-field=&quot;name&quot;
+        data-value-field=&quot;id&quot;
+        data-source=&quot;things&quot;&gt;&lt;/select&gt;
+    </pre>
+  </div>
+
+  <div class="pure-u-1-3">
+    <h4>Demo</h4>
+    <select kendo-drop-down-list
+            data-option-label="Select A Thing"
+            data-text-field="name"
+            data-value-field="id"
+            data-source="things"></select>
+  </div>
+</div>
+
+<h3>Configuring Widget Options From The Controller</h3>
+<hr>
+
+<p>You may not want to have your configuration in the widget itself.  In that case, you can pass the object that contains your widgets configuration into the directive.</p>
+
+<div class="pure-g">
+  <div class="pure-u-2-3">
+    <h4>Code</h4>
+    <pre class="prettyprint ng-non-bindable">
+// controller
+function HomeCtrl($scope) {
+  $scope.thingsOptions = {
+    dataSource: new kendo.data.DataSource({
+      data: [{ name: &quot;Thing 1&quot;, id: 1 },
+             { name: &quot;Thing 2&quot;, id: 2 },
+             { name: &quot;Thing 3&quot;, id: 3 }]
+    }),
+    dataTextField: &quot;name&quot;,
+    dataValueField: &quot;id&quot;,
+    optionLabel: &quot;Select A Thing&quot;
+  };
+}
+
+// markup
+&lt;select kendo-drop-down-list=&quot;thingsOptions&quot;&gt;&lt;/select&gt;
+    </pre>
+  </div>
+  <div class="pure-u-1-3">
+    <h4>Demo</h4>
+      <select kendo-drop-down-list="thingsOptions"></select>
+  </div>
+</div>
+
+<h3>Integration With AngularJS Models</h3>
+<hr>
+
+<p>Kendo UI Widgets raise their changed events so that AngularJS is notified to update the model.  Simply specify which model property to update by adding the <code>ng-model</code> attribute.</p>
+
+<div class="pure-g">
+  <div class="pure-u-2-3">
+    <h4>Code</h4>
+    <pre class="prettyprint ng-non-bindable">
+&lt;select kendo-drop-down-list=&quot;thingsOptions&quot;
+        ng-model=&quot;selectedThing&quot;&gt;&lt;/select&gt;
+&lt;h5&gt;You Selected: {{ selectedThing }}&lt;/h5&gt;
+    </pre>
+  </div>
+  <div class="pure-u-1-3">
+    <h4>Demo</h4>
+    <select kendo-drop-down-list="thingsOptions"
+            ng-model="selectedThing"></select>
+
+
+    <h5>You Selected: {{ selectedThing }}</h5>
+  </div>
+</div>
+
+<!-- <h2><span id="dom"></span>Configuration With Data Attributes</h2>
 <p>You can specify options for the widget configuration by using <code>data-</code> attributes.</p>
 <div kendo-tab-strip>
   <ul>
@@ -257,3 +360,4 @@ var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo&#039;]);
     </section>
   </div>
 </div>
+ -->
