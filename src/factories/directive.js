@@ -1,5 +1,5 @@
-angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$parse', '$timeout',
-  function(widgetFactory, $parse, $timeout) {
+angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$timeout',
+  function(widgetFactory, $timeout) {
     var create = function(kendoWidget) {
 
       return {
@@ -28,10 +28,10 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.
-            widget = widgetFactory.create($parse, scope, element, attrs, kendoWidget);
+            widget = widgetFactory.create(scope, element, attrs, kendoWidget);
 
 
-            // if kendo-refresh attribute is provided, rebind the kendo widget when 
+            // if kendo-refresh attribute is provided, rebind the kendo widget when
             // the watched value changes
             if( attrs.kendoRefresh ) {
               // watch for changes on the expression passed in the kendo-refresh attribute
@@ -63,7 +63,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
               // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
               widget.bind("change", function(e) {
                 scope.$apply(function() {
-                  // Set the value on the scope to the widget value. 
+                  // Set the value on the scope to the widget value.
                   ngModel.$setViewValue(widget.value());
                 });
               });

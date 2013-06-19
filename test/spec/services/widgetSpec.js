@@ -4,7 +4,7 @@ describe('services widget', function () {
     beforeEach(module('kendo.directives'));
 
     it('should have collected Kendo widget names', function () {
-        inject(function (widgets) {
+        inject(function (kendoWidgets) {
             var widgetsArr = [];
 
             angular.forEach([kendo.ui, kendo.dataviz && kendo.dataviz.ui], function(namespace) {
@@ -16,7 +16,7 @@ describe('services widget', function () {
                 });
             });
 
-            expect(widgetsArr).toEqual(widgets);
+            expect(widgetsArr).toEqual(kendoWidgets);
         });
     });
 });

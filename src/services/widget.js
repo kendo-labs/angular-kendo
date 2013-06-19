@@ -1,7 +1,7 @@
 angular.module('kendo.directives', [], function($provide){
 
   // Iterate over the kendo.ui and kendo.dataviz.ui namespace objects to get the Kendo UI widgets adding
-  // them to the 'widgets' array. 
+  // them to the 'widgets' array.
   var widgets = [];
 
   angular.forEach([kendo.ui, kendo.dataviz && kendo.dataviz.ui], function(namespace) {
@@ -13,6 +13,6 @@ angular.module('kendo.directives', [], function($provide){
     });
   });
 
-  $provide.value('widgets', widgets);
+  $provide.value('kendoWidgets', widgets);
 
 });

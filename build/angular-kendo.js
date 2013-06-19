@@ -5,7 +5,7 @@ angular.module('kendo.directives', []);
 angular.module('kendo.directives', [], function($provide){
 
   // Iterate over the kendo.ui and kendo.dataviz.ui namespace objects to get the Kendo UI widgets adding
-  // them to the 'widgets' array. 
+  // them to the 'widgets' array.
   var widgets = [];
 
   angular.forEach([kendo.ui, kendo.dataviz && kendo.dataviz.ui], function(namespace) {
@@ -17,62 +17,58 @@ angular.module('kendo.directives', [], function($provide){
     });
   });
 
-  $provide.value('widgets', widgets);
+  $provide.value('kendoWidgets', widgets);
 
 });
 
-angular.module('kendo.directives').factory('utils',
-  function() {
-    return {
-      // simplistic reduce function
-      reduce: function(obj, cb, memo) {
-        angular.forEach(obj, function(value, key) {
-          memo = cb.call(value, memo, value, key);
-        });
-        return memo;
-      }
-    };
-  }
-);
-angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', function(utils, $parse) {
+angular.module('kendo.directives').factory('widgetFactory', ['$parse', function($parse) {
 
   // Gather the options from defaults and from attributes
-  var gatherOptions = function($parse, scope, element, attrs, kendoWidget) {
-
+  var gatherOptions = function(scope, element, attrs, kendoWidget) {
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
-    var dataSource, role = attrs[kendoWidget];
-
-    // check the data-source attribute
-    dataSource = scope.$eval(attrs.source);
-
-    // get the base widget that we are working with there
-    var roles = kendo.rolesFromNamespaces([]);
-    var widget = roles[kendoWidget.substring(5).toLowerCase()];
-
+    var dataSource;
     // make a deep clone of the options object passed to the directive, if any.
-    var options = $.extend(true, {}, scope[role], {});
+    var options = angular.copy(scope.$eval(attrs[kendoWidget])) || {};
 
-    // parse out the options with Kendo UI using the base widget as the lookup for options
-    options = $.extend({}, kendo.parseOptions(element[0], widget.fn.options), options);
+    // regexp for matching regular options attributes and event handler attributes
+    // The first matching group will be defined only when the attribute starts by k-on- for event handlers.
+    // The second matching group will contain the option name.
+    var attrRE = /k(On)?([A-Z].*)/;
+    // Mixin the data from the element's k-* attributes in the options
+    angular.forEach(attrs, function(attValue, attName) {
+      var match = attName.match(attrRE), optionName, fn;
+      // ignore dataSource option as it is provided by the kDataSource directive
+      if( match && match[2] !== 'dataSource' ) {
+        // Lowercase the first letter to match the option name kendo expects.
+        optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
 
-    // If no dataSource was provided, 
-    if( !options.dataSource ) {
-      // check to see if was passed as data-source
-      if (dataSource) {
-        options.dataSource = dataSource;
+        if( match[1] ) {
+          // This is an event handler attribute (k-on-*)
+          // Parse the expression so that it get evaluated later.
+          fn = $parse(attValue);
+          // Add a kendo event listener to the options.
+          options[optionName] = function(e) {
+            // Make sure this gets invoked in the angularjs lifecycle.
+            scope.$apply(function() {
+              // Invoke the parsed expression with a kendoEvent local that the expression can use.
+              fn(scope, {kendoEvent: e});
+            });
+          };
+        } else {
+          // Evaluate the angular expression and put its result in the widget's options object.
+          // Here we make a copy because the kendo widgets make changes to the objects passed in the options
+          // and kendo-refresh would not be able to refresh with the initial values otherwise.
+          options[optionName] = angular.copy(scope.$eval(attValue));
+        }
       }
-      // Check if one was set in the element's data or in its ancestors.
-      // this clobber data-source but somebody has to win.
-      dataSource = element.inheritedData('$kendoDataSource');
-      if( dataSource ) {
-        options.dataSource = dataSource;
-      }
-    }
+    });
 
-    // Add on-* event handlers to options.
-    addEventHandlers($parse, options, scope, attrs);
+    // The kDataSource directive sets the $kendoDataSource data on the element it is put on.
+    // A datasource set in this way takes precedence over the one that could have been provided in options object passed
+    // in the directive's attribute and that is used as the initial options object.
+    options.dataSource = element.inheritedData('$kendoDataSource') || options.dataSource;
 
     // TODO: invoke controller.decorateOptions to allow other directives (or directive extensions)
     //       to modify the options before they get bound. This would provide an extention point for directives
@@ -84,37 +80,11 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', 
 
   };
 
-  // Create an event handler function for each on-* attribute on the element and add to dest.
-  var addEventHandlers = function($parse, dest, scope, attrs) {
-    var memo,
-        eventHandlers = utils.reduce(attrs, function(memo, attValue, att) {
-      var match = att.match(/^on(.+)/), eventName, fn;
-      if( match ) {
-        // Lowercase the first letter to match the event name kendo expects.
-        eventName = match[1].charAt(0).toLowerCase() + match[1].slice(1);
-        // Parse the expression.
-        fn = $parse(attValue);
-        // Add a kendo event listener to the memo.
-        memo[eventName] = function(e) {
-          // Make sure this gets invoked in the angularjs lifecycle.
-          scope.$apply(function() {
-            // Invoke the parsed expression with a kendoEvent local that the expression can use.
-            fn(scope, {kendoEvent: e});
-          });
-        };
-      }
-      return memo;
-    }, {});
-
-    // mix the eventHandlers in the options object
-    angular.extend(dest, eventHandlers);
-  };
-
   // Create the kendo widget with gathered options
-  var create = function($parse, scope, element, attrs, kendoWidget) {
+  var create = function(scope, element, attrs, kendoWidget) {
 
     // Create the options object
-    var options = gatherOptions($parse, scope, element, attrs, kendoWidget);
+    var options = gatherOptions(scope, element, attrs, kendoWidget);
 
     // Bind the kendo widget to the element and return a reference to the widget.
     return element[kendoWidget](options).data(kendoWidget);
@@ -126,8 +96,8 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', 
 
 }]);
 
-angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$parse', '$timeout',
-  function(widgetFactory, $parse, $timeout) {
+angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$timeout',
+  function(widgetFactory, $timeout) {
     var create = function(kendoWidget) {
 
       return {
@@ -156,10 +126,10 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
           $timeout( function() {
 
             // create the kendo widget and bind it to the element.
-            widget = widgetFactory.create($parse, scope, element, attrs, kendoWidget);
+            widget = widgetFactory.create(scope, element, attrs, kendoWidget);
 
 
-            // if kendo-refresh attribute is provided, rebind the kendo widget when 
+            // if kendo-refresh attribute is provided, rebind the kendo widget when
             // the watched value changes
             if( attrs.kendoRefresh ) {
               // watch for changes on the expression passed in the kendo-refresh attribute
@@ -191,7 +161,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
               // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
               widget.bind("change", function(e) {
                 scope.$apply(function() {
-                  // Set the value on the scope to the widget value. 
+                  // Set the value on the scope to the widget value.
                   ngModel.$setViewValue(widget.value());
                 });
               });
@@ -207,7 +177,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 }]);
 (function(angular) {
 
-  var widgets = angular.injector(['kendo.directives']).get('widgets');
+  var widgets = angular.injector(['kendo.directives']).get('kendoWidgets');
 
   // loop through all the widgets and create a directive
   angular.forEach(widgets, function(widget) {
@@ -222,7 +192,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 
 
 // ## The kendoSource directive allows setting the Kendo UI DataSource of a widget directly from the HTML.
-angular.module('kendo.directives').directive('kendoSource', [function() {
+angular.module('kendo.directives').directive('kDataSource', [function() {
 
   // Transforms the object into a Kendo UI DataSource.
   var toDataSource = function(ds) {
@@ -236,10 +206,10 @@ angular.module('kendo.directives').directive('kendoSource', [function() {
     controller: ['$scope', '$attrs', '$element', function($scope, $attrs, $element) {
       // Set $kendoDataSource in the element's data. 3rd parties can define their own dataSource creation
       // directive and provide this data on the element.
-      $element.data('$kendoDataSource', toDataSource($scope.$eval($attrs.kendoSource)));
+      $element.data('$kendoDataSource', toDataSource($scope.$eval($attrs.kDataSource)));
 
       // Keep the element's data up-to-date with changes.
-      $scope.$watch($attrs.kendoSource, function(newDS, oldDS) {
+      $scope.$watch($attrs.kDataSource, function(newDS, oldDS) {
         if( newDS !== oldDS ) {
           $element.data('$kendoDataSource', toDataSource(newDS));
         }

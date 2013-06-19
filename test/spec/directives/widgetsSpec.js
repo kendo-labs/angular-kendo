@@ -1,4 +1,4 @@
-ddescribe('Widgets Directive', function () {
+describe('Widgets Directive', function () {
     'use strict';
 
     /* The following web edition widgets will be tested in this test-case.

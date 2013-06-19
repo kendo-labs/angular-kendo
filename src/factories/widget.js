@@ -1,42 +1,51 @@
-angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', function(utils, $parse) {
+angular.module('kendo.directives').factory('widgetFactory', ['$parse', function($parse) {
 
   // Gather the options from defaults and from attributes
-  var gatherOptions = function($parse, scope, element, attrs, kendoWidget) {
-
+  var gatherOptions = function(scope, element, attrs, kendoWidget) {
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
-    var dataSource, role = attrs[kendoWidget];
-
-    // check the data-source attribute
-    dataSource = scope.$eval(attrs.source);
-
-    // get the base widget that we are working with there
-    var roles = kendo.rolesFromNamespaces([]);
-    var widget = roles[kendoWidget.substring(5).toLowerCase()];
-
+    var dataSource;
     // make a deep clone of the options object passed to the directive, if any.
-    var options = $.extend(true, {}, scope[role], {});
+    var options = angular.copy(scope.$eval(attrs[kendoWidget])) || {};
 
-    // parse out the options with Kendo UI using the base widget as the lookup for options
-    options = $.extend({}, kendo.parseOptions(element[0], widget.fn.options), options);
+    // regexp for matching regular options attributes and event handler attributes
+    // The first matching group will be defined only when the attribute starts by k-on- for event handlers.
+    // The second matching group will contain the option name.
+    var attrRE = /k(On)?([A-Z].*)/;
+    // Mixin the data from the element's k-* attributes in the options
+    angular.forEach(attrs, function(attValue, attName) {
+      var match = attName.match(attrRE), optionName, fn;
+      // ignore dataSource option as it is provided by the kDataSource directive
+      if( match && match[2] !== 'dataSource' ) {
+        // Lowercase the first letter to match the option name kendo expects.
+        optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
 
-    // If no dataSource was provided, 
-    if( !options.dataSource ) {
-      // check to see if was passed as data-source
-      if (dataSource) {
-        options.dataSource = dataSource;
+        if( match[1] ) {
+          // This is an event handler attribute (k-on-*)
+          // Parse the expression so that it get evaluated later.
+          fn = $parse(attValue);
+          // Add a kendo event listener to the options.
+          options[optionName] = function(e) {
+            // Make sure this gets invoked in the angularjs lifecycle.
+            scope.$apply(function() {
+              // Invoke the parsed expression with a kendoEvent local that the expression can use.
+              fn(scope, {kendoEvent: e});
+            });
+          };
+        } else {
+          // Evaluate the angular expression and put its result in the widget's options object.
+          // Here we make a copy because the kendo widgets make changes to the objects passed in the options
+          // and kendo-refresh would not be able to refresh with the initial values otherwise.
+          options[optionName] = angular.copy(scope.$eval(attValue));
+        }
       }
-      // Check if one was set in the element's data or in its ancestors.
-      // this clobber data-source but somebody has to win.
-      dataSource = element.inheritedData('$kendoDataSource');
-      if( dataSource ) {
-        options.dataSource = dataSource;
-      }
-    }
+    });
 
-    // Add on-* event handlers to options.
-    addEventHandlers($parse, options, scope, attrs);
+    // The kDataSource directive sets the $kendoDataSource data on the element it is put on.
+    // A datasource set in this way takes precedence over the one that could have been provided in options object passed
+    // in the directive's attribute and that is used as the initial options object.
+    options.dataSource = element.inheritedData('$kendoDataSource') || options.dataSource;
 
     // TODO: invoke controller.decorateOptions to allow other directives (or directive extensions)
     //       to modify the options before they get bound. This would provide an extention point for directives
@@ -48,37 +57,11 @@ angular.module('kendo.directives').factory('widgetFactory', ['utils', '$parse', 
 
   };
 
-  // Create an event handler function for each on-* attribute on the element and add to dest.
-  var addEventHandlers = function($parse, dest, scope, attrs) {
-    var memo,
-        eventHandlers = utils.reduce(attrs, function(memo, attValue, att) {
-      var match = att.match(/^on(.+)/), eventName, fn;
-      if( match ) {
-        // Lowercase the first letter to match the event name kendo expects.
-        eventName = match[1].charAt(0).toLowerCase() + match[1].slice(1);
-        // Parse the expression.
-        fn = $parse(attValue);
-        // Add a kendo event listener to the memo.
-        memo[eventName] = function(e) {
-          // Make sure this gets invoked in the angularjs lifecycle.
-          scope.$apply(function() {
-            // Invoke the parsed expression with a kendoEvent local that the expression can use.
-            fn(scope, {kendoEvent: e});
-          });
-        };
-      }
-      return memo;
-    }, {});
-
-    // mix the eventHandlers in the options object
-    angular.extend(dest, eventHandlers);
-  };
-
   // Create the kendo widget with gathered options
-  var create = function($parse, scope, element, attrs, kendoWidget) {
+  var create = function(scope, element, attrs, kendoWidget) {
 
     // Create the options object
-    var options = gatherOptions($parse, scope, element, attrs, kendoWidget);
+    var options = gatherOptions(scope, element, attrs, kendoWidget);
 
     // Bind the kendo widget to the element and return a reference to the widget.
     return element[kendoWidget](options).data(kendoWidget);

@@ -1,6 +1,6 @@
 (function(angular) {
 
-  var widgets = angular.injector(['kendo.directives']).get('widgets');
+  var widgets = angular.injector(['kendo.directives']).get('kendoWidgets');
 
   // loop through all the widgets and create a directive
   angular.forEach(widgets, function(widget) {
