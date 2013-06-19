@@ -21,7 +21,7 @@ angular.module('kendo.directives', [], function($provide){
 
 });
 
-angular.module('kendo.directives').factory('widgetFactory', ['$parse', function($parse) {
+angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', function($parse, $log) {
 
   // Gather the options from defaults and from attributes
   var gatherOptions = function(scope, element, attrs, kendoWidget) {
@@ -30,7 +30,7 @@ angular.module('kendo.directives').factory('widgetFactory', ['$parse', function(
 
     var dataSource;
     // make a deep clone of the options object passed to the directive, if any.
-    var options = angular.copy(scope.$eval(attrs[kendoWidget])) || {};
+    var options = angular.element.extend(true, {}, scope.$eval(attrs[kendoWidget]));
 
     // regexp for matching regular options attributes and event handler attributes
     // The first matching group will be defined only when the attribute starts by k-on- for event handlers.
@@ -61,6 +61,11 @@ angular.module('kendo.directives').factory('widgetFactory', ['$parse', function(
           // Here we make a copy because the kendo widgets make changes to the objects passed in the options
           // and kendo-refresh would not be able to refresh with the initial values otherwise.
           options[optionName] = angular.copy(scope.$eval(attValue));
+          if( options[optionName] === undefined && attValue.match(/^\w*$/) ) {
+            // if the user put a single word as the attribute value and the expression evaluates to undefined,
+            // he may have wanted to use a string literal.
+            $log.warn(kendoWidget + '\'s ' + attName + ' attribute resolved to undefined. Maybe you meant to use a string literal like: \'' + attValue + '\'?');
+          }
         }
       }
     });
