@@ -1,5 +1,19 @@
-angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$timeout',
-  function(widgetFactory, $timeout) {
+angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$timeout', '$parse',
+  function(widgetFactory, $timeout, $parse) {
+
+    function exposeWidget(widget, scope, attrs, kendoWidget) {
+      // expose the widget object
+      if( attrs.kendoWidget ) {
+        var set = $parse(attrs.kendoWidget).assign;
+        if( set ) {
+          // set the value of the expression to the kendo widget object to expose its api
+          set(scope, widget);
+        } else {
+          throw new Error( kendoWidget + ': kendo-widget attribute used but expression in it is not assignable: ' + attrs.kendoWidget);
+        }
+      }
+    }
+
     var create = function(kendoWidget) {
 
       return {
@@ -7,6 +21,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
         restrict: 'ACE',
         transclude: true,
         require: '?ngModel',
+        scope: false,
         controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
 
           // Make the element's contents available to the kendo widget to allow creating some widgets from existing elements.
@@ -29,7 +44,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 
             // create the kendo widget and bind it to the element.
             widget = widgetFactory.create(scope, element, attrs, kendoWidget);
-
+            exposeWidget(widget, scope, attrs, kendoWidget);
 
             // if kendo-refresh attribute is provided, rebind the kendo widget when
             // the watched value changes
@@ -39,6 +54,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
                 if(newValue !== oldValue) {
                   // create the kendo widget and bind it to the element.
                   widget = widgetFactory.create(scope, element, attrs, kendoWidget);
+                  exposeWidget(widget, scope, attrs, kendoWidget);
                 }
               }, true); // watch for object equality. Use native or simple values.
             }
@@ -76,4 +92,5 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
     return {
       create: create
     };
-}]);
+  }
+]);
