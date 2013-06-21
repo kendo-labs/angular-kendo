@@ -101,7 +101,10 @@
   <script src="app/js/controllers.js"></script>
 
   <script>
-    $(".menu").css("opacity", 1);
+    setTimeout(function() {
+      kendo.fx(".menu").slideIn("down").play();
+      $(".menu").css("opacity", 1);
+    }, 500)
   </script>
 
 </body>
