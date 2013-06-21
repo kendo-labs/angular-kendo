@@ -10,7 +10,7 @@ describe('dataSource directive', function () {
                 {name: 'Samwise'}
             ];
 
-            var element = $compile('<div kendo-source="data"></div>')($rootScope);
+            var element = $compile('<div k-data-source="data"></div>')($rootScope);
             $rootScope.$apply();
             var ds = element.data('$kendoDataSource');
 
@@ -31,7 +31,7 @@ describe('dataSource directive', function () {
                 ]
             });
 
-            var element = $compile('<div kendo-source="dataSource"></div>')($rootScope);
+            var element = $compile('<div k-data-source="dataSource"></div>')($rootScope);
             $rootScope.$apply();
             var ds = element.data('$kendoDataSource');
 
@@ -50,7 +50,7 @@ describe('dataSource directive', function () {
                 {name: 'Samwise'}
             ];
 
-            var element = $compile('<div kendo-source="data"></div>')($rootScope);
+            var element = $compile('<div k-data-source="data"></div>')($rootScope);
             $rootScope.$apply();
             var ds = element.data('$kendoDataSource');
 

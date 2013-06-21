@@ -13,7 +13,7 @@ describe('Widget Factory', function () {
                 value: new Date(2012, 11, 15)// 15 December 2012
             };
             var element = angular.element('<input>');
-            var datePickerWidget = widgetFactory.create($rootScope, element, {kendoDatePicker: 'opts'}, 'kendoDatePicker');
+            var datePickerWidget = widgetFactory.create($rootScope, element, {kOptions: 'opts'}, 'kendoDatePicker');
             var datePickerVal = datePickerWidget.value();
             var datePickerValStr = datePickerVal.getDate() + '/' + (datePickerVal.getMonth() + 1) + '/' + datePickerVal.getFullYear();
 
@@ -33,7 +33,7 @@ describe('Widget Factory', function () {
             //Override format with MM/dd/yyyy
             element.data('format', 'formatOverride');
             //Note the format in attrs is a string and not an expression
-            var datePickerWidget = widgetFactory.create($rootScope, element, {kendoDatePicker: 'opts', format: 'MM/dd/yyyy'}, 'kendoDatePicker');
+            var datePickerWidget = widgetFactory.create($rootScope, element, {kOptions: 'opts', kFormat: 'MM/dd/yyyy'}, 'kendoDatePicker');
             var datePickerVal = datePickerWidget.value();
             var datePickerValStr = (datePickerVal.getMonth() + 1) + '/' + datePickerVal.getDate() + '/' + datePickerVal.getFullYear();
             //Compare date picker value and input value are equal
@@ -49,7 +49,7 @@ describe('Widget Factory', function () {
                 value: new Date(2012, 11, 15)// 15 December 2012
             };
             var element = angular.element('<input>');
-            var datePickerWidget = widgetFactory.create($rootScope, element, {kendoDatePicker: 'opts', onOpen: 'onOpenFn'}, 'kendoDatePicker');
+            var datePickerWidget = widgetFactory.create($rootScope, element, {kOptions: 'opts', kOnOpen: 'onOpenFn'}, 'kendoDatePicker');
             datePickerWidget.open();
             //Let the digest cycle complete and then verify the open callback is executed
             $timeout(function () {
@@ -72,7 +72,7 @@ describe('Widget Factory', function () {
                 dataTextField: "text",
                 dataValueField: "value"
             };
-            var dropdownListWidget = widgetFactory.create($rootScope, element.children().first(), {kendoDropDownList: 'opts'}, 'kendoDropDownList');
+            var dropdownListWidget = widgetFactory.create($rootScope, element.children().first(), {kOptions: 'opts'}, 'kendoDropDownList');
             expect(dropdownListWidget.value()).toEqual('1');
         });
     });
