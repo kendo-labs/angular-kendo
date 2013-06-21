@@ -4,6 +4,16 @@ html,body {
   width: 960px;
 }
 
+* { 
+  -webkit-transition:opacity 1s;
+  -moz-transition:opacity 1s;
+  transition:opacity 1s;
+}
+
+.menu {
+  opacity: 0;
+}
+
 .buffer {
   margin-top: 20px;
 }

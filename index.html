@@ -20,7 +20,7 @@
       <p class="subtitle">The missing UI framework for AngularJS</p>
     </div>
     <div class="pure-u-1">
-      <ul kendo-menu>
+      <ul kendo-menu class="menu">
         <li>
           Web Widgets
           <ul>
@@ -99,6 +99,10 @@
   <script src="build/angular-kendo.js"></script>
   <script src="app/js/app.js"></script>
   <script src="app/js/controllers.js"></script>
+
+  <script>
+    $(".menu").css("opacity", 1);
+  </script>
 
 </body>
 </html>
