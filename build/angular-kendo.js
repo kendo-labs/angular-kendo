@@ -23,14 +23,20 @@ angular.module('kendo.directives', [], function($provide){
 
 angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', function($parse, $log) {
 
+  // k-* attributes that should not be $parsed or $evaluated by gatherOptions
+  var ignoredAttributes = {
+    kDataSource: true,
+    kOptions: true,
+    kRebind: true
+  };
+
   // Gather the options from defaults and from attributes
   var gatherOptions = function(scope, element, attrs, kendoWidget) {
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
-    var dataSource;
-    // make a deep clone of the options object passed to the directive, if any.
-    var options = angular.element.extend(true, {}, scope.$eval(attrs[kendoWidget]));
+    // make a deep clone of the options object provided by the k-options attribute, if any.
+    var options = angular.element.extend(true, {}, scope.$eval(attrs.kOptions));
 
     // regexp for matching regular options attributes and event handler attributes
     // The first matching group will be defined only when the attribute starts by k-on- for event handlers.
@@ -38,9 +44,14 @@ angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', f
     var attrRE = /k(On)?([A-Z].*)/;
     // Mixin the data from the element's k-* attributes in the options
     angular.forEach(attrs, function(attValue, attName) {
+      // ignore attributes that do not map to widget configuration options
+      if( ignoredAttributes[attName] ) {
+        return;
+      }
+
       var match = attName.match(attrRE), optionName, fn;
-      // ignore dataSource option as it is provided by the kDataSource directive
-      if( match && match[2] !== 'dataSource' ) {
+
+      if( match ) {
         // Lowercase the first letter to match the option name kendo expects.
         optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
 
@@ -105,14 +116,14 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
   function(widgetFactory, $timeout, $parse) {
 
     function exposeWidget(widget, scope, attrs, kendoWidget) {
-      // expose the widget object
-      if( attrs.kendoWidget ) {
-        var set = $parse(attrs.kendoWidget).assign;
+      if( attrs[kendoWidget] ) {
+        // expose the widget object
+        var set = $parse(attrs[kendoWidget]).assign;
         if( set ) {
           // set the value of the expression to the kendo widget object to expose its api
           set(scope, widget);
         } else {
-          throw new Error( kendoWidget + ': kendo-widget attribute used but expression in it is not assignable: ' + attrs.kendoWidget);
+          throw new Error( kendoWidget + ' attribute used but expression in it is not assignable: ' + attrs[kendoWidget]);
         }
       }
     }
@@ -149,11 +160,11 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
             widget = widgetFactory.create(scope, element, attrs, kendoWidget);
             exposeWidget(widget, scope, attrs, kendoWidget);
 
-            // if kendo-refresh attribute is provided, rebind the kendo widget when
+            // if k-rebind attribute is provided, rebind the kendo widget when
             // the watched value changes
-            if( attrs.kendoRefresh ) {
-              // watch for changes on the expression passed in the kendo-refresh attribute
-              scope.$watch(attrs.kendoRefresh, function(newValue, oldValue) {
+            if( attrs.kRebind ) {
+              // watch for changes on the expression passed in the k-rebind attribute
+              scope.$watch(attrs.kRebind, function(newValue, oldValue) {
                 if(newValue !== oldValue) {
                   // create the kendo widget and bind it to the element.
                   widget = widgetFactory.create(scope, element, attrs, kendoWidget);

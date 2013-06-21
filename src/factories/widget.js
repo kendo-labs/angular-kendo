@@ -1,13 +1,19 @@
 angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', function($parse, $log) {
 
+  // k-* attributes that should not be $parsed or $evaluated by gatherOptions
+  var ignoredAttributes = {
+    kDataSource: true,
+    kOptions: true,
+    kRebind: true
+  };
+
   // Gather the options from defaults and from attributes
   var gatherOptions = function(scope, element, attrs, kendoWidget) {
     // TODO: add kendoDefaults value service and use it to get a base options object?
     // var options = kendoDefaults[kendoWidget];
 
-    var dataSource;
-    // make a deep clone of the options object passed to the directive, if any.
-    var options = angular.element.extend(true, {}, scope.$eval(attrs[kendoWidget]));
+    // make a deep clone of the options object provided by the k-options attribute, if any.
+    var options = angular.element.extend(true, {}, scope.$eval(attrs.kOptions));
 
     // regexp for matching regular options attributes and event handler attributes
     // The first matching group will be defined only when the attribute starts by k-on- for event handlers.
@@ -15,9 +21,14 @@ angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', f
     var attrRE = /k(On)?([A-Z].*)/;
     // Mixin the data from the element's k-* attributes in the options
     angular.forEach(attrs, function(attValue, attName) {
+      // ignore attributes that do not map to widget configuration options
+      if( ignoredAttributes[attName] ) {
+        return;
+      }
+
       var match = attName.match(attrRE), optionName, fn;
-      // ignore dataSource option as it is provided by the kDataSource directive
-      if( match && match[2] !== 'dataSource' ) {
+
+      if( match ) {
         // Lowercase the first letter to match the option name kendo expects.
         optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
 

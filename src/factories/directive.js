@@ -2,14 +2,14 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
   function(widgetFactory, $timeout, $parse) {
 
     function exposeWidget(widget, scope, attrs, kendoWidget) {
-      // expose the widget object
-      if( attrs.kendoWidget ) {
-        var set = $parse(attrs.kendoWidget).assign;
+      if( attrs[kendoWidget] ) {
+        // expose the widget object
+        var set = $parse(attrs[kendoWidget]).assign;
         if( set ) {
           // set the value of the expression to the kendo widget object to expose its api
           set(scope, widget);
         } else {
-          throw new Error( kendoWidget + ': kendo-widget attribute used but expression in it is not assignable: ' + attrs.kendoWidget);
+          throw new Error( kendoWidget + ' attribute used but expression in it is not assignable: ' + attrs[kendoWidget]);
         }
       }
     }
@@ -46,11 +46,11 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
             widget = widgetFactory.create(scope, element, attrs, kendoWidget);
             exposeWidget(widget, scope, attrs, kendoWidget);
 
-            // if kendo-refresh attribute is provided, rebind the kendo widget when
+            // if k-rebind attribute is provided, rebind the kendo widget when
             // the watched value changes
-            if( attrs.kendoRefresh ) {
-              // watch for changes on the expression passed in the kendo-refresh attribute
-              scope.$watch(attrs.kendoRefresh, function(newValue, oldValue) {
+            if( attrs.kRebind ) {
+              // watch for changes on the expression passed in the k-rebind attribute
+              scope.$watch(attrs.kRebind, function(newValue, oldValue) {
                 if(newValue !== oldValue) {
                   // create the kendo widget and bind it to the element.
                   widget = widgetFactory.create(scope, element, attrs, kendoWidget);
