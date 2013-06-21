@@ -10,15 +10,15 @@ angular-kendo was designed to work with Kendo UI Web / DataViz and AngularJS ver
 
 angular-kendo currently depends on the following libraries:
 
-- [jQuery](http://www.jquery.com) v1.8.2
+- [jQuery](http://www.jquery.com) v1.9.1
 - [Kendo UI](http://www.kendoui.com) vCurrent
-- [AngularJS](http://www.angularjs.org) v1.0.4
+- [AngularJS](http://www.angularjs.org) v1.0.5
 
 angular-kendo has not been tested against any other versions of these libraries. You may find that versions other than these are compatible with angular-kendo, but we make no claims to support those version, nor can we troubleshoot issues that arise when using those versions.
 
 ## Source Code and Downloads
 
-This repository contains both the full and minified version of angular-kendo.
+This repository contains both the full and minified version of angular-kendo in the **build** folder.
 
 ## Documentation
 
