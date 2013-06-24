@@ -34,6 +34,10 @@ function HomeCtrl($scope) {
     optionLabel: "Select A Thing"
   };
 
+  $scope.thingsChange = function(e) {
+    console.log(e.sender.text());
+  };
+
   $scope.window = {
     open: function() {
       $scope.modal.center().open();
@@ -149,6 +153,7 @@ function HomeCtrl($scope) {
   // apply pretty print
   $scope.$on('$viewContentLoaded', function() {
     prettyPrint();
+    $("*").css("opacity", 1);
   });
   
 }

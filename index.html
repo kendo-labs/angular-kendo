@@ -20,7 +20,7 @@
       <p class="subtitle">The missing UI framework for AngularJS</p>
     </div>
     <div class="pure-u-1">
-      <ul kendo-menu class="menu">
+      <ul kendo-menu class="menu" ng-cloak>
         <li>
           Web Widgets
           <ul>
@@ -99,13 +99,6 @@
   <script src="build/angular-kendo.js"></script>
   <script src="app/js/app.js"></script>
   <script src="app/js/controllers.js"></script>
-
-  <script>
-    setTimeout(function() {
-      kendo.fx(".menu").slideIn("down").play();
-      $(".menu").css("opacity", 1);
-    }, 500)
-  </script>
 
 </body>
 </html>
