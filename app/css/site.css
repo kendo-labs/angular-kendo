@@ -10,8 +10,10 @@ html,body {
   transition:opacity 1s;
 }
 
+.negative
+
 .menu {
-  opacity: 0;
+    opacity: 0;
 }
 
 .buffer {
@@ -23,9 +25,11 @@ html,body {
 }
 
 .content {
-  min-height: 100%;
-  width: 940px;
-  padding: 20px;
+  margin-top: 20px;
+}
+
+.negative {
+  margin-top: -50px;
 }
 
 .sidebar {

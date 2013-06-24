@@ -45,6 +45,12 @@ module.exports = function(grunt) {
           { src: ['docs/angular-kendo.html'], dest: 'app/partials/docs.html', filter: 'isFile' }, // includes files in path
         ]
       }
+    },
+    watch: {
+      scripts: {
+        files: "src/**/*.js",
+        tasks: "default"
+      }
     }
   });
 
@@ -57,7 +63,9 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-concat');
 
+  grunt.loadNpmTasks('grunt-contrib-watch');
+
   // Default task(s).
-  grunt.registerTask('default', ['concat', 'uglify']);
+  grunt.registerTask('default', ['concat', 'uglify', 'watch']);
 
 };

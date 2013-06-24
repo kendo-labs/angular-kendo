@@ -1,4 +1,4 @@
-angular.module('kendo.directives', [], function($provide){
+angular.module('kendo.directives', [], ['$provide', function($provide){
 
   // Iterate over the kendo.ui and kendo.dataviz.ui namespace objects to get the Kendo UI widgets adding
   // them to the 'widgets' array.
@@ -15,4 +15,4 @@ angular.module('kendo.directives', [], function($provide){
 
   $provide.value('kendoWidgets', widgets);
 
-});
+}]);
