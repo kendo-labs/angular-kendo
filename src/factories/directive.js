@@ -29,7 +29,6 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
             $element.append(clone);
           });
 
-          // TODO: add functions to allow other directives to register option decorators
         }],
 
         link: function(scope, element, attrs, ngModel) {
