@@ -78,10 +78,13 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 
               // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
               widget.bind("change", function(e) {
-                scope.$apply(function() {
-                  // Set the value on the scope to the widget value.
+                if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
                   ngModel.$setViewValue(widget.value());
-                });
+                } else {
+                  scope.$apply(function() {
+                    ngModel.$setViewValue(widget.value());
+                  });
+                }
               });
             }
           });
