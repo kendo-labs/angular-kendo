@@ -2,7 +2,7 @@
 
 // declare all the module
 angular.module('kendo.directives', []);
-angular.module('kendo.directives', [], function($provide){
+angular.module('kendo.directives', [], ['$provide', function($provide){
 
   // Iterate over the kendo.ui and kendo.dataviz.ui namespace objects to get the Kendo UI widgets adding
   // them to the 'widgets' array.
@@ -19,7 +19,7 @@ angular.module('kendo.directives', [], function($provide){
 
   $provide.value('kendoWidgets', widgets);
 
-});
+}]);
 
 angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', function($parse, $log) {
 
@@ -62,10 +62,14 @@ angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', f
           // Add a kendo event listener to the options.
           options[optionName] = function(e) {
             // Make sure this gets invoked in the angularjs lifecycle.
-            scope.$apply(function() {
-              // Invoke the parsed expression with a kendoEvent local that the expression can use.
-              fn(scope, {kendoEvent: e});
-            });
+            if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
+              fn({kendoEvent: e});
+            } else {
+              scope.$apply(function() {
+                  // Invoke the parsed expression with a kendoEvent local that the expression can use.
+                  fn(scope, {kendoEvent: e});
+              });
+            }
           };
         } else {
           // Evaluate the angular expression and put its result in the widget's options object.
@@ -192,10 +196,13 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 
               // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
               widget.bind("change", function(e) {
-                scope.$apply(function() {
-                  // Set the value on the scope to the widget value.
+                if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
                   ngModel.$setViewValue(widget.value());
-                });
+                } else {
+                  scope.$apply(function() {
+                    ngModel.$setViewValue(widget.value());
+                  });
+                }
               });
             }
           });
