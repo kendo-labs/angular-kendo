@@ -1,6 +1,6 @@
 {
   "name": "angular-kendo",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "dependencies": {
     "kendo-ui": "~2013.1.319",
     "angular": "~1.0.5"

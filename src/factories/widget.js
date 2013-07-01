@@ -39,10 +39,14 @@ angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', f
           // Add a kendo event listener to the options.
           options[optionName] = function(e) {
             // Make sure this gets invoked in the angularjs lifecycle.
-            scope.$apply(function() {
-              // Invoke the parsed expression with a kendoEvent local that the expression can use.
-              fn(scope, {kendoEvent: e});
-            });
+            if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
+              fn({kendoEvent: e});
+            } else {
+              scope.$apply(function() {
+                  // Invoke the parsed expression with a kendoEvent local that the expression can use.
+                  fn(scope, {kendoEvent: e});
+              });
+            }
           };
         } else {
           // Evaluate the angular expression and put its result in the widget's options object.
