@@ -89,7 +89,7 @@ function HomeCtrl($scope) {
 
   <div class="pure-u-1-3">
     <h4>Demo</h4>
-    <select kendo-drop-down-list
+    <select id="debug1" kendo-drop-down-list
             k-option-label="'Select A Thing'"
             k-data-text-field="'name'"
             k-data-value-field="'id'"
@@ -125,7 +125,7 @@ function HomeCtrl($scope) {
   </div>
   <div class="pure-u-1-3">
     <h4>Demo</h4>
-      <select kendo-drop-down-list k-options="thingsOptions"></select>
+      <select kendo-drop-down-list k-options="thingsController"></select>
   </div>
 </div>
 
@@ -163,7 +163,7 @@ function HomeCtrl($scope) {
   </div>
   <div class="pure-u-1-3">
     <h4>Demo</h4>
-      <select kendo-drop-down-list k-options="thingsOptions" k-on-change="thingsChange(kendoEvent)"></select>
+      <select kendo-drop-down-list k-options="thingsBinding" k-on-change="thingsChange(kendoEvent)"></select>
   </div>
 </div>
 
@@ -182,10 +182,8 @@ function HomeCtrl($scope) {
   </div>
   <div class="pure-u-1-3">
     <h4>Demo</h4>
-    <select kendo-drop-down-list k-options="thingsOptions"
+    <select kendo-drop-down-list k-options="thingsModels"
             ng-model="selectedThing"></select>
-
-
     <h5>You Selected: {{ selectedThing }}</h5>
   </div>
 </div>

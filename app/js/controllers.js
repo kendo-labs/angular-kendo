@@ -23,7 +23,29 @@ function HomeCtrl($scope) {
            { name: "Thing 3", id: 3 }]
   });
 
-  $scope.thingsOptions = {
+  $scope.thingsController = {
+    dataSource: new kendo.data.DataSource({
+      data: [{ name: "Thing 1", id: 1 },
+             { name: "Thing 2", id: 2 },
+             { name: "Thing 3", id: 3 }]
+    }),
+    dataTextField: "name",
+    dataValueField: "id",
+    optionLabel: "Select A Thing"
+  };
+
+  $scope.thingsBinding = {
+    dataSource: new kendo.data.DataSource({
+      data: [{ name: "Thing 1", id: 1 },
+             { name: "Thing 2", id: 2 },
+             { name: "Thing 3", id: 3 }]
+    }),
+    dataTextField: "name",
+    dataValueField: "id",
+    optionLabel: "Select A Thing"
+  };
+
+  $scope.thingsModels = {
     dataSource: new kendo.data.DataSource({
       data: [{ name: "Thing 1", id: 1 },
              { name: "Thing 2", id: 2 },

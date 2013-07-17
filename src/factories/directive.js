@@ -44,6 +44,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
 
             // create the kendo widget and bind it to the element.
             widget = widgetFactory.create(scope, element, attrs, kendoWidget);
+
             exposeWidget(widget, scope, attrs, kendoWidget);
 
             // if k-rebind attribute is provided, rebind the kendo widget when
@@ -75,8 +76,11 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
                 // Update the widget with the view value.
                 widget.value(ngModel.$viewValue);
               };
-              
-              widget.value(ngModel.$viewValue);
+
+              // if the model value is undefined, then we set the widget value to match ( == null/undefined )
+              if (widget.value !== undefined) {
+                widget.value(ngModel.$viewValue || null);
+              }
 
               // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
               widget.bind("change", function(e) {
