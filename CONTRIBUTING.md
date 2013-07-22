@@ -24,10 +24,6 @@ See the previous item on creating a topic branch.
 
 If you don't use a topic branch, we may ask you to re-do your pull request on a topic branch. If your pull request contains commits or other changes that are not related to the pull request, we will ask you to re-do your pull request.
 
-#### Branch from "dev" not "master"
-
-The "master" branch of the angular-kendo repository is for production release code, and documentation updates only. Never create a pull request from the master branch. Always create a branch for your work from the "dev" branch. This will facilitate easier pull request management for the continuous work that is done in the dev branch.
-
 #### Squash your commits
 
 When you've completed your work on a topic branch, we prefer that you squash your work down into a single commit to make the merge process easier. For information on squashing via an interactive rebase, see [the rebase documentation on GitHub](https://help.github.com/articles/interactive-rebase)
