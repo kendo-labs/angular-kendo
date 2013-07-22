@@ -1,6 +1,6 @@
 {
   "name": "angular-kendo",
-  "version": "0.0.9",
+  "version": "0.5.1",
   "scripts": {
     "preinstall": "npm install -g bower"
   },
