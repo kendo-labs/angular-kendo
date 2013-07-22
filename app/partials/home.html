@@ -71,11 +71,11 @@ var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo.directives&#
     <pre class="prettyprint ng-non-bindable">
 // controller
 function HomeCtrl($scope) {
-  $scope.things = new kendo.data.DataSource({
+  $scope.things = {
     data: [{ name: &quot;Thing 1&quot;, id: 1 },
            { name: &quot;Thing 2&quot;, id: 2 },
            { name: &quot;Thing 3&quot;, id: 3 }]
-  });
+  };
 }
 
 // markup
@@ -89,7 +89,7 @@ function HomeCtrl($scope) {
 
   <div class="pure-u-1-3">
     <h4>Demo</h4>
-    <select id="debug1" kendo-drop-down-list
+    <select kendo-drop-down-list
             k-option-label="'Select A Thing'"
             k-data-text-field="'name'"
             k-data-value-field="'id'"
@@ -108,11 +108,11 @@ function HomeCtrl($scope) {
 // controller
 function HomeCtrl($scope) {
   $scope.thingsOptions = {
-    dataSource: new kendo.data.DataSource({
+    dataSource: {
       data: [{ name: &quot;Thing 1&quot;, id: 1 },
              { name: &quot;Thing 2&quot;, id: 2 },
              { name: &quot;Thing 3&quot;, id: 3 }]
-    }),
+    },
     dataTextField: &quot;name&quot;,
     dataValueField: &quot;id&quot;,
     optionLabel: &quot;Select A Thing&quot;
@@ -125,7 +125,7 @@ function HomeCtrl($scope) {
   </div>
   <div class="pure-u-1-3">
     <h4>Demo</h4>
-      <select kendo-drop-down-list k-options="thingsController"></select>
+      <select kendo-drop-down-list k-options="thingsOptions"></select>
   </div>
 </div>
 
@@ -142,11 +142,11 @@ function HomeCtrl($scope) {
 // controller
 function HomeCtrl($scope) {
   $scope.thingsOptions = {
-    dataSource: new kendo.data.DataSource({
+    dataSource: {
       data: [{ name: &quot;Thing 1&quot;, id: 1 },
              { name: &quot;Thing 2&quot;, id: 2 },
              { name: &quot;Thing 3&quot;, id: 3 }]
-    }),
+    },
     dataTextField: &quot;name&quot;,
     dataValueField: &quot;id&quot;,
     optionLabel: &quot;Select A Thing&quot;
@@ -163,7 +163,7 @@ function HomeCtrl($scope) {
   </div>
   <div class="pure-u-1-3">
     <h4>Demo</h4>
-      <select kendo-drop-down-list k-options="thingsBinding" k-on-change="thingsChange(kendoEvent)"></select>
+      <select kendo-drop-down-list k-options="thingsOptions" k-on-change="thingsChange(kendoEvent)"></select>
   </div>
 </div>
 
@@ -182,7 +182,7 @@ function HomeCtrl($scope) {
   </div>
   <div class="pure-u-1-3">
     <h4>Demo</h4>
-    <select kendo-drop-down-list k-options="thingsModels"
+    <select kendo-drop-down-list k-options="thingsOptions"
             ng-model="selectedThing"></select>
     <h5>You Selected: {{ selectedThing }}</h5>
   </div>
