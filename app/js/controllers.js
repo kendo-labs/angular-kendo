@@ -153,7 +153,6 @@ function HomeCtrl($scope) {
   // apply pretty print
   $scope.$on('$viewContentLoaded', function() {
     window.prettyPrint();
-    $("*").css("opacity", 1);
   });
 
 }
