@@ -26,7 +26,9 @@ If you don't use a topic branch, we may ask you to re-do your pull request on a 
 
 #### Squash your commits
 
-When you've completed your work on a topic branch, we prefer that you squash your work down into a single commit to make the merge process easier. For information on squashing via an interactive rebase, see [the rebase documentation on GitHub](https://help.github.com/articles/interactive-rebase)
+When you've completed your work on a topic branch, we prefer that you squash your work down into a single commit to make the merge process easier. For information on squashing via an interactive rebase, see [the rebase documentation on GitHub](https://help.github.com/articles/interactive-rebase).
+
+You should also follow the [AngularJS Git Commit Message Conventions](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/) for you commit message since we are using the [grunt-conventional-changelog](https://github.com/btford/grunt-conventional-changelog) grunt task to generate our CHANGELOG.
 
 ### 3. Submit a Pull Request
 
