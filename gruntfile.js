@@ -51,6 +51,13 @@ module.exports = function(grunt) {
         files: "src/**/*.js",
         tasks: "default"
       }
+    },
+    changelog: {
+      options: {
+        dest: 'CHANGELOG.md',
+        github: 'kendo-labs/angular-kendo',
+        version: grunt.file.readJSON('bower.json').version
+      }
     }
   });
 
@@ -64,6 +71,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
 
   grunt.loadNpmTasks('grunt-contrib-watch');
+
+  grunt.loadNpmTasks('grunt-conventional-changelog');
 
   // Default task(s).
   grunt.registerTask('default', ['concat', 'uglify', 'watch']);
