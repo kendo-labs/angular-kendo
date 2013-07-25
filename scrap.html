@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scrappy</title>
+  <link href="http://cdn.kendostatic.com/2013.1.319/styles/kendo.common.min.css" rel="stylesheet">
+  <link href="http://cdn.kendostatic.com/2013.1.319/styles/kendo.default.min.css" rel="stylesheet">
+</head>
+<body>
+  
+  <select class="dropdown"></select>
+  <select class="dropdown"></select>
+
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="http://cdn.kendostatic.com/2013.1.319/js/kendo.all.min.js"></script>
+
+  <script>
+
+    $(function() {
+
+      var options = {
+        dataSource: new kendo.data.DataSource({
+          data: [{ name: "Thing 1", id: 1 },
+                 { name: "Thing 2", id: 2 },
+                 { name: "Thing 3", id: 3 }]
+        }),
+        dataTextField: "name",
+        dataValueField: "id",
+        optionLabel: "Select A Thing"
+      };
+
+      $(".dropdown").kendoDropDownList({
+        dataSource: new kendo.data.DataSource({
+          data: [{ name: "Thing 1", id: 1 },
+                 { name: "Thing 2", id: 2 },
+                 { name: "Thing 3", id: 3 }]
+        }),
+        dataTextField: "name",
+        dataValueField: "id",
+        optionLabel: "Select A Thing"
+      });
+
+      $("#dropdown2").kendoDropDownList(options);
+
+    });
+
+  </script>
+
+</body>
+</html>

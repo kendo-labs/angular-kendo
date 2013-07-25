@@ -1,3 +1,8 @@
+# 0.5.1
+
+* Minified file is fixed (issue #26)
+* Safe apply added (issue #27)
+
 # 0.5.0
 
 ### Revamp of API to provide deeper integration with AngularJS.

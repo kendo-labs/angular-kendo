@@ -1,5 +1,5 @@
 function HomeCtrl($scope) {
-  
+
   $scope.products = new kendo.data.DataSource({
     transport: {
       read: "app/data/products.json"
@@ -17,18 +17,18 @@ function HomeCtrl($scope) {
     }
   };
 
-  $scope.things = new kendo.data.DataSource({
+  $scope.things = {
     data: [{ name: "Thing 1", id: 1 },
            { name: "Thing 2", id: 2 },
            { name: "Thing 3", id: 3 }]
-  });
+  };
 
   $scope.thingsOptions = {
-    dataSource: new kendo.data.DataSource({
+    dataSource: {
       data: [{ name: "Thing 1", id: 1 },
              { name: "Thing 2", id: 2 },
              { name: "Thing 3", id: 3 }]
-    }),
+    },
     dataTextField: "name",
     dataValueField: "id",
     optionLabel: "Select A Thing"
@@ -152,12 +152,11 @@ function HomeCtrl($scope) {
 
   // apply pretty print
   $scope.$on('$viewContentLoaded', function() {
-    prettyPrint();
-    $("*").css("opacity", 1);
+    window.prettyPrint();
   });
-  
+
 }
 
 function SettingsCtrl($scope) {
-  
+
 }

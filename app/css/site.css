@@ -4,17 +4,13 @@ html,body {
   width: 960px;
 }
 
-* { 
+/** { 
   -webkit-transition:opacity 1s;
   -moz-transition:opacity 1s;
   transition:opacity 1s;
-}
+}*/
 
 .negative
-
-.menu {
-    opacity: 0;
-}
 
 .buffer {
   margin-top: 20px;
@@ -57,6 +53,10 @@ html,body {
 
 h3 { position:relative; }
 h3 span { position:absolute; top:-140px; }
+
+.ng-cloak {
+  display: none;
+}
 
 .menu {
   margin-top: 50px;
