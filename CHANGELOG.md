@@ -1,3 +1,10 @@
+# 0.5.2
+
+* Add version number to top of minified file ((issue #50)[https://github.com/kendo-labs/angular-kendo/issues/50])
+* Update Kendo UI version in demos to 2013.2.716
+* Add initial view value to widgets with ng-model binding ((issue #53)[https://github.com/kendo-labs/angular-kendo/pull/53])
+* Change DataSource delcaration to literal on demos so all DropDowns show optionLabel ((issue #57)[https://github.com/kendo-labs/angular-kendo/issues/57]
+
 # 0.5.1
 
 * Minified file is fixed (issue #26)
