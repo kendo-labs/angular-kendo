@@ -12,7 +12,7 @@ module.exports = function(grunt) {
                 }
             },
             dist: {
-                src: ['src/main.js', 'src/services/widget.js', 'src/factories/widget.js', 'src/factories/directive.js', 'src/directives/widgets.js', 'src/directives/dataSource.js'],
+                src: ['src/main.js', 'src/services/widget.js', 'src/factories/widget.js', 'src/factories/directive.js', 'src/directives/widgets.js', 'src/directives/dataSource.js', 'src/services/kendoDecorator.js'],
                 dest: 'build/angular-kendo.js'
             },
 
