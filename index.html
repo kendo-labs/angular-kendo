@@ -5,22 +5,22 @@
   <title>Angular Kendo</title>
   <link href="app/components/google-code-prettify-lite/prettify.css" rel="stylesheet">
   <link rel="stylesheet" href="app/css/pure-min.css">
-  <link href="http://cdn.kendostatic.com/2013.1.319/styles/kendo.common.min.css" rel="stylesheet">
-  <link href="http://cdn.kendostatic.com/2013.1.319/styles/kendo.default.min.css" rel="stylesheet">
+  <link href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.common.min.css" rel="stylesheet">
+  <link href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.default.min.css" rel="stylesheet">
   <link rel="stylesheet" href="app/css/site.css">
 </head>
 <body>
   <a href="https://github.com/kendo-labs/angular-kendo"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
-  <div class="pure-g">
+  <div class="pure-g content">
     <div class="pure-u-1-6">
       <img src="app/css/img/angular-kendo.png" class="logo">  
     </div>
     <div class="pure-u-5-6">
       <h1>Angular Kendo UI</h1>
-      <p class="subtitle">The missing UI framework for AngularJS</p>
+      <p class="subtitle">A Complete UI Framework For AngularJS</p>
     </div>
-    <div class="pure-u-1">
-      <ul kendo-menu class="menu">
+    <div class="pure-u-1 negative">
+      <ul kendo-menu class="menu ng-cloak">
         <li>
           Web Widgets
           <ul>
@@ -38,6 +38,7 @@
             <li><a href="http://demos.kendoui.com/web/multiselect">MultiSelect</a></li>
             <li><a href="http://demos.kendoui.com/web/numerictextbox">Numeric Textbox</a></li>
             <li><a href="http://demos.kendoui.com/web/panelbar">Panel Bar</a></li>
+            <li><a href="http://demos.kendoui.com/web/scheduler/index.html">Scheduler</a></li>
             <li><a href="http://demos.kendoui.com/web/slider">Slider</a></li>
             <li><a href="http://demos.kendoui.com/web/splitter">Splitter</a></li>
             <li><a href="http://demos.kendoui.com/web/tabstrip">Tabstrip</a></li>
@@ -70,6 +71,12 @@
                 <li><a href="http://demos.kendoui.com/dataviz/linear-gauge">Linear Gauge</a></li>
               </ul>
             </li>
+            <li>Bar & QR Codes
+              <ul>
+                <li><a href="http://demos.kendoui.com/dataviz/barcode/index.html">Barcode</a></li>
+                <li><a href="http://demos.kendoui.com/dataviz/qrcode/index.html">QR Code</a></li>
+              </ul>
+            </li>
             <li>
               Financial    
               <ul>
@@ -93,17 +100,10 @@
   <script src="app/components/google-code-prettify-lite/prettify.js"></script>
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular.min.js"></script>
-  <script src="http://cdn.kendostatic.com/2013.1.319/js/kendo.all.min.js"></script>
+  <script src="http://cdn.kendostatic.com/2013.2.716/js/kendo.all.min.js"></script>
   <script src="build/angular-kendo.js"></script>
   <script src="app/js/app.js"></script>
   <script src="app/js/controllers.js"></script>
-
-  <script>
-    setTimeout(function() {
-      kendo.fx(".menu").slideIn("down").play();
-      $(".menu").css("opacity", 1);
-    }, 500)
-  </script>
 
 </body>
 </html>

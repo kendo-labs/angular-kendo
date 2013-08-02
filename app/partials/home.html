@@ -19,11 +19,11 @@
   </pre>
 </div>
 
-<p>Pass the <code>kendo</code> module into your app as a dependency:</p>
+<p>Pass the <code>kendo.directives</code> module into your app as a dependency:</p>
 
 <div class="demo-section">
   <pre class="prettyprint">
-var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo&#039;]);  
+var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo.directives&#039;]);
   </pre>
 </div>
 
@@ -71,11 +71,11 @@ var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo&#039;]);
     <pre class="prettyprint ng-non-bindable">
 // controller
 function HomeCtrl($scope) {
-  $scope.things = new kendo.data.DataSource({
+  $scope.things = {
     data: [{ name: &quot;Thing 1&quot;, id: 1 },
            { name: &quot;Thing 2&quot;, id: 2 },
            { name: &quot;Thing 3&quot;, id: 3 }]
-  });
+  };
 }
 
 // markup
@@ -108,11 +108,11 @@ function HomeCtrl($scope) {
 // controller
 function HomeCtrl($scope) {
   $scope.thingsOptions = {
-    dataSource: new kendo.data.DataSource({
+    dataSource: {
       data: [{ name: &quot;Thing 1&quot;, id: 1 },
              { name: &quot;Thing 2&quot;, id: 2 },
              { name: &quot;Thing 3&quot;, id: 3 }]
-    }),
+    },
     dataTextField: &quot;name&quot;,
     dataValueField: &quot;id&quot;,
     optionLabel: &quot;Select A Thing&quot;
@@ -126,6 +126,44 @@ function HomeCtrl($scope) {
   <div class="pure-u-1-3">
     <h4>Demo</h4>
       <select kendo-drop-down-list k-options="thingsOptions"></select>
+  </div>
+</div>
+
+<h3>Binding To Events</h3>
+
+<p>Events can be specified either in markup, or in the options object passed to <code>k-options</code>.  Any events passed to <code>k-options</code> are specified accoding to the <a href="http://docs.kendoui.com/api">Kendo UI API Docs</a>.</p>
+
+<p>Events specifed in Markup need a <code>k-on</code> prefix and must pass a <code>kendEvent</code> argument.</p>
+
+<div class="pure-g demo-section">
+  <div class="pure-u-2-3">
+    <h4>Code</h4>
+    <pre class="prettyprint ng-non-bindable">
+// controller
+function HomeCtrl($scope) {
+  $scope.thingsOptions = {
+    dataSource: {
+      data: [{ name: &quot;Thing 1&quot;, id: 1 },
+             { name: &quot;Thing 2&quot;, id: 2 },
+             { name: &quot;Thing 3&quot;, id: 3 }]
+    },
+    dataTextField: &quot;name&quot;,
+    dataValueField: &quot;id&quot;,
+    optionLabel: &quot;Select A Thing&quot;
+  };
+
+  $scope.thingsChange = function(e) {
+    console.log(e.sender.text());
+  };
+}
+
+// markup
+&lt;select kendo-drop-down-list k-options=&quot;thingsOptions&quot; k-on-change=&quot;thingsChange(kendoEvent)&quot;&gt;&lt;/select&gt;
+    </pre>
+  </div>
+  <div class="pure-u-1-3">
+    <h4>Demo</h4>
+      <select kendo-drop-down-list k-options="thingsOptions" k-on-change="thingsChange(kendoEvent)"></select>
   </div>
 </div>
 
@@ -146,8 +184,6 @@ function HomeCtrl($scope) {
     <h4>Demo</h4>
     <select kendo-drop-down-list k-options="thingsOptions"
             ng-model="selectedThing"></select>
-
-
     <h5>You Selected: {{ selectedThing }}</h5>
   </div>
 </div>

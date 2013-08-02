@@ -4,15 +4,13 @@ html,body {
   width: 960px;
 }
 
-* { 
+/** { 
   -webkit-transition:opacity 1s;
   -moz-transition:opacity 1s;
   transition:opacity 1s;
-}
+}*/
 
-.menu {
-  opacity: 0;
-}
+.negative
 
 .buffer {
   margin-top: 20px;
@@ -23,9 +21,11 @@ html,body {
 }
 
 .content {
-  min-height: 100%;
-  width: 940px;
-  padding: 20px;
+  margin-top: 20px;
+}
+
+.negative {
+  margin-top: -50px;
 }
 
 .sidebar {
@@ -53,6 +53,10 @@ html,body {
 
 h3 { position:relative; }
 h3 span { position:absolute; top:-140px; }
+
+.ng-cloak {
+  display: none;
+}
 
 .menu {
   margin-top: 50px;

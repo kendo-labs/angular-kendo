@@ -4,7 +4,11 @@ angular.module('kendo.directives').directive('kDataSource', [function() {
   // Transforms the object into a Kendo UI DataSource.
   var toDataSource = function(ds) {
     // TODO: if ds is a $resource, wrap it in a kendo dataSource using an injected service
-     return kendo.data.DataSource.create(ds);
+    return kendo.data.DataSource.create(ds);
+  };
+
+  var widgetInstance = function($element) {
+    return kendo.widgetInstance($element, kendo.ui) || kendo.widgetInstance($element, kendo.dataviz.ui);
   };
 
   return {
