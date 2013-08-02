@@ -195,7 +195,7 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
               // Angular will invoke $render when the view needs to be updated with the view value.
               ngModel.$render = function() {
                 // Update the widget with the view value.
-                widget.value(ngModel.$viewValue);
+                widget.value(ngModel.$viewValue || null);
               };
 
               // if the model value is undefined, then we set the widget value to match ( == null/undefined )
