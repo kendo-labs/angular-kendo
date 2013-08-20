@@ -33,7 +33,7 @@ var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo.directives&#
 <h2><span id="simple"></span>Basic Use</h2>
 
 <p>Any widget can be created using a directive (attribute or class). There is one directive per Kendo UI widget and they are named using a dash-separated version of the Kendo UI widget name. For example, the <code>DropDownList</code> Kendo UI widget becomes a <code>kendo-drop-down-list</code> attribute that you can apply on an input element.  The attribute doesn't have to have a value, it just has to be present.</p>
-      
+
 <h3>Dead Simple Widget Creation</h3>
 
 <div class="pure-g demo-section">
@@ -230,14 +230,13 @@ $scope.window = {
 <p>This grid is pageable, sortable, groupable and filterable.  Select A row to see the Angular binding.</p>
 
 <div class="demo-section">
-  <div kendo-grid k-data-source="products" k-selectable="'row'" 
+  <div kendo-grid k-data-source="products" k-selectable="'row'"
        k-pageable='{ "refresh": true, "pageSizes": true }'
-       k-columns='[{ "field": "ProductName", "title": "Name"}, 
-                      { "field": "Supplier.SupplierName", "title": "Supplier"}, 
+       k-columns='[{ "field": "ProductName", "title": "Name"},
+                      { "field": "Supplier.SupplierName", "title": "Supplier"},
                       { "field": "Category.CategoryName", "title": "Category" }]'
-        k-sortable="true", k-groupable="true", k-filterable="true"
-
-       k-on-change="rowSelected(kendoEvent)" >
+       k-sortable="true" k-groupable="true" k-filterable="true"
+       k-on-change="selectedItem = data" >
  </div>
   <div>
     <h3>{{selectedItem.ProductName}} <small>(Product ID: {{selectedItem.ProductID}})</small></h3>
@@ -258,7 +257,7 @@ $scope.window = {
   <div class="pure-u-1-3">
     <div class="gauge">
       <div kendo-radial-gauge ng-model="value"></div>
-      <input class="gauge-slider" kendo-slider k-min="0" k-max="100" k-large-step="20" k-tick-placement="'none'" ng-model="value" class="span4 offset1"/>  
+      <input class="gauge-slider" kendo-slider k-min="0" k-max="100" k-large-step="20" k-tick-placement="'none'" ng-model="value" class="span4 offset1"/>
     </div>
   </div>
   <div class="pure-u-1-3">
