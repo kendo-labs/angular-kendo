@@ -15,6 +15,7 @@
     "grunt-contrib-uglify": "~0.2.2",
     "grunt-docco": "~0.2.0",
     "grunt-contrib-watch": "~0.4.4",
-    "grunt-conventional-changelog": "~0.1.2"
+    "grunt-conventional-changelog": "~0.1.2",
+    "matchdep": "~0.1.2"
   }
 }
