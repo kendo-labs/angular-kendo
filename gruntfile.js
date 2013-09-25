@@ -1,5 +1,7 @@
 module.exports = function(grunt) {
 
+  require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -60,19 +62,6 @@ module.exports = function(grunt) {
       }
     }
   });
-
-  // Load the plugin that provides the "uglify" task.
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-
-  grunt.loadNpmTasks('grunt-docco');
-
-  grunt.loadNpmTasks('grunt-contrib-copy');
-
-  grunt.loadNpmTasks('grunt-contrib-concat');
-
-  grunt.loadNpmTasks('grunt-contrib-watch');
-
-  grunt.loadNpmTasks('grunt-conventional-changelog');
 
   // Default task(s).
   grunt.registerTask('default', ['concat', 'uglify', 'watch']);
