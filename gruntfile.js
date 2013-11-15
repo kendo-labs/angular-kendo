@@ -1,16 +1,14 @@
 module.exports = function(grunt) {
 
-  require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+  require('load-grunt-tasks')(grunt);
 
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
-      config: {
-        options: {
-          banner: "(function(angular) {",
-          footer: "}(angular));"
-        }
+      options: {
+        banner: "(function(angular) {",
+        footer: "}(angular));"
       },
       dist: {
         src: [
