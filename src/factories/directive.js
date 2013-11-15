@@ -13,6 +13,10 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
         }
       }
     }
+	
+	// $timeout tracking
+	var $timeoutPromise = null;
+	var unsetTimeoutPromise = function() { $timeoutPromise = null };
 
     var create = function(kendoWidget) {
 
@@ -34,12 +38,18 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
         link: function(scope, element, attrs, ngModel) {
 
           var widget;
+		  
+		  // Instead of having angular digest each component that needs to be setup
+		  // Use the same timeout until the timeout has been executed, this will cause all
+		  //   directives to be evaluated in the next cycle, instead of over multiple cycles.
+		  if (!$timeoutPromise)
+		    $timeoutPromise = $timeout(unsetTimeoutPromise);
 
           // Bind kendo widget to element only once interpolation on attributes is done.
           // Using a $timeout with no delay simply makes sure the function will be executed next in the event queue
           // after the current $digest cycle is finished. Other directives on the same element (select for example)
           // will have been processed, and interpolation will have happened on the attributes.
-          $timeout( function() {
+          $timeoutPromise.then( function() {
 
             // create the kendo widget and bind it to the element.
             widget = widgetFactory.create(scope, element, attrs, kendoWidget);
