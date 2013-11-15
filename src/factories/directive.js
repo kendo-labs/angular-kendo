@@ -1,5 +1,5 @@
-angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$timeout', '$parse',
-  function(widgetFactory, $timeout, $parse) {
+angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', 'directiveBinding', '$timeout', '$parse',
+  function(widgetFactory, directiveBinding, $timeout, $parse) {
 
     function exposeWidget(widget, scope, attrs, kendoWidget) {
       if( attrs[kendoWidget] ) {
@@ -75,6 +75,10 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
               widget.destroy();
             });
 
+            // bind to any important angular directives
+            // such as ngShow, ngDisabled, etc.
+            directiveBinding.bind(scope, attrs, widget, kendoWidget);
+
             // if ngModel is on the element, we setup bi-directional data binding
             if (ngModel) {
               if( !widget.value ) {
@@ -86,6 +90,19 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
                 // Update the widget with the view value.
                 widget.value(ngModel.$viewValue);
               };
+
+              // Capture validity call
+              // Then pull out the classes after the call, up to our parent element
+              var old$setValidity = ngModel.$setValidity;
+              ngModel.$setValidity = function() {
+                // Call normal method
+                $setValidity.apply(ngModel, arguments);
+                
+                // migrate the changes
+                directiveBindingService.migrateClasses(element, parentElement);
+              };
+              // Migrate the currently existing classes up
+              directiveBindingService.migrateClasses(element, parentElement);
 
               // if the model value is undefined, then we set the widget value to match ( == null/undefined )
               if (widget.value !== undefined) {

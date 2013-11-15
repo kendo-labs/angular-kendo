@@ -13,6 +13,7 @@ files = [
   'test/components/kendo-ui/js/kendo.web.min.js',
   'src/main.js',
   'src/services/widget.js',
+  'src/services/directiveBinding.js',
   'src/factories/widget.js',
   'src/factories/directive.js',
   'src/directives/widgets.js',
