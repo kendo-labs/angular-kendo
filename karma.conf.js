@@ -13,11 +13,12 @@ files = [
   'test/components/kendo-ui/js/kendo.web.min.js',
   'src/main.js',
   'src/services/widget.js',
+  'src/services/kendoDecorator.js',
   'src/factories/widget.js',
   'src/factories/directive.js',
   'src/directives/widgets.js',
   'src/directives/dataSource.js',
-  'test/spec/**/*Spec.js'
+  'test/web/*Spec.js' 
 ];
 
 // list of files to exclude
