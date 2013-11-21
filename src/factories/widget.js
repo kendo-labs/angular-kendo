@@ -33,7 +33,7 @@ angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', '
         options[optionName] = function(e) {
           // Make sure this gets invoked in the angularjs lifecycle.
           if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
-            fn({kendoEvent: e});
+            fn(scope, {kendoEvent: e});
           } else {
             scope.$apply(function() {
               // Invoke the parsed expression with a kendoEvent local that the expression can use.
