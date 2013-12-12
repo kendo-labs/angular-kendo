@@ -1,19 +1,11 @@
 (function(angular) {
   'use strict';
 
-  angular.module('kendo.directives', []);
+  var module = angular.module('kendo.directives', []);
 
-  var kendoWidgets = [];
-  angular.forEach([kendo.ui, kendo.dataviz && kendo.dataviz.ui], function(namespace) {
-    angular.forEach(namespace, function(value, key) {
-      // add all widgets
-      if( key.match(/^[A-Z]/) && key !== 'Widget' ){
-        kendoWidgets.push("kendo" + key);
-      }
-    });
-  });
 
-  angular.module('kendo.directives').provider('kendoDecorator', [ function() {
+
+  module.provider('kendoDecorator', [ function() {
     var provider = this, DECORATORS = '$kendoOptionsDecorators';
 
     var globalOptionsDecorators = {};
@@ -82,7 +74,9 @@
 
   }]);
 
-  angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', 'kendoDecorator', function($parse, $log, kendoDecorator) {
+
+
+  module.factory('widgetFactory', ['$parse', '$log', 'kendoDecorator', function($parse, $log, kendoDecorator) {
 
     // k-* attributes that should not be $parsed or $evaluated by gatherOptions
     var ignoredAttributes = {
@@ -181,7 +175,9 @@
 
   }]);
 
-  angular.module('kendo.directives').factory('directiveFactory', [
+
+
+  module.factory('directiveFactory', [
     'widgetFactory', '$timeout', '$parse',
     function(widgetFactory, $timeout, $parse) {
 
@@ -221,8 +217,6 @@
 
           link: function(scope, element, attrs, ngModel) {
 
-            var widget;
-
 	    // Instead of having angular digest each component that needs to be setup
 	    // Use the same timeout until the timeout has been executed, this will cause all
 	    //   directives to be evaluated in the next cycle, instead of over multiple cycles.
@@ -236,7 +230,7 @@
             $timeoutPromise.then( function() {
 
               // create the kendo widget and bind it to the element.
-              widget = widgetFactory.create(scope, element, attrs, kendoWidget);
+              var widget = widgetFactory.create(scope, element, attrs, kendoWidget);
 
               exposeWidget(widget, scope, attrs, kendoWidget);
 
@@ -297,23 +291,27 @@
     }
   ]);
 
-  (function(angular) {
 
-    // loop through all the widgets and create a directive
-    angular.forEach(kendoWidgets, function(widget) {
-      angular.module('kendo.directives').directive(widget, [
-        'directiveFactory',
-        function(directiveFactory) {
-          return directiveFactory.create(widget);
-        }
-      ]);
+
+  // create directives for every widget.
+  angular.forEach([ kendo.ui, kendo.dataviz && kendo.dataviz.ui ], function(namespace) {
+    angular.forEach(namespace, function(value, key) {
+      if (key.match(/^[A-Z]/) && key !== 'Widget') {
+        var widget = "kendo" + key;
+        module.directive(widget, [
+          "directiveFactory",
+          function(directiveFactory) {
+            return directiveFactory.create(widget);
+          }
+        ]);
+      }
     });
+  });
 
-  }(angular));
 
 
   // ## The kendoSource directive allows setting the Kendo UI DataSource of a widget directly from the HTML.
-  angular.module('kendo.directives').directive('kDataSource', [function(){
+  module.directive('kDataSource', [function(){
     return {
       // This is an attribute directive
       restrict: 'A',
@@ -364,7 +362,10 @@
       return kendo.data[dataSourceType].create(dataSource);
     }
   }]);
-  angular.module('kendo.directives').directive('kendoGrid', ['$compile', 'kendoDecorator', '$parse', function($compile, kendoDecorator, $parse) {
+
+
+
+  module.directive('kendoGrid', ['$compile', 'kendoDecorator', '$parse', function($compile, kendoDecorator, $parse) {
 
     function dataBoundHandler(scope, element, rowDataVar) {
       var grid = element.data('kendoGrid');
@@ -482,8 +483,11 @@
 
   }]);
 
+
+
 }(angular));
 
 // Local Variables:
 // js-indent-level: 2
+// js2-basic-offset: 2
 // End:
