@@ -1,6 +1,4 @@
-(function(angular) {'use strict';
-
-// declare all the module
+(function(angular) {// declare all the module
 angular.module('kendo.directives', []);
 angular.module('kendo.directives', [], ['$provide', function($provide){
 
@@ -190,6 +188,7 @@ angular.module('kendo.directives').factory('widgetFactory', ['$parse', '$log', '
 }]);
 
 angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory', '$timeout', '$parse',
+
   function(widgetFactory, $timeout, $parse) {
 
     function exposeWidget(widget, scope, attrs, kendoWidget) {
@@ -282,20 +281,38 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
                 widget.value(ngModel.$viewValue || null);
               }
 
-              // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
-              widget.bind("change", function(e) {
-                if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
-                  ngModel.$setViewValue(widget.value());
-                } else {
-                  scope.$apply(function() {
-                    ngModel.$setViewValue(widget.value());
-                  });
-                }
-              });
+              // In order to be able to update the angular scope objects, 
+              // we need to know when the change event is fired for a Kendo UI Widget.
+              bind(widget, scope, ngModel);
             }
           });
         }
       };
+    };
+
+    // some widgets change their value with more than one event
+    var changeEvents = {
+      NumericTextBox: [ 'change', 'spin' ]
+    };
+
+    // bind to any events that might signify a value change on the widget
+    var bind = function(widget, scope, ngModel) {
+      
+      var role = widget.options.name;
+      var events = changeEvents[role]; 
+
+      angular.forEach(events, function(value) {
+        widget.bind(value, function(e) {
+          // TODO: Why are we doing this apply/digest check?
+          if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
+            ngModel.$setViewValue(widget.value());
+          } else {
+            scope.$apply(function() {
+              ngModel.$setViewValue(widget.value());
+            });
+          }
+        });
+      });
     };
 
     return {
