@@ -1,6 +1,4 @@
-(function(angular) {'use strict';
-
-// declare all the module
+(function(angular) {// declare all the module
 angular.module('kendo.directives', []);
 angular.module('kendo.directives', [], ['$provide', function($provide){
 
@@ -293,11 +291,11 @@ angular.module('kendo.directives').factory('directiveFactory', ['widgetFactory',
     };
 
     // some widgets change their value with more than one event
-    
     var changeEvents = {
       NumericTextBox: [ 'change', 'spin' ]
     };
 
+    // bind to any events that might signify a value change on the widget
     var bind = function(widget, scope, ngModel) {
       
       var role = widget.options.name;
