@@ -11,13 +11,7 @@ files = [
   'test/components/angular/angular.js',
   'test/components/angular-mocks/angular-mocks.js',
   'test/components/kendo-ui/js/kendo.web.min.js',
-  'src/main.js',
-  'src/services/widget.js',
-  'src/services/kendoDecorator.js',
-  'src/factories/widget.js',
-  'src/factories/directive.js',
-  'src/directives/widgets.js',
-  'src/directives/dataSource.js',
+  'angular-kendo.js',
   'test/web/*Spec.js' 
 ];
 
