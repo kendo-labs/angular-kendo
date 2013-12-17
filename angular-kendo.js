@@ -253,7 +253,7 @@
       function makeValue(val) {
         if (val == null) return null;
         if (typeof val == "string") {
-          if (/^[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)$/) {
+          if (/^[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)$/.test(val)) {
             return parseFloat(val);
           }
         }
