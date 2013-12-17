@@ -1,4 +1,4 @@
-(function(angular) {
+(function(angular, $) {
 
   var module = angular.module('kendo.directives', []),
                parse, timeout, compile, log;
@@ -29,7 +29,7 @@
         // // Keep the element's data up-to-date with changes.
         scope.$watch(attrs.kDataSource, function(mew, old){
           if(mew !== old) {
-            element.data('$kendoDataSource', 
+            element.data('$kendoDataSource',
               toDataSource(type, mew)
             );
           }
@@ -69,33 +69,33 @@
           optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
 
           if( match[1] ) {
-            
+
             fn = parse(attr.value);
 
             options[optionName] = function(e) {
-              
+
               if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
-            
+
                 fn({kendoEvent: e});
-            
+
               } else {
-            
+
                 scope.$apply(function() {
-            
+
                   fn(scope, {kendoEvent: e});
-            
+
                 });
               }
             };
 
           } else {
-            
+
             options[optionName] = angular.copy(scope.$eval(attr.value));
-            
+
             if( options[optionName] === undefined && attr.value.match(/^\w*$/) ) {
 
               log.warn(widget + '\'s ' + attr.name + ' attribute resolved to undefined. Maybe you meant to use a string literal like: \'' + attr.value + '\'?');
-            
+
             }
           }
         }
@@ -103,9 +103,7 @@
 
       var gatherOptions = function() {
 
-        var options;
-
-        options = angular.element.extend(true, {}, scope.$eval(attrs.kOptions));
+        var options = angular.extend({}, scope.$eval(attrs.kOptions));
 
         $.each(attrs, function(name, value) {
           processAttr(options, { name: name, value: value });
@@ -136,7 +134,7 @@
           spackle[role](scope, element, options, attrs);
         }
 
-        return element[widget](options).data(widget);
+        return $(element)[widget](options).data(widget);
 
       };
 
@@ -158,12 +156,12 @@
         // Creating a scope for each row ensures you don't leak scopes when the
         // kendo widget regenerates the dom on pagination for example.
         rows.each(function(index, row) {
-          
+
           var rowScope = scope.$new();
-          
+
           // provide index of the row using the same $index var as ngRepeat
           rowScope.$index = index;
-          
+
           // provide the data object for that row in the scope
           rowScope.dataItem = grid.dataItem(row);
 
@@ -185,7 +183,7 @@
       };
 
       options.change = function(e) {
-        
+
         var cell, multiple, locals = { kendoEvent: e }, elems, items, columns, colIdx;
         if( angular.isString(options.selectable) ) {
           cell = options.selectable.indexOf('cell') !== -1;
@@ -272,7 +270,7 @@
           link: function(scope, element, attrs, ngModel) {
 
             timeout(function() {
-              
+
               var widget = factories.widget.create(scope, element, attrs, role);
 
               exposeWidget(widget, scope, attrs, role);
@@ -322,7 +320,7 @@
                     });
                   }
                 });
-              }              
+              }
             });
           }
         };
@@ -333,7 +331,7 @@
       };
     }
   ]);
-  
+
 
   // create directives for every widget.
   angular.forEach([ kendo.ui, kendo.dataviz && kendo.dataviz.ui ], function(namespace) {
@@ -350,9 +348,9 @@
     });
   });
 
-}(angular));
+}(angular, jQuery));
 
 // Local Variables:
 // js-indent-level: 2
 // js2-basic-offset: 2
-  // End:
+// End:
