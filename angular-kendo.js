@@ -302,12 +302,12 @@
                 // Angular will invoke $render when the view needs to be updated with the view value.
                 ngModel.$render = function() {
                   // Update the widget with the view value.
-                  widget.value(ngModel.$viewValue || null);
+                  widget.value(ngModel.$viewValue != null ? ngModel.$viewValue : null);
                 };
 
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
                 if (widget.value !== undefined) {
-                  widget.value(ngModel.$viewValue || null);
+                  widget.value(ngModel.$viewValue != null ? ngModel.$viewValue : null);
                 }
 
                 // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
