@@ -250,6 +250,16 @@
       var $timeoutPromise = null;
       var unsetTimeoutPromise = function() { $timeoutPromise = null; };
 
+      function makeValue(val) {
+        if (val == null) return null;
+        if (typeof val == "string") {
+          if (/^[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)$/) {
+            return parseFloat(val);
+          }
+        }
+        return val;
+      }
+
       var create = function(role) {
 
         return {
@@ -302,12 +312,12 @@
                 // Angular will invoke $render when the view needs to be updated with the view value.
                 ngModel.$render = function() {
                   // Update the widget with the view value.
-                  widget.value(ngModel.$viewValue != null ? ngModel.$viewValue : null);
+                  widget.value(makeValue(ngModel.$viewValue));
                 };
 
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
                 if (widget.value !== undefined) {
-                  widget.value(ngModel.$viewValue != null ? ngModel.$viewValue : null);
+                  widget.value(makeValue(ngModel.$viewValue));
                 }
 
                 // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
