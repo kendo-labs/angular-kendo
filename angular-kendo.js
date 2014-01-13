@@ -26,14 +26,36 @@
         // // directive and provide this data on the element.
         element.data('$kendoDataSource', ds);
 
-        // // Keep the element's data up-to-date with changes.
+        // Keep the element's data up-to-date with changes.
         scope.$watch(attrs.kDataSource, function(mew, old){
+          var role;
+          var widget;
+          var widgetType;
+
           if(mew !== old) {
             element.data('$kendoDataSource',
-              toDataSource(type, mew)
+              toDataSource(mew, type)
             );
+
+            // update the widget if any
+            // try getting widget from role attr
+            role = element.data("role");
+
+            if (role) {
+              widgetType = role.charAt(0).toUpperCase() + role.slice(1);
+              widget = element.data("kendo" + widgetType);
+            }
+
+            // if no role attr, try kendo.widgetInstance
+            if (!widget) {
+              widget = kendo.widgetInstance(element, kendo.ui);
+            }
+
+            if (widget && typeof widget.setDataSource === "function") {
+              widget.setDataSource(element.data('$kendoDataSource'));
+            }
           }
-        });
+        }, true);
 
         return ds;
 
