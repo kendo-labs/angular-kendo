@@ -17,26 +17,26 @@
       };
 
       var init = function(scope, element, attrs, role) {
-
         var type = types[role] || 'DataSource';
-
         var ds = toDataSource(scope.$eval(attrs.kDataSource), type);
 
-        // // Set $kendoDataSource in the element's data. 3rd parties can define their own dataSource creation
-        // // directive and provide this data on the element.
+        // Set $kendoDataSource in the element's data. 3rd parties can define their own dataSource creation
+        // directive and provide this data on the element.
         element.data('$kendoDataSource', ds);
 
-        // // Keep the element's data up-to-date with changes.
+        // Keep the element's data up-to-date with changes.
         scope.$watch(attrs.kDataSource, function(mew, old){
-          if(mew !== old) {
-            element.data('$kendoDataSource',
-              toDataSource(type, mew)
-            );
+          if (mew !== old) {
+            var ds = toDataSource(mew, type);
+            element.data('$kendoDataSource', ds);
+            var widget = kendo.widgetInstance($(element));
+            if (widget && typeof widget.setDataSource == "function") {
+              widget.setDataSource(ds);
+            }
           }
         });
 
         return ds;
-
       };
 
       return { create: init };
@@ -44,9 +44,7 @@
     }()),
 
     widget: (function() {
-
       var scope, element, attrs, widget;
-
       var ignoredAttributes = {
         kDataSource: true,
         kOptions: true,
@@ -54,69 +52,45 @@
       };
 
       var processAttr = function(options, attr) {
-
         var exp = /k(On)?([A-Z].*)/,
             match, optionName, fn;
 
         if (ignoredAttributes[attr.name]) {
           return;
         }
-
         match = attr.name.match(exp);
-
         if( match ) {
-
           optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
-
           if( match[1] ) {
-
             fn = parse(attr.value);
-
             options[optionName] = function(e) {
-
               if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
-
                 fn({kendoEvent: e});
-
               } else {
-
                 scope.$apply(function() {
-
                   fn(scope, {kendoEvent: e});
-
                 });
               }
             };
-
           } else {
-
             options[optionName] = angular.copy(scope.$eval(attr.value));
-
             if( options[optionName] === undefined && attr.value.match(/^\w*$/) ) {
-
               log.warn(widget + '\'s ' + attr.name + ' attribute resolved to undefined. Maybe you meant to use a string literal like: \'' + attr.value + '\'?');
-
             }
           }
         }
       };
 
       var gatherOptions = function() {
-
         var options = angular.extend({}, scope.$eval(attrs.kOptions));
-
         $.each(attrs, function(name, value) {
           processAttr(options, { name: name, value: value });
         });
-
         options.dataSource = element.inheritedData('$kendoDataSource') || options.dataSource;
-
         return options;
-
       };
 
       var init = function($scope, $element, $attrs, $widget) {
-
         scope = $scope;
         element = $element;
         widget = $widget;
@@ -135,7 +109,6 @@
         }
 
         return $(element)[widget](options).data(widget);
-
       };
 
       return { create: init };
