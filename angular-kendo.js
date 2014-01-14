@@ -25,6 +25,22 @@
         element.data('$kendoDataSource', ds);
 
         // Keep the element's data up-to-date with changes.
+
+        // recursive watcher.  triggers when individual property
+        // changed.  we trigger "change" on our own datasource so that
+        // the widget will update.
+        scope.$watch(attrs.kDataSource, function(mew, old){
+          if (mew !== old) {
+            var widget = kendo.widgetInstance($(element));
+            if (widget) {
+              var ds = widget.dataSource;
+              if (ds)
+                ds.trigger("change");
+            }
+          }
+        }, true);
+
+        // not recursive -- this triggers when the whole data source changed
         scope.$watch(attrs.kDataSource, function(mew, old){
           if (mew !== old) {
             var ds = toDataSource(mew, type);
