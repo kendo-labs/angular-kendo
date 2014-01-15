@@ -310,8 +310,8 @@
                 }
 
                 // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
-                widget.bind("change", function(e) {
-                  if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
+                widget.bind([ "change", "dataBound" ], function(e) {
+                  if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
                     ngModel.$setViewValue(widget.value());
                   } else {
                     scope.$apply(function() {
