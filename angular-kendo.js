@@ -1,7 +1,7 @@
 (function(angular, $) {
 
-  var module = angular.module('kendo.directives', []),
-               parse, timeout, compile, log;
+  var module = angular.module('kendo.directives', []);
+  var parse, timeout, compile, log;
 
   // The following disables AngularJS built-in directives for <input> fields
   // when a Kendo widget is defined.  The reason we have to do this is:
@@ -62,7 +62,7 @@
         // the widget will update.
         scope.$watch(attrs.kDataSource, function(mew, old){
           if (mew !== old) {
-            var widget = kendo.widgetInstance($(element));
+            var widget = kendoWidgetInstance($(element));
             if (widget) {
               var ds = widget.dataSource;
               if (ds)
@@ -76,7 +76,7 @@
           if (mew !== old) {
             var ds = toDataSource(mew, type);
             element.data('$kendoDataSource', ds);
-            var widget = kendo.widgetInstance($(element));
+            var widget = kendoWidgetInstance($(element));
             if (widget && typeof widget.setDataSource == "function") {
               widget.setDataSource(ds);
             }
@@ -99,8 +99,8 @@
       };
 
       var processAttr = function(options, attr) {
-        var exp = /k(On)?([A-Z].*)/,
-            match, optionName, fn;
+        var exp = /k(On)?([A-Z].*)/;
+        var match, optionName, fn;
 
         if (ignoredAttributes[attr.name]) {
           return;
@@ -357,7 +357,6 @@
     }
   ]);
 
-
   // create directives for every widget.
   angular.forEach([ kendo.ui, kendo.dataviz && kendo.dataviz.ui ], function(namespace) {
     angular.forEach(namespace, function(value, key) {
@@ -372,6 +371,13 @@
       }
     });
   });
+
+  function kendoWidgetInstance(el) {
+    el = $(el);
+    return kendo.widgetInstance(el, kendo.ui) ||
+      kendo.widgetInstance(el, kendo.mobile.ui) ||
+      kendo.widgetInstance(el, kendo.dataviz.ui);
+  }
 
 }(angular, jQuery));
 
