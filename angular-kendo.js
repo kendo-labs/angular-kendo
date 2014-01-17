@@ -293,58 +293,88 @@
           link: function(scope, element, attrs, ngModel) {
 
             timeout(function() {
-
               var widget = factories.widget.create(scope, element, attrs, role);
-
-              exposeWidget(widget, scope, attrs, role);
 
               // if k-rebind attribute is provided, rebind the kendo widget when
               // the watched value changes
-              if( attrs.kRebind ) {
+              if (attrs.kRebind) {
                 // watch for changes on the expression passed in the k-rebind attribute
                 scope.$watch(attrs.kRebind, function(newValue, oldValue) {
-                  if(newValue !== oldValue) {
+                  if (newValue !== oldValue) {
                     // create the kendo widget and bind it to the element.
-                    widget = factories.widget.create(scope, element, attrs, role);
-                    exposeWidget(widget, scope, attrs, role);
+                    try {
+                      /****************************************************************
+                       // XXX: this is a gross hack that might not even work with all
+                       // widgets.  we need to destroy the current widget and get its
+                       // wrapper element out of the DOM, then make the original element
+                       // visible so we can initialize a new widget on it.
+                       //
+                       // kRebind is probably impossible to get right at the moment.
+                       ****************************************************************/
+                      var _wrapper = $(widget.wrapper)[0];
+                      var _element = $(widget.element)[0];
+                      widget.destroy();
+                      if (_wrapper && _element) {
+                        $(_element).css("display", "");
+                        _wrapper.parentNode.replaceChild(_element, _wrapper);
+                      }
+                      widget = factories.widget.create(scope, element, attrs, role);
+                      setupBindings();
+                    } catch(ex) {
+                      console.error(ex);
+                      console.error(ex.stack);
+                    }
                   }
                 }, true); // watch for object equality. Use native or simple values.
               }
 
-              // Cleanup after ourselves
-              scope.$on( '$destroy', function() {
-                widget.destroy();
-              });
+              setupBindings();
 
-              // if ngModel is on the element, we setup bi-directional data binding
-              if (ngModel) {
-                if( !widget.value ) {
-                  throw new Error('ng-model used but ' + role + ' does not define a value accessor');
+              var prev_destroy = null;
+              function setupBindings() {
+                exposeWidget(widget, scope, attrs, role);
+
+                // Cleanup after ourselves
+                if (prev_destroy) {
+                  prev_destroy();
                 }
+                prev_destroy = scope.$on("$destroy", function() {
+                  widget.destroy();
+                });
 
-                // Angular will invoke $render when the view needs to be updated with the view value.
-                ngModel.$render = function() {
-                  // Update the widget with the view value.
-                  widget.value(makeValue(ngModel.$viewValue));
-                };
+                // 2 way binding: ngModel <-> widget.value()
+                if (ngModel) {
+                  if (!widget.value) {
+                    throw new Error('ng-model used but ' + role + ' does not define a value accessor');
+                  }
 
-                // if the model value is undefined, then we set the widget value to match ( == null/undefined )
-                if (widget.value !== undefined) {
-                  widget.value(makeValue(ngModel.$viewValue));
-                }
+                  // Angular will invoke $render when the view needs to be updated with the view value.
+                  ngModel.$render = function() {
+                    // Update the widget with the view value.
+                    widget.value(makeValue(ngModel.$viewValue));
+                  };
 
-                // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
-                function onChange(e) {
-                  if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
-                    ngModel.$setViewValue(widget.value());
-                  } else {
-                    scope.$apply(function() {
+                  // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
+                  function onChange(e) {
+                    if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
                       ngModel.$setViewValue(widget.value());
-                    });
+                    } else {
+                      scope.$apply(function() {
+                        ngModel.$setViewValue(widget.value());
+                      });
+                    }
+                  }
+                  bindBefore(widget, "change", onChange);
+                  bindBefore(widget, "dataBound", onChange);
+
+                  // if the model value is undefined, then we set the widget value to match ( == null/undefined )
+                  if (ngModel.$viewValue !== undefined) {
+                    widget.value(makeValue(ngModel.$viewValue));
+                  }
+                  if (widget.value() !== undefined) {
+                    ngModel.$setViewValue(widget.value());
                   }
                 }
-                bindBefore(widget, "change", onChange);
-                bindBefore(widget, "dataBound", onChange);
               }
             });
           }
