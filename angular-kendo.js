@@ -18,7 +18,7 @@
   // https://github.com/kendo-labs/angular-kendo/issues/135
   // https://github.com/kendo-labs/angular-kendo/issues/152
   module.config([ "$provide", function($provide){
-    $provide.decorator("inputDirective", function($delegate){
+    $provide.decorator("inputDirective", [ "$delegate", function($delegate){
       var orig_compile = $delegate[0].compile;
       $delegate[0].compile = function(element, attrs) {
         for (var i in attrs) {
@@ -31,7 +31,7 @@
         return orig_compile.apply(this, arguments);
       };
       return $delegate;
-    });
+    }]);
   }]);
 
   var factories = {
