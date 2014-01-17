@@ -168,73 +168,71 @@
 
     Grid: function(scope, element, options, attrs) {
 
-      this.bind({
-        dataBound: function() {
-          var grid = element.data('kendoGrid');
-          var rows = grid.tbody.children('tr');
+      bindBefore(this, "dataBound", function() {
+        var grid = element.data('kendoGrid');
+        var rows = grid.tbody.children('tr');
 
-          // Here we mimic ng-repeat in that we create a scope for each row that we can then destroy in dataBinding event.
-          // Creating a scope for each row ensures you don't leak scopes when the
-          // kendo widget regenerates the dom on pagination for example.
-          rows.each(function(index, row) {
-            var rowScope = scope.$new();
-            // provide index of the row using the same $index var as ngRepeat
-            rowScope.$index = index;
-            // provide the data object for that row in the scope
-            rowScope.dataItem = grid.dataItem(row);
-            // compile the row. You can now use angular templates in that row.
-            compile(row)(rowScope);
-          });
-        },
+        // Here we mimic ng-repeat in that we create a scope for each row that we can then destroy in dataBinding event.
+        // Creating a scope for each row ensures you don't leak scopes when the
+        // kendo widget regenerates the dom on pagination for example.
+        rows.each(function(index, row) {
+          var rowScope = scope.$new();
+          // provide index of the row using the same $index var as ngRepeat
+          rowScope.$index = index;
+          // provide the data object for that row in the scope
+          rowScope.dataItem = grid.dataItem(row);
+          // compile the row. You can now use angular templates in that row.
+          compile(row)(rowScope);
+        });
+      });
 
-        dataBinding: function() {
-          var rows = element.data('kendoGrid').tbody.children('tr.ng-scope');
-          // here we need to destroy the scopes that we created in dataBound handler to make sure no scopes are leaked.
-          rows.each(function(index, rowElement) {
-            var rowScope = angular.element(rowElement).scope();
-            // destroy the scope
-            rowScope.$destroy();
-          });
-        },
+      bindBefore(this, "dataBinding", function() {
+        var rows = element.data('kendoGrid').tbody.children('tr.ng-scope');
+        // here we need to destroy the scopes that we created in dataBound handler to make sure no scopes are leaked.
+        rows.each(function(index, rowElement) {
+          var rowScope = angular.element(rowElement).scope();
+          // destroy the scope
+          rowScope.$destroy();
+        });
+      });
 
-        change: function(e) {
-          var cell, multiple, locals = { kendoEvent: e }, elems, items, columns, colIdx;
+      bindBefore(this, "change", function(e) {
+        var cell, multiple, locals = { kendoEvent: e }, elems, items, columns, colIdx;
 
-          if( angular.isString(options.selectable) ) {
-            cell = options.selectable.indexOf('cell') !== -1;
-            multiple = options.selectable.indexOf('multiple') !== -1;
-          }
+        if( angular.isString(options.selectable) ) {
+          cell = options.selectable.indexOf('cell') !== -1;
+          multiple = options.selectable.indexOf('multiple') !== -1;
+        }
 
-          elems = locals.selected = this.select();
-          items = locals.data = [];
-          columns = locals.columns = [];
-          for (var i = 0; i < elems.length; i++) {
-            var dataItem = this.dataItem(cell ? elems[i].parentNode : elems[i]);
-            if( cell ) {
-              if (angular.element.inArray(dataItem, items) < 0) {
-                items.push(dataItem);
-              }
-              colIdx = angular.element(elems[i]).index();
-              if (angular.element.inArray(colIdx, columns) < 0 ) {
-                columns.push(colIdx);
-              }
-            } else {
+        elems = locals.selected = this.select();
+        items = locals.data = [];
+        columns = locals.columns = [];
+        for (var i = 0; i < elems.length; i++) {
+          var dataItem = this.dataItem(cell ? elems[i].parentNode : elems[i]);
+          if( cell ) {
+            if (angular.element.inArray(dataItem, items) < 0) {
               items.push(dataItem);
             }
+            colIdx = angular.element(elems[i]).index();
+            if (angular.element.inArray(colIdx, columns) < 0 ) {
+              columns.push(colIdx);
+            }
+          } else {
+            items.push(dataItem);
           }
-
-          if( !multiple ) {
-            locals.data = items[0];
-            locals.selected = elems[0];
-          }
-
-          // Make sure this gets invoked in the angularjs lifecycle.
-          scope.$apply(function() {
-            // Invoke the parsed expression with a kendoEvent local that the expression can use.
-            var changeExpFn = parse(attrs.kOnChange);
-            changeExpFn(scope, locals);
-          });
         }
+
+        if( !multiple ) {
+          locals.data = items[0];
+          locals.selected = elems[0];
+        }
+
+        // Make sure this gets invoked in the angularjs lifecycle.
+        scope.$apply(function() {
+          // Invoke the parsed expression with a kendoEvent local that the expression can use.
+          var changeExpFn = parse(attrs.kOnChange);
+          changeExpFn(scope, locals);
+        });
       });
 
     }
@@ -336,7 +334,7 @@
                 }
 
                 // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
-                widget.bind([ "change", "dataBound" ], function(e) {
+                function onChange(e) {
                   if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
                     ngModel.$setViewValue(widget.value());
                   } else {
@@ -344,7 +342,9 @@
                       ngModel.$setViewValue(widget.value());
                     });
                   }
-                });
+                }
+                bindBefore(widget, "change", onChange);
+                bindBefore(widget, "dataBound", onChange);
               }
             });
           }
@@ -377,6 +377,15 @@
     return kendo.widgetInstance(el, kendo.ui) ||
       kendo.widgetInstance(el, kendo.mobile.ui) ||
       kendo.widgetInstance(el, kendo.dataviz.ui);
+  }
+
+  // XXX: using internal API (Widget::_events).  Seems to be no way in Kendo to
+  // insert a handler to be executed before any existing ones, hence this hack.
+  // Use for a single event/handler combination.
+  function bindBefore(widget, name, handler, one) {
+    widget.bind.call(widget, name, handler, one);
+    var a = widget._events[name];
+    a.unshift(a.pop());
   }
 
 }(angular, jQuery));
