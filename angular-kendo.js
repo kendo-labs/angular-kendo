@@ -168,7 +168,7 @@
 
     Grid: function(scope, element, options, attrs) {
 
-      bindBefore(this, "dataBound", function() {
+      this.bind("dataBound", function() {
         var grid = element.data('kendoGrid');
         var rows = grid.tbody.children('tr');
 
@@ -186,7 +186,7 @@
         });
       });
 
-      bindBefore(this, "dataBinding", function() {
+      this.bind("dataBinding", function() {
         var rows = element.data('kendoGrid').tbody.children('tr.ng-scope');
         // here we need to destroy the scopes that we created in dataBound handler to make sure no scopes are leaked.
         rows.each(function(index, rowElement) {
@@ -196,7 +196,7 @@
         });
       });
 
-      bindBefore(this, "change", function(e) {
+      this.bind("change", function(e) {
         var cell, multiple, locals = { kendoEvent: e }, elems, items, columns, colIdx;
 
         if( angular.isString(options.selectable) ) {
