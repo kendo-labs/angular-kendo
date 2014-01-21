@@ -99,29 +99,31 @@
       };
 
       var processAttr = function(options, attr) {
-        var exp = /k(On)?([A-Z].*)/;
         var match, optionName, fn;
 
         if (ignoredAttributes[attr.name]) {
           return;
         }
-        match = attr.name.match(exp);
-        if( match ) {
+        if (widget == "kendoGrid" && attr.name == "kOnChange") {
+          return;               // handled in spackle.Grid :-\
+        }
+        match = attr.name.match(/k(On)?([A-Z].*)/);
+        if (match) {
           optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
-          if( match[1] ) {
+          if (match[1]) {
             fn = parse(attr.value);
             options[optionName] = function(e) {
-              if(scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
-                fn({kendoEvent: e});
+              if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
+                fn({ kendoEvent: e });
               } else {
                 scope.$apply(function() {
-                  fn(scope, {kendoEvent: e});
+                  fn(scope, { kendoEvent: e });
                 });
               }
             };
           } else {
             options[optionName] = angular.copy(scope.$eval(attr.value));
-            if( options[optionName] === undefined && attr.value.match(/^\w*$/) ) {
+            if (options[optionName] === undefined && attr.value.match(/^\w*$/)) {
               log.warn(widget + '\'s ' + attr.name + ' attribute resolved to undefined. Maybe you meant to use a string literal like: \'' + attr.value + '\'?');
             }
           }
@@ -168,8 +170,8 @@
 
     Grid: function(scope, element, options, attrs) {
 
-      this.bind("dataBound", function() {
-        var grid = element.data('kendoGrid');
+      bindBefore(this, "dataBound", function() {
+        var grid = this;
         var rows = grid.tbody.children('tr');
 
         // Here we mimic ng-repeat in that we create a scope for each row that we can then destroy in dataBinding event.
@@ -186,8 +188,8 @@
         });
       });
 
-      this.bind("dataBinding", function() {
-        var rows = element.data('kendoGrid').tbody.children('tr.ng-scope');
+      this.bind(this, "dataBinding", function() {
+        var rows = this.tbody.children('tr.ng-scope');
         // here we need to destroy the scopes that we created in dataBound handler to make sure no scopes are leaked.
         rows.each(function(index, rowElement) {
           var rowScope = angular.element(rowElement).scope();
@@ -196,10 +198,10 @@
         });
       });
 
-      this.bind("change", function(e) {
+      bindBefore(this, "change", function(e) {
         var cell, multiple, locals = { kendoEvent: e }, elems, items, columns, colIdx;
 
-        if( angular.isString(options.selectable) ) {
+        if (angular.isString(options.selectable)) {
           cell = options.selectable.indexOf('cell') !== -1;
           multiple = options.selectable.indexOf('multiple') !== -1;
         }
@@ -209,7 +211,7 @@
         columns = locals.columns = [];
         for (var i = 0; i < elems.length; i++) {
           var dataItem = this.dataItem(cell ? elems[i].parentNode : elems[i]);
-          if( cell ) {
+          if (cell) {
             if (angular.element.inArray(dataItem, items) < 0) {
               items.push(dataItem);
             }
@@ -222,7 +224,7 @@
           }
         }
 
-        if( !multiple ) {
+        if (!multiple) {
           locals.data = items[0];
           locals.selected = elems[0];
         }
