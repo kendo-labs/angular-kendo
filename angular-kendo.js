@@ -153,9 +153,19 @@
           options.dataSource = factories.dataSource.create(scope, element, attrs, role);
         }
 
+        var customize = spackle[role]; // for widgets which need customization (i.e. Grid)
+
+        // could modify options or whatever
+        if (customize && customize.beforeCreate) {
+          customize.beforeCreate(scope, element, options, attrs);
+        }
+
+        // instantiate Widget
         widget = $(element)[widget](options).data(widget);
-        if (spackle[role]) {
-          spackle[role].call(widget, scope, element, options, attrs);
+
+        // could attach more event handlers etc.
+        if (customize && customize.afterCreate) {
+          customize.afterCreate.call(widget, scope, element, options, attrs);
         }
 
         return widget;
@@ -168,76 +178,95 @@
 
   var spackle = {
 
-    Grid: function(scope, element, options, attrs) {
+    Grid: {
 
-      bindBefore(this, "dataBound", function() {
-        var grid = this;
-        var rows = grid.tbody.children('tr');
+      beforeCreate: function(scope, element, options, attrs) {
+        var prev_dataBound = options.dataBound;
 
-        // Here we mimic ng-repeat in that we create a scope for each row that we can then destroy in dataBinding event.
-        // Creating a scope for each row ensures you don't leak scopes when the
-        // kendo widget regenerates the dom on pagination for example.
-        rows.each(function(index, row) {
-          var rowScope = scope.$new();
-          // provide index of the row using the same $index var as ngRepeat
-          rowScope.$index = index;
-          // provide the data object for that row in the scope
-          rowScope.dataItem = grid.dataItem(row);
-          // compile the row. You can now use angular templates in that row.
-          compile(row)(rowScope);
+        // we need to bind this before creating the widget to get the
+        // initial dataBound event.  I'll leave the others in
+        // afterCreate as it feels cleaner.
+        options.dataBound = function(ev) {
+          var grid = this;
+          var rows = grid.tbody.children('tr');
+
+          // Here we mimic ng-repeat in that we create a scope for each row that we can then destroy in dataBinding event.
+          // Creating a scope for each row ensures you don't leak scopes when the
+          // kendo widget regenerates the dom on pagination for example.
+          rows.each(function(index, row) {
+            var rowScope = scope.$new();
+            // provide index of the row using the same $index var as ngRepeat
+            rowScope.$index = index;
+            // provide the data object for that row in the scope
+            rowScope.dataItem = grid.dataItem(row);
+            // compile the row. You can now use angular templates in that row.
+            compile(row)(rowScope);
+          });
+
+          // this seems to force refreshing the view.
+          if (scope.$root.$$phase !== "$digest") {
+            scope.$digest();
+          }
+
+          if (prev_dataBound) {
+            return prev_dataBound.apply(grid, arguments);
+          }
+        };
+      },
+
+      afterCreate: function(scope, element, options, attrs) {
+
+        this.bind(this, "dataBinding", function() {
+          var rows = this.tbody.children('tr.ng-scope');
+          // here we need to destroy the scopes that we created in dataBound handler to make sure no scopes are leaked.
+          rows.each(function(index, rowElement) {
+            var rowScope = angular.element(rowElement).scope();
+            // destroy the scope
+            rowScope.$destroy();
+          });
         });
-      });
 
-      this.bind(this, "dataBinding", function() {
-        var rows = this.tbody.children('tr.ng-scope');
-        // here we need to destroy the scopes that we created in dataBound handler to make sure no scopes are leaked.
-        rows.each(function(index, rowElement) {
-          var rowScope = angular.element(rowElement).scope();
-          // destroy the scope
-          rowScope.$destroy();
-        });
-      });
+        bindBefore(this, "change", function(e) {
+          var cell, multiple, locals = { kendoEvent: e }, elems, items, columns, colIdx;
 
-      bindBefore(this, "change", function(e) {
-        var cell, multiple, locals = { kendoEvent: e }, elems, items, columns, colIdx;
+          if (angular.isString(options.selectable)) {
+            cell = options.selectable.indexOf('cell') !== -1;
+            multiple = options.selectable.indexOf('multiple') !== -1;
+          }
 
-        if (angular.isString(options.selectable)) {
-          cell = options.selectable.indexOf('cell') !== -1;
-          multiple = options.selectable.indexOf('multiple') !== -1;
-        }
-
-        elems = locals.selected = this.select();
-        items = locals.data = [];
-        columns = locals.columns = [];
-        for (var i = 0; i < elems.length; i++) {
-          var dataItem = this.dataItem(cell ? elems[i].parentNode : elems[i]);
-          if (cell) {
-            if (angular.element.inArray(dataItem, items) < 0) {
+          elems = locals.selected = this.select();
+          items = locals.data = [];
+          columns = locals.columns = [];
+          for (var i = 0; i < elems.length; i++) {
+            var dataItem = this.dataItem(cell ? elems[i].parentNode : elems[i]);
+            if (cell) {
+              if (angular.element.inArray(dataItem, items) < 0) {
+                items.push(dataItem);
+              }
+              colIdx = angular.element(elems[i]).index();
+              if (angular.element.inArray(colIdx, columns) < 0 ) {
+                columns.push(colIdx);
+              }
+            } else {
               items.push(dataItem);
             }
-            colIdx = angular.element(elems[i]).index();
-            if (angular.element.inArray(colIdx, columns) < 0 ) {
-              columns.push(colIdx);
-            }
-          } else {
-            items.push(dataItem);
           }
-        }
 
-        if (!multiple) {
-          locals.data = items[0];
-          locals.selected = elems[0];
-        }
+          if (!multiple) {
+            locals.data = items[0];
+            locals.selected = elems[0];
+          }
 
-        // Make sure this gets invoked in the angularjs lifecycle.
-        scope.$apply(function() {
-          // Invoke the parsed expression with a kendoEvent local that the expression can use.
-          var changeExpFn = parse(attrs.kOnChange);
-          changeExpFn(scope, locals);
+          // Make sure this gets invoked in the angularjs lifecycle.
+          scope.$apply(function() {
+            // Invoke the parsed expression with a kendoEvent local that the expression can use.
+            var changeExpFn = parse(attrs.kOnChange);
+            changeExpFn(scope, locals);
+          });
         });
-      });
-
+      }
     }
+
   };
 
   module.factory('directiveFactory', ['$timeout', '$parse', '$compile', '$log',
