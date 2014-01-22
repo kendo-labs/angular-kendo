@@ -407,6 +407,61 @@
                   }
                 }
               }
+
+              // mutation observers — propagate the original
+              // element's class to the widget wrapper.
+              (function(){
+
+                if (!(window.MutationObserver
+                      && widget.wrapper
+                      && $(widget.wrapper)[0] !== $(element)[0])) {
+                  return;
+                }
+
+                var prevClassList = [].slice.call($(element)[0].classList);
+
+                var mo = new MutationObserver(function(changes, mo){
+                  suspend();    // make sure we don't trigger a loop
+
+                  changes.forEach(function(chg){
+                    var w = $(widget.wrapper)[0];
+                    switch (chg.attributeName) {
+
+                     case "class":
+                      // sync classes to the wrapper element
+                      var currClassList = [].slice.call(chg.target.classList);
+                      currClassList.forEach(function(cls){
+                        if (prevClassList.indexOf(cls) < 0) {
+                          w.classList.add(cls);
+                        }
+                      });
+                      prevClassList.forEach(function(cls){
+                        if (currClassList.indexOf(cls) < 0) {
+                          w.classList.remove(cls);
+                        }
+                      });
+                      prevClassList = currClassList;
+                      break;
+
+                     case "disabled":
+                      widget.enable(!$(chg.target).attr("disabled"));
+                      break;
+                    }
+                  });
+
+                  resume();
+                });
+
+                function suspend() {
+                  mo.disconnect();
+                }
+                function resume() {
+                  mo.observe($(element)[0], { attributes: true });
+                }
+                resume();
+                bindBefore(widget, "destroy", suspend);
+              })();
+
             });
           }
         };
