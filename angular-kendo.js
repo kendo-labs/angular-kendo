@@ -444,7 +444,15 @@
                       break;
 
                      case "disabled":
-                      widget.enable(!$(chg.target).attr("disabled"));
+                      if (typeof widget.enable == "function") {
+                        widget.enable(!$(chg.target).attr("disabled"));
+                      }
+                      break;
+
+                     case "readonly":
+                      if (typeof widget.readonly == "function") {
+                        widget.readonly(!!$(chg.target).attr("readonly"));
+                      }
                       break;
                     }
                   });
