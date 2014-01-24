@@ -2,7 +2,7 @@
   <h1>Getting Started</h1>
 </div>
 
-<p>Kendo UI is a comprehensive HTML5/JavaScript framework for modern web and mobile app development.  It consists of 17 widgets for web, a core framework, a mobile suite, and a complete Data Vizualization solution.</p>
+<p>Kendo UI is a comprehensive HTML5/JavaScript framework for modern web and mobile app development.  It consists of 17 widgets for web, a core framework, a mobile suite, and a complete Data Visualization solution.</p>
 
 <p>The Angular Kendo project aims to provide deep integration between Kendo UI Web/DataViz and AngularJS.</p>
 
@@ -32,7 +32,7 @@ var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo.directives&#
 
 <h2><span id="simple"></span>Basic Use</h2>
 
-<p>Any widget can be created using a directive (attribute or class). There is one directive per Kendo UI widget and they are named using a dash-separated version of the Kendo UI widget name. For example, the <code>DropDownList</code> Kendo UI widget becomes a <code>kendo-drop-down-list</code> attribute that you can apply on an input element.  The attribute doesn't have to have a value, it just has to be present.</p>
+<p>Any widget can be created using a directive (attribute or class). There is one directive per Kendo UI widget and they are named using a dash-separated version of the Kendo UI widget name. For example, the <code>DropDownList</code> Kendo UI widget becomes a <code>kendo-drop-down-list</code> attribute that you can apply on an input element.  The attribute doesn't have to have a value; it just has to be present.</p>
 
 <h3>Dead Simple Widget Creation</h3>
 
@@ -62,7 +62,7 @@ var app = angular.module(&#039;your-angular-app&#039;, [&#039;kendo.directives&#
 
 <h3>Configuring Widget Options (k- Attributes)</h3>
 
-<p>You can specify any widget configuration attributes with <code>k-</code>attributes.  Your data source should exist in the controller as that is the only place the directive will look for the <code>k-source</code> attribute.  Notice that all strings values <strong>must be quoted with single-quotes</strong> as per AngularJS standards.
+<p>You can specify any widget configuration attributes with <code>k-</code>attributes.  Your data source should exist in the controller, as that is the only place the directive will look for the <code>k-source</code> attribute.  Notice that all strings values <strong>must be quoted with single-quotes</strong> as per AngularJS standards.
 
 <div class="pure-g demo-section">
 
@@ -131,9 +131,9 @@ function HomeCtrl($scope) {
 
 <h3>Binding To Events</h3>
 
-<p>Events can be specified either in markup, or in the options object passed to <code>k-options</code>.  Any events passed to <code>k-options</code> are specified accoding to the <a href="http://docs.kendoui.com/api">Kendo UI API Docs</a>.</p>
+<p>Events can be specified either in markup, or in the options object passed to <code>k-options</code>.  Any events passed to <code>k-options</code> are specified according to the <a href="http://docs.kendoui.com/api">Kendo UI API Docs</a>.</p>
 
-<p>Events specifed in Markup need a <code>k-on</code> prefix and must pass a <code>kendEvent</code> argument.</p>
+<p>Events specified in Markup need a <code>k-on</code> prefix and must pass a <code>kendoEvent</code> argument.</p>
 
 <div class="pure-g demo-section">
   <div class="pure-u-2-3">
@@ -220,14 +220,14 @@ $scope.window = {
 
 <h2>DropDown Lists are great, but what about REAL widgets?</h2>
 
-<p>Kendo UI includes Grids, TreeViews, MultiSelects, ColorPickers - 17 widgets in all and that's not including the complete DataViz suite which includes bar, pie, line, donut, guage charts and much more.</p>
+<p>Kendo UI includes Grids, TreeViews, MultiSelects, ColorPickers - 17 widgets in all, and that's not including the complete DataViz suite - which includes bar, pie, line, donut, gauge charts and much more.</p>
 
 <p>Just for fun, here are a few of those widgets in action:</p>
 
 
 <h2>Grid</h2>
 
-<p>This grid is pageable, sortable, groupable and filterable.  Select A row to see the Angular binding.</p>
+<p>This grid is pageable, sortable, groupable and filterable.  Select a row to see the Angular binding.</p>
 
 <div class="demo-section">
   <div kendo-grid k-data-source="products" k-selectable="'row'"
@@ -248,7 +248,7 @@ $scope.window = {
 
 <h3>DataViz</h3>
 
-<p>Kendo UI Comes with a powerful data vizualizatin suite.  In this demo, move the slider to see the binding to the radial guages.</p>
+<p>Kendo UI Comes with a powerful data visualization suite.  In this demo, move the slider to see the binding to the radial gauges.</p>
 
 <div class="pure-g demo-section">
   <div class="pure-u-1-3">
@@ -267,7 +267,7 @@ $scope.window = {
 
 <h1>Complete Kendo UI Demos</h1>
 
-<p>For A complete list of all widgets and demos, visit the <a href="http://demos.kendoui.com">Kendo UI Demos site</a>.</p>
+<p>For a complete list of all widgets and demos, visit the <a href="http://demos.kendoui.com">Kendo UI Demos site</a>.</p>
 
 <p>Have suggestions for this project?  Something that you don't see that you need?  Please <a href="https://github.com/kendo-labs/angular-kendo/issues">enter an issue</a>, or better yet - <a href="https://github.com/kendo-labs/angular-kendo">fork us</a> and submit a pull request!</p>
 
