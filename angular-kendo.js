@@ -91,59 +91,54 @@
     }()),
 
     widget: (function() {
-      var scope, element, attrs, widget;
       var ignoredAttributes = {
         kDataSource: true,
         kOptions: true,
         kRebind: true
       };
 
-      var processAttr = function(options, attr) {
-        var match, optionName, fn;
+      var init = function(scope, element, attrs, widget) {
 
-        if (ignoredAttributes[attr.name]) {
-          return;
+        function gatherOptions() {
+          var options = angular.extend({}, scope.$eval(attrs.kOptions));
+          $.each(attrs, function(name, value) {
+            processAttr(options, { name: name, value: value });
+          });
+          options.dataSource = element.inheritedData('$kendoDataSource') || options.dataSource;
+          return options;
         }
-        if (widget == "kendoGrid" && attr.name == "kOnChange") {
-          return;               // handled in spackle.Grid :-\
-        }
-        match = attr.name.match(/k(On)?([A-Z].*)/);
-        if (match) {
-          optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
-          if (match[1]) {
-            fn = parse(attr.value);
-            options[optionName] = function(e) {
-              if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
-                fn({ kendoEvent: e });
-              } else {
-                scope.$apply(function() {
-                  fn(scope, { kendoEvent: e });
-                });
+
+        function processAttr(options, attr) {
+          var match, optionName, fn;
+
+          if (ignoredAttributes[attr.name]) {
+            return;
+          }
+          if (widget == "kendoGrid" && attr.name == "kOnChange") {
+            return;               // handled in spackle.Grid :-\
+          }
+          match = attr.name.match(/k(On)?([A-Z].*)/);
+          if (match) {
+            optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
+            if (match[1]) {
+              fn = parse(attr.value);
+              options[optionName] = function(e) {
+                if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
+                  fn({ kendoEvent: e });
+                } else {
+                  scope.$apply(function() {
+                    fn(scope, { kendoEvent: e });
+                  });
+                }
+              };
+            } else {
+              options[optionName] = angular.copy(scope.$eval(attr.value));
+              if (options[optionName] === undefined && attr.value.match(/^\w*$/)) {
+                log.warn(widget + '\'s ' + attr.name + ' attribute resolved to undefined. Maybe you meant to use a string literal like: \'' + attr.value + '\'?');
               }
-            };
-          } else {
-            options[optionName] = angular.copy(scope.$eval(attr.value));
-            if (options[optionName] === undefined && attr.value.match(/^\w*$/)) {
-              log.warn(widget + '\'s ' + attr.name + ' attribute resolved to undefined. Maybe you meant to use a string literal like: \'' + attr.value + '\'?');
             }
           }
         }
-      };
-
-      var gatherOptions = function() {
-        var options = angular.extend({}, scope.$eval(attrs.kOptions));
-        $.each(attrs, function(name, value) {
-          processAttr(options, { name: name, value: value });
-        });
-        options.dataSource = element.inheritedData('$kendoDataSource') || options.dataSource;
-        return options;
-      };
-
-      var init = function($scope, $element, $attrs, $widget) {
-        scope = $scope;
-        element = $element;
-        widget = $widget;
-        attrs = $attrs;
 
         var options = gatherOptions();
         var role = widget.replace('kendo', '');
