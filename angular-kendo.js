@@ -290,10 +290,6 @@
         }
       }
 
-      // $timeout tracking
-      var $timeoutPromise = null;
-      var unsetTimeoutPromise = function() { $timeoutPromise = null; };
-
       function makeValue(val) {
         if (val == null) return null;
         if (typeof val == "string") {
