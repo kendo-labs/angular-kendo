@@ -305,17 +305,19 @@
         return {
           // Parse the directive for attributes and classes
           restrict: 'ACE',
-          transclude: true,
           require: '?ngModel',
           scope: false,
-          controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
 
-            // Make the element's contents available to the kendo widget to allow creating some widgets from existing elements.
-            $transclude(function(clone){
-              $element.append(clone);
-            });
-
-          }],
+          // // XXX: Is this transclusion needed?  We seem to do better without it.
+          // //      https://github.com/kendo-labs/angular-kendo/issues/90
+          //
+          // transclude: true,
+          // controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
+          //   // Make the element's contents available to the kendo widget to allow creating some widgets from existing elements.
+          //   $transclude(function(clone){
+          //     $element.append(clone);
+          //   });
+          // }],
 
           link: function(scope, element, attrs, ngModel) {
 
