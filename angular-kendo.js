@@ -62,7 +62,7 @@
         // the widget will update.
         scope.$watch(attrs.kDataSource, function(mew, old){
           if (mew !== old) {
-            var widget = kendoWidgetInstance($(element));
+            var widget = kendoWidgetInstance(element);
             if (widget) {
               var ds = widget.dataSource;
               if (ds)
@@ -76,7 +76,7 @@
           if (mew !== old) {
             var ds = toDataSource(mew, type);
             element.data('$kendoDataSource', ds);
-            var widget = kendoWidgetInstance($(element));
+            var widget = kendoWidgetInstance(element);
             if (widget && typeof widget.setDataSource == "function") {
               widget.setDataSource(ds);
             }
@@ -327,6 +327,15 @@
           // }],
 
           link: function(scope, element, attrs, ngModel) {
+
+            // we must remove data-kendo-widget-name attribute because
+            // it breaks kendo.widgetInstance; can generate all kinds
+            // of funny issues like
+            // https://github.com/kendo-labs/angular-kendo/issues/167
+
+            // $(element).removeData(role);
+            // console.log($(element).data(role)); // --> not undefined.  now I'm pissed.
+            $(element)[0].removeAttribute("data-" + role.replace(/([A-Z])/g, "-$1"));
 
             timeout(function() {
               var widget = factories.widget.create(scope, element, attrs, role);
