@@ -163,6 +163,18 @@
           customize.afterCreate.call(widget, scope, element, options, attrs);
         }
 
+        // Widgets that have contentLoad events may insert
+        // arbitrary content in the DOM.  Compile it as Angular
+        // templates.
+        bindBefore(widget, "contentLoad", function(ev){
+          //                   tabstrip/panelbar    splitter
+          var contentElement = ev.contentElement || ev.pane;
+          compile(ev.contentElement)(scope);
+          if (scope.$root.$$phase !== "$digest") {
+            scope.$digest();
+          }
+        });
+
         return widget;
       };
 
