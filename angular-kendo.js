@@ -1,5 +1,7 @@
 (function(angular, $) {
 
+  var _UID_ = kendo.attr("uid");
+
   var module = angular.module('kendo.directives', []);
   var parse, timeout, compile, log;
 
@@ -432,13 +434,13 @@
         var widget = ev.sender;
         var dataSource = widget.dataSource;
         widget.items().each(function(){
-          var itemUid = $(this).attr(kendo.attr("uid"));
+          var itemUid = $(this).attr(_UID_);
           var item = dataSource.getByUid(itemUid);
           var itemScope = scope.$new();
           itemScope.dataItem = item;
           compile(this)(itemScope);
         });
-        if (scope.$root.$$phase !== "$digest") {
+        if (!/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
           scope.$digest();
         }
         if (prev_dataBound) {
@@ -452,12 +454,29 @@
   // object.
   function afterCreate(role, scope, element, options, attrs) {
     switch (role) {
-     case "Grid":
      case "ListView":
-      this.bind(this, "dataBinding", function(ev) {
+     case "Grid":
+      // itemChange triggers when a single item is changed through our
+      // DataSource mechanism.
+      this.bind("itemChange", function(ev) {
+        var dataSource = ev.sender.dataSource;
+        var itemElement = ev.item[0];
+        var itemScope = scope.$new();
+        itemScope.dataItem = dataSource.getByUid(ev.item.attr(_UID_));
+        compile(itemElement)(itemScope);
+        if (!/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
+          itemScope.$digest();
+        }
+      });
+
+      // dataBinding triggers when new data is loaded.  We use this to
+      // destroy() each item's scope.
+      this.bind("dataBinding", function(ev) {
         ev.sender.items().each(function(){
-          var rowScope = angular.element(this).scope();
-          rowScope.$destroy();
+          if ($(this).attr(_UID_)) {
+            var rowScope = angular.element(this).scope();
+            rowScope.$destroy();
+          }
         });
       });
 
@@ -476,7 +495,7 @@
         columns = locals.columns = [];
         for (var i = 0; i < elems.length; i++) {
           var item = cell ? elems[i].parentNode : elems[i];
-          var itemUid = $(item).attr(kendo.attr("uid"));
+          var itemUid = $(item).attr(_UID_);
           var dataItem = dataSource.getByUid(itemUid);
           if (cell) {
             if (angular.element.inArray(dataItem, items) < 0) {
@@ -513,7 +532,7 @@
       //                   tabstrip/panelbar    splitter
       var contentElement = ev.contentElement || ev.pane;
       compile(ev.contentElement)(scope);
-      if (scope.$root.$$phase !== "$digest") {
+      if (!/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
         scope.$digest();
       }
     });
