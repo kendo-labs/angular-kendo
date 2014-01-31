@@ -205,6 +205,8 @@
             // console.log($(element).data(role)); // --> not undefined.  now I'm pissed.
             $(element)[0].removeAttribute("data-" + role.replace(/([A-Z])/g, "-$1"));
 
+            var originalElement = $(element)[0].cloneNode(true);
+
             timeout(function() {
               var widget = factories.widget.create(scope, element, attrs, role);
 
@@ -228,8 +230,10 @@
                       var _element = $(widget.element)[0];
                       widget.destroy();
                       if (_wrapper && _element) {
-                        $(_element).css("display", "");
                         _wrapper.parentNode.replaceChild(_element, _wrapper);
+                        var clone = originalElement.cloneNode(true);
+                        $(element).replaceWith(clone);
+                        element = $(clone);
                       }
                       widget = factories.widget.create(scope, element, attrs, role);
                       setupBindings();
