@@ -55,28 +55,12 @@
         // directive and provide this data on the element.
         element.data('$kendoDataSource', ds);
 
-        // Keep the element's data up-to-date with changes.
-
-        // recursive watcher.  triggers when individual property
-        // changed.  we trigger "change" on our own datasource so that
-        // the widget will update.
-        scope.$watch(attrs.kDataSource, function(mew, old){
-          if (mew !== old) {
-            var widget = kendoWidgetInstance($(element));
-            if (widget) {
-              var ds = widget.dataSource;
-              if (ds)
-                ds.trigger("change");
-            }
-          }
-        }, true);
-
         // not recursive -- this triggers when the whole data source changed
         scope.$watch(attrs.kDataSource, function(mew, old){
           if (mew !== old) {
             var ds = toDataSource(mew, type);
             element.data('$kendoDataSource', ds);
-            var widget = kendoWidgetInstance($(element));
+            var widget = kendoWidgetInstance(element);
             if (widget && typeof widget.setDataSource == "function") {
               widget.setDataSource(ds);
             }
@@ -114,8 +98,8 @@
           if (ignoredAttributes[attr.name]) {
             return;
           }
-          if (widget == "kendoGrid" && attr.name == "kOnChange") {
-            return;               // handled in spackle.Grid :-\
+          if (/^kendo(Grid|ListView)$/.test(widget) && attr.name == "kOnChange") {
+            return;             // XXX: handled in afterCreate :-\
           }
           match = attr.name.match(/k(On)?([A-Z].*)/);
           if (match) {
@@ -148,20 +132,9 @@
           options.dataSource = factories.dataSource.create(scope, element, attrs, role);
         }
 
-        var customize = spackle[role]; // for widgets which need customization (i.e. Grid)
-
-        // could modify options or whatever
-        if (customize && customize.beforeCreate) {
-          customize.beforeCreate(scope, element, options, attrs);
-        }
-
-        // instantiate Widget
+        beforeCreate(role, scope, element, options, attrs);
         widget = $(element)[widget](options).data(widget);
-
-        // could attach more event handlers etc.
-        if (customize && customize.afterCreate) {
-          customize.afterCreate.call(widget, scope, element, options, attrs);
-        }
+        afterCreate.call(widget, role, scope, element, options, attrs);
 
         return widget;
       };
@@ -169,99 +142,6 @@
       return { create: init };
 
     }())
-  };
-
-  var spackle = {
-
-    Grid: {
-
-      beforeCreate: function(scope, element, options, attrs) {
-        var prev_dataBound = options.dataBound;
-
-        // we need to bind this before creating the widget to get the
-        // initial dataBound event.  I'll leave the others in
-        // afterCreate as it feels cleaner.
-        options.dataBound = function(ev) {
-          var grid = this;
-          var rows = grid.tbody.children('tr');
-
-          // Here we mimic ng-repeat in that we create a scope for each row that we can then destroy in dataBinding event.
-          // Creating a scope for each row ensures you don't leak scopes when the
-          // kendo widget regenerates the dom on pagination for example.
-          rows.each(function(index, row) {
-            var rowScope = scope.$new();
-            // provide index of the row using the same $index var as ngRepeat
-            rowScope.$index = index;
-            // provide the data object for that row in the scope
-            rowScope.dataItem = grid.dataItem(row);
-            // compile the row. You can now use angular templates in that row.
-            compile(row)(rowScope);
-          });
-
-          // this seems to force refreshing the view.
-          if (scope.$root.$$phase !== "$digest") {
-            scope.$digest();
-          }
-
-          if (prev_dataBound) {
-            return prev_dataBound.apply(grid, arguments);
-          }
-        };
-      },
-
-      afterCreate: function(scope, element, options, attrs) {
-
-        this.bind(this, "dataBinding", function() {
-          var rows = this.tbody.children('tr.ng-scope');
-          // here we need to destroy the scopes that we created in dataBound handler to make sure no scopes are leaked.
-          rows.each(function(index, rowElement) {
-            var rowScope = angular.element(rowElement).scope();
-            // destroy the scope
-            rowScope.$destroy();
-          });
-        });
-
-        bindBefore(this, "change", function(e) {
-          var cell, multiple, locals = { kendoEvent: e }, elems, items, columns, colIdx;
-
-          if (angular.isString(options.selectable)) {
-            cell = options.selectable.indexOf('cell') !== -1;
-            multiple = options.selectable.indexOf('multiple') !== -1;
-          }
-
-          elems = locals.selected = this.select();
-          items = locals.data = [];
-          columns = locals.columns = [];
-          for (var i = 0; i < elems.length; i++) {
-            var dataItem = this.dataItem(cell ? elems[i].parentNode : elems[i]);
-            if (cell) {
-              if (angular.element.inArray(dataItem, items) < 0) {
-                items.push(dataItem);
-              }
-              colIdx = angular.element(elems[i]).index();
-              if (angular.element.inArray(colIdx, columns) < 0 ) {
-                columns.push(colIdx);
-              }
-            } else {
-              items.push(dataItem);
-            }
-          }
-
-          if (!multiple) {
-            locals.data = items[0];
-            locals.selected = elems[0];
-          }
-
-          // Make sure this gets invoked in the angularjs lifecycle.
-          scope.$apply(function() {
-            // Invoke the parsed expression with a kendoEvent local that the expression can use.
-            var changeExpFn = parse(attrs.kOnChange);
-            changeExpFn(scope, locals);
-          });
-        });
-      }
-    }
-
   };
 
   module.factory('directiveFactory', ['$timeout', '$parse', '$compile', '$log',
@@ -315,6 +195,15 @@
           // }],
 
           link: function(scope, element, attrs, ngModel) {
+
+            // we must remove data-kendo-widget-name attribute because
+            // it breaks kendo.widgetInstance; can generate all kinds
+            // of funny issues like
+            // https://github.com/kendo-labs/angular-kendo/issues/167
+
+            // $(element).removeData(role);
+            // console.log($(element).data(role)); // --> not undefined.  now I'm pissed.
+            $(element)[0].removeAttribute("data-" + role.replace(/([A-Z])/g, "-$1"));
 
             timeout(function() {
               var widget = factories.widget.create(scope, element, attrs, role);
@@ -503,6 +392,127 @@
     widget.bind.call(widget, name, handler, one);
     var a = widget._events[name];
     a.unshift(a.pop());
+  }
+
+  /* -----[ Special widget setup ]----- */
+
+  // runs before the widget is created.
+  function beforeCreate(role, scope, element, options, attrs) {
+    switch (role) {
+     case "Grid":
+      handle_dataBound();
+      fix_columns();
+      break;
+
+     case "ListView":
+      handle_dataBound();
+      break;
+    }
+
+    // Only for the grid.  For columns where there is no template and
+    // we have a 'field', we supply it as Angular template.
+    function fix_columns() {
+      options.columns.forEach(function(col){
+        if (col.field && !col.template) {
+          col.template = "{{dataItem." + col.field + "}}";
+        }
+      });
+    }
+
+    // This uses API that is common to Grid and ListView, so it works
+    // for both.  It compiles each item in a new Angular scope
+    // containing the `dataItem` property to point to the item data.
+    function handle_dataBound() {
+      var prev_dataBound = options.dataBound;
+      options.dataBound = function(ev) {
+        var widget = ev.sender;
+        var dataSource = widget.dataSource;
+        widget.items().each(function(){
+          var itemUid = $(this).attr(kendo.attr("uid"));
+          var item = dataSource.getByUid(itemUid);
+          var itemScope = scope.$new();
+          itemScope.dataItem = item;
+          compile(this)(itemScope);
+        });
+        if (scope.$root.$$phase !== "$digest") {
+          scope.$digest();
+        }
+        if (prev_dataBound) {
+          return prev_dataBound.apply(this, arguments);
+        }
+      };
+    }
+  }
+
+  // Runs after the widget has been created.  `this` is the widget
+  // object.
+  function afterCreate(role, scope, element, options, attrs) {
+    switch (role) {
+     case "Grid":
+     case "ListView":
+      this.bind(this, "dataBinding", function(ev) {
+        ev.sender.items().each(function(){
+          var rowScope = angular.element(this).scope();
+          rowScope.$destroy();
+        });
+      });
+
+      bindBefore(this, "change", function(ev) {
+        var widget = ev.sender;
+        var dataSource = widget.dataSource;
+        var cell, multiple, locals = { kendoEvent: ev }, elems, items, columns, colIdx;
+
+        if (angular.isString(options.selectable)) {
+          cell = options.selectable.indexOf('cell') !== -1;
+          multiple = options.selectable.indexOf('multiple') !== -1;
+        }
+
+        elems = locals.selected = this.select();
+        items = locals.data = [];
+        columns = locals.columns = [];
+        for (var i = 0; i < elems.length; i++) {
+          var item = cell ? elems[i].parentNode : elems[i];
+          var itemUid = $(item).attr(kendo.attr("uid"));
+          var dataItem = dataSource.getByUid(itemUid);
+          if (cell) {
+            if (angular.element.inArray(dataItem, items) < 0) {
+              items.push(dataItem);
+            }
+            colIdx = angular.element(elems[i]).index();
+            if (angular.element.inArray(colIdx, columns) < 0 ) {
+              columns.push(colIdx);
+            }
+          } else {
+            items.push(dataItem);
+          }
+        }
+
+        if (!multiple) {
+          locals.data = items[0];
+          locals.selected = elems[0];
+        }
+
+        // Make sure this gets invoked in the angularjs lifecycle.
+        scope.$apply(function() {
+          // Invoke the parsed expression with a kendoEvent local that the expression can use.
+          var changeExpFn = parse(attrs.kOnChange);
+          changeExpFn(scope, locals);
+        });
+      });
+      break;
+    }
+
+    // Widgets that have contentLoad events may insert
+    // arbitrary content in the DOM.  Compile it as Angular
+    // templates.
+    bindBefore(this, "contentLoad", function(ev){
+      //                   tabstrip/panelbar    splitter
+      var contentElement = ev.contentElement || ev.pane;
+      compile(ev.contentElement)(scope);
+      if (scope.$root.$$phase !== "$digest") {
+        scope.$digest();
+      }
+    });
   }
 
 }(angular, jQuery));
