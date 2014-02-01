@@ -419,7 +419,7 @@
     // we have a 'field', we supply it as Angular template.
     function fix_columns() {
       options.columns.forEach(function(col){
-        if (col.field && !col.template) {
+        if (col.field && !col.template && !col.format) {
           col.template = "{{dataItem." + col.field + "}}";
         }
       });
