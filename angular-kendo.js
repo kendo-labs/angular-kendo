@@ -480,7 +480,7 @@
         });
       });
 
-      bindBefore(this, "change", function(ev) {
+      this.bind("change", function(ev) {
         var widget = ev.sender;
         var dataSource = widget.dataSource;
         var cell, multiple, locals = { kendoEvent: ev }, elems, items, columns, colIdx;
