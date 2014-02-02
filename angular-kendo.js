@@ -411,7 +411,8 @@
       break;
 
      case "ListView":
-      handle_dataBound();
+     case "TreeView":
+      handle_dataBound(role);
       break;
     }
 
@@ -428,19 +429,31 @@
     // This uses API that is common to Grid and ListView, so it works
     // for both.  It compiles each item in a new Angular scope
     // containing the `dataItem` property to point to the item data.
-    function handle_dataBound() {
+    function handle_dataBound(role) {
       var prev_dataBound = options.dataBound;
       options.dataBound = function(ev) {
         var widget = ev.sender;
         var dataSource = widget.dataSource;
+        var dirty = false;
         widget.items().each(function(){
-          var itemUid = $(this).attr(_UID_);
-          var item = dataSource.getByUid(itemUid);
-          var itemScope = scope.$new();
-          itemScope.dataItem = item;
-          compile(this)(itemScope);
+          // XXX HACK: the tree view will call dataBound multiple
+          // times, sometimes for LI-s containing nested items that
+          // may have been already compiled.  Therefore in this
+          // situation we compile the ".k-in" element, which contains
+          // only the template for a single item.
+          var elementToCompile = role == "TreeView"
+            ? $(this).find(".k-in").filter(":first")
+            : $(this);
+          if (!elementToCompile.hasClass("ng-scope")) {
+            var itemUid = $(this).attr(_UID_);
+            var item = dataSource.getByUid(itemUid);
+            var itemScope = scope.$new();
+            itemScope.dataItem = item;
+            compile(elementToCompile)(itemScope);
+            dirty = true;
+          }
         });
-        if (!/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
+        if (dirty && !/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
           scope.$digest();
         }
         if (prev_dataBound) {
