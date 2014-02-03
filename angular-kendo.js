@@ -566,10 +566,11 @@
       var origObject = this;
       function wrapper(){};
       wrapper.prototype = origObject;
-      wrapper.prototype.$callNextMethod = function() {
+      wrapper = new wrapper;
+      wrapper.$callNextMethod = function() {
         return origMethod.apply(origObject, arguments.length > 0 ? arguments : origArgs);
       };
-      return func.apply(new wrapper, origArgs);
+      return func.apply(wrapper, origArgs);
     };
   }
 
