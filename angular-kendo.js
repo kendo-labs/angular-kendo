@@ -455,9 +455,7 @@
             dirty = true;
           }
         });
-        if (dirty && !/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
-          scope.$digest();
-        }
+        if (dirty) digest(scope);
         if (prev_dataBound) {
           return prev_dataBound.apply(this, arguments);
         }
@@ -479,9 +477,7 @@
         var itemScope = scope.$new();
         itemScope.dataItem = dataSource.getByUid(ev.item.attr(_UID_));
         compile(itemElement)(itemScope);
-        if (!/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
-          itemScope.$digest();
-        }
+        digest(itemScope);
       });
 
       // dataBinding triggers when new data is loaded.  We use this to
@@ -547,11 +543,68 @@
       //                   tabstrip/panelbar    splitter
       var contentElement = ev.contentElement || ev.pane;
       compile(ev.contentElement)(scope);
-      if (!/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
-        scope.$digest();
-      }
+      digest(scope);
     });
   }
+
+  function digest(scope) {
+    if (!/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
+      scope.$digest();
+    }
+  }
+
+  /* -----[ Advices ]----- */
+
+  // defadvice will patch a class' method with another function.  That
+  // function will be called in the context of the original object
+  // (well, almost) that will have an additional method
+  // $callNextMethod(), to invoke the original implementation.
+  function defadvice(klass, methodName, func) {
+    var origMethod = klass.prototype[methodName];
+    klass.prototype[methodName] = function() {
+      var origArgs = arguments;
+      var origObject = this;
+      function wrapper(){};
+      wrapper.prototype = origObject;
+      wrapper.prototype.$callNextMethod = function() {
+        return origMethod.apply(origObject, arguments.length > 0 ? arguments : origArgs);
+      };
+      return func.apply(new wrapper, origArgs);
+    };
+  }
+
+  // on Draggable::_start compile the content as Angular template, if
+  // an $angularScope method is provided.
+  defadvice(kendo.ui.Draggable, "_start", function(){
+    this.$callNextMethod();
+    if (this.hint && this.$angularScope) {
+      var scope = this.$angularScope(this.currentTarget);
+      compile(this.hint)(scope);
+      digest(scope);
+    }
+  });
+
+  // destroy the Angular scope when dragging has ended.
+  defadvice(kendo.ui.Draggable, "_afterEnd", function(){
+    if (this.hint) {
+      var scope = this.hint.scope();
+      if (scope) scope.$destroy();
+    }
+    this.$callNextMethod();
+  });
+
+  // provide $angularScope for TreeView's draggable.
+  defadvice(kendo.ui.TreeView, "_dragging", function(){
+    var treeview = this;
+    treeview.$callNextMethod();
+    if (treeview.dragging) {
+      treeview.dragging._draggable.$angularScope = function(node) {
+        var scope = $(node).scope().$new();
+        scope.dataItem = treeview.dataItem(node);
+        return scope;
+      };
+    }
+  });
 
 }(angular, jQuery));
 
