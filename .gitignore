@@ -4,3 +4,4 @@ node_modules
 test/components
 tmp/
 build/angular-kendo.min.js
+*.nupkg

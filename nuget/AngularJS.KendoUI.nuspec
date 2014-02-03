@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+    <metadata>
+        <id>AngularJS.KendoUI</id>
+        <version>0.7.0</version>
+        <authors>Atanas Korchev</authors>
+        <projectUrl>https://github.com/kendo-labs/angular-kendo</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>angular-kendo is a directive for AngularJS that runs an element through Kendo UI declarative initialization, allowing you to take full advantage of Kendo UI within the context of an AngularJS Application.</description>
+        <copyright>Copyright 2014</copyright>
+        <dependencies>
+            <dependency id="AngularJS.Core" version="1.2.9" />
+        </dependencies>
+        <tags>angular angularjs kendo kendo-ui</tags>
+    </metadata>
+    <files>
+        <file src="..\angular-kendo.js" target="content\scripts" />
+    </files>
+</package>
