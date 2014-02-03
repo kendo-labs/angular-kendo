@@ -287,11 +287,13 @@
                   bindBefore(widget, "dataBound", onChange);
 
                   // if the model value is undefined, then we set the widget value to match ( == null/undefined )
-                  if (ngModel.$viewValue !== undefined) {
-                    widget.value(makeValue(ngModel.$viewValue));
-                  }
-                  if (widget.value() !== undefined) {
-                    ngModel.$setViewValue(widget.value());
+                  if (widget.value() != ngModel.$viewValue) {
+                    if (ngModel.$viewValue !== undefined) {
+                      widget.value(makeValue(ngModel.$viewValue));
+                    }
+                    if (widget.value() !== undefined) {
+                      ngModel.$setViewValue(widget.value());
+                    }
                   }
                 }
               }
