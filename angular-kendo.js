@@ -538,7 +538,7 @@
         // situation we compile the ".k-in" element, which contains
         // only the template for a single item.
         var elementToCompile = role == "TreeView"
-          ? $(this).find(".k-in").filter(":first")
+          ? $(this).find(".k-in").first()
           : $(this);
         if (!elementToCompile.hasClass("ng-scope")) {
           var itemUid = $(this).attr(_UID_);
@@ -582,6 +582,13 @@
         }
       });
     });
+  });
+
+  defadvice(kendo.ui.Grid, "_toolbar", function(){
+    this.$callNextMethod();
+    var scope = this.element.scope();
+    compile(this.wrapper.find(".k-grid-toolbar").first())(scope);
+    digest(scope);
   });
 
 }(kendo, angular, jQuery));
