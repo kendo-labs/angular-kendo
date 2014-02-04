@@ -455,9 +455,10 @@
             dirty = true;
           }
         });
-        if (dirty) digest(scope);
-        if (prev_dataBound) {
-          return prev_dataBound.apply(this, arguments);
+        try {
+          if (prev_dataBound) return prev_dataBound.apply(this, arguments);
+        } finally {
+          if (dirty) digest(scope);
         }
       };
     }
