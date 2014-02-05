@@ -252,7 +252,7 @@
                   if (ngModel.$viewValue !== undefined) {
                     widget.value(makeValue(ngModel.$viewValue));
                   }
-                  if (widget.value() !== undefined) {
+                  if (widget.value() !== undefined && widget.value() != ngModel.$viewValue) {
                     ngModel.$setViewValue(widget.value());
                   }
                 }
