@@ -594,6 +594,14 @@
     digest(scope);
   });
 
+  defadvice(kendo.ui.editor.Toolbar, "render", function(){
+    this.next();
+    var self = this.self;
+    var scope = self.element.scope();
+    compile(self.element)(scope);
+    digest(scope);
+  });
+
 }(kendo, angular, jQuery));
 
 // Local Variables:
