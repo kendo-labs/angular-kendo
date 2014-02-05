@@ -399,7 +399,7 @@
   // Hence we resort to the beforeCreate/afterCreate hack.
   defadvice(kendo.ui.Widget, "init", function(element, options){
     var self = this.self;
-    if (options.$angular) {
+    if (options && options.$angular) {
       // call before/after hooks only for widgets instantiated by angular-kendo
       self.$angular_beforeCreate(element, options);
       this.next();
