@@ -371,9 +371,9 @@
   }
 
   // defadvice will patch a class' method with another function.  That
-  // function will be called in the context of the original object
-  // (well, almost) that will have an additional method
-  // $callNextMethod(), to invoke the original implementation.
+  // function will be called in a context containing `next` (to call
+  // the next method) and `object` (a reference to the original
+  // object).
   function defadvice(klass, methodName, func) {
     if ($.isArray(klass)) {
       return klass.forEach(function(klass){
@@ -382,17 +382,13 @@
     }
     var origMethod = klass.prototype[methodName];
     klass.prototype[methodName] = function() {
-      var origArgs = arguments;
-      var origObject = this;
-      function wrapper(){};
-      wrapper.prototype = origObject;
-      wrapper = new wrapper;
-      if (!wrapper.$origObject)
-        wrapper.$origObject = origObject;
-      wrapper.$callNextMethod = function() {
-        return origMethod.apply(origObject, arguments.length > 0 ? arguments : origArgs);
-      };
-      return func.apply(wrapper, origArgs);
+      var self = this, args = arguments;
+      return func.apply({
+        self: self,
+        next: function() {
+          return origMethod.apply(self, arguments.length > 0 ? arguments : args);
+        }
+      }, args);
     };
   }
 
@@ -402,25 +398,27 @@
   // because kendo.ui.Widget === kendo.ui.Widget.prototype.init.
   // Hence we resort to the beforeCreate/afterCreate hack.
   defadvice(kendo.ui.Widget, "init", function(element, options){
+    var self = this.self;
     if (options.$angular) {
       // call before/after hooks only for widgets instantiated by angular-kendo
-      this.$angular_beforeCreate(element, options);
-      this.$callNextMethod();
-      this.$angular_afterCreate();
+      self.$angular_beforeCreate(element, options);
+      this.next();
+      self.$angular_afterCreate();
     } else {
-      this.$callNextMethod();
+      this.next();
     }
   });
 
   // All event handlers that are strings are compiled the Angular way.
   defadvice(kendo.ui.Widget, "$angular_beforeCreate", function(element, options) {
+    var self = this.self;
     if (options && !$.isArray(options)) {
       var scope = $(element).scope();
-      for (var i = this.events.length; --i >= 0;) {
-        var event = this.events[i];
+      for (var i = self.events.length; --i >= 0;) {
+        var event = self.events[i];
         var handler = options[event];
         if (handler && typeof handler == "string")
-          options[event] = this.$angular_makeEventHandler(event, scope, handler);
+          options[event] = self.$angular_makeEventHandler(event, scope, handler);
       }
     }
   });
@@ -441,7 +439,7 @@
 
   // for the Grid and ListView we add `data` and `selected` too.
   defadvice([ kendo.ui.Grid, kendo.ui.ListView ], "$angular_makeEventHandler", function(event, scope, handler){
-    if (event != "change") return this.$callNextMethod();
+    if (event != "change") return this.next();
     handler = parse(handler);
     return function(ev) {
       var widget = ev.sender;
@@ -486,9 +484,10 @@
   // for PanelBar, TabStrip and Splitter, hook on `contentLoad` to
   // compile Angular templates.
   defadvice([ kendo.ui.PanelBar, kendo.ui.TabStrip, kendo.ui.Splitter ], "$angular_afterCreate", function() {
-    this.$callNextMethod();
-    var scope = this.element.scope();
-    bindBefore(this, "contentLoad", function(ev){
+    this.next();
+    var self = this.self;
+    var scope = self.element.scope();
+    bindBefore(self, "contentLoad", function(ev){
       //                   tabstrip/panelbar    splitter
       var contentElement = ev.contentElement || ev.pane;
       compile(ev.contentElement)(scope);
@@ -499,10 +498,11 @@
   // on Draggable::_start compile the content as Angular template, if
   // an $angular_scope method is provided.
   defadvice(kendo.ui.Draggable, "_start", function(){
-    this.$callNextMethod();
-    if (this.hint) {
-      var scope = this.currentTarget.scope();
-      compile(this.hint)(scope);
+    this.next();
+    var self = this.self;
+    if (self.hint) {
+      var scope = self.currentTarget.scope();
+      compile(self.hint)(scope);
       digest(scope);
     }
   });
@@ -511,7 +511,7 @@
   // template.  The reason is that in this way AngularJS will take
   // care to update the view as the data in scope changes.
   defadvice(kendo.ui.Grid, "$angular_beforeCreate", function(element, options){
-    this.$callNextMethod();
+    this.next();
     if (options.columns) options.columns.forEach(function(col){
       if (col.field && !col.template && !col.format) {
         col.template = "{{dataItem." + col.field + "}}";
@@ -523,8 +523,9 @@
   // recompiles Angular templates.  We need to do this before the
   // widget is initialized so that we catch the first dataBound event.
   defadvice([ kendo.ui.Grid, kendo.ui.ListView, kendo.ui.TreeView ], "$angular_beforeCreate", function(element, options){
-    this.$callNextMethod();
-    var role = this.options.name;
+    this.next();
+    var self = this.self;
+    var role = self.options.name;
     var scope = $(element).scope();
     var prev_dataBound = options.dataBound;
     options.dataBound = function(ev) {
@@ -558,12 +559,13 @@
   });
 
   defadvice([ kendo.ui.Grid, kendo.ui.ListView ], "$angular_afterCreate", function(){
-    this.$callNextMethod();
-    var scope = $(this.element).scope();
+    this.next();
+    var self = this.self;
+    var scope = $(self.element).scope();
 
     // itemChange triggers when a single item is changed through our
     // DataSource mechanism.
-    this.bind("itemChange", function(ev) {
+    self.bind("itemChange", function(ev) {
       var dataSource = ev.sender.dataSource;
       var itemElement = ev.item[0];
       var itemScope = scope.$new();
@@ -574,7 +576,7 @@
 
     // dataBinding triggers when new data is loaded.  We use this to
     // destroy() each item's scope.
-    this.bind("dataBinding", function(ev) {
+    self.bind("dataBinding", function(ev) {
       ev.sender.items().each(function(){
         if ($(this).attr(_UID_)) {
           var rowScope = angular.element(this).scope();
@@ -585,9 +587,10 @@
   });
 
   defadvice(kendo.ui.Grid, "_toolbar", function(){
-    this.$callNextMethod();
-    var scope = this.element.scope();
-    compile(this.wrapper.find(".k-grid-toolbar").first())(scope);
+    this.next();
+    var self = this.self;
+    var scope = self.element.scope();
+    compile(self.wrapper.find(".k-grid-toolbar").first())(scope);
     digest(scope);
   });
 
