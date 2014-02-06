@@ -612,6 +612,17 @@
       digest(scope);
     }
   });
+
+  defadvice(kendo.ui.Grid, AFTER, function(){
+    this.next();
+    var self = this.self;
+    var scope = self.element.scope();
+    if (scope) bindBefore(self, "detailInit", function(ev){
+      var detailScope = scope.$new();
+      detailScope.dataItem = ev.data;
+      compile(ev.detailCell)(detailScope);
+      digest(detailScope);
+    });
   });
 
 }(kendo, angular, jQuery));
