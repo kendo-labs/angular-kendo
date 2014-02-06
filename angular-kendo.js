@@ -618,6 +618,7 @@
   defadvice(kendo.ui.Grid, AFTER, function(){
     this.next();
     var self = this.self;
+    if (!self.options.detailTemplate) return;
     var scope = self.element.scope();
     if (scope) bindBefore(self, "detailInit", function(ev){
       var detailScope = scope.$new();
