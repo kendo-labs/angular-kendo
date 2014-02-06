@@ -1,11 +1,13 @@
-(function(kendo, angular, $) {
+(function(f, define){
+  define([ "jquery", "angular", "kendo" ], f);
+})(function($, angular, kendo) {
 
   "use strict";
 
   var _UID_ = kendo.attr("uid");
 
   var module = angular.module('kendo.directives', []);
-  var parse, timeout, compile, log;
+  var parse, timeout, compile = function compile(){ return compile }, log;
 
   // The following disables AngularJS built-in directives for <input> fields
   // when a Kendo widget is defined.  The reason we have to do this is:
@@ -252,7 +254,7 @@
                   if (ngModel.$viewValue !== undefined) {
                     widget.value(makeValue(ngModel.$viewValue));
                   }
-                  if (widget.value() !== undefined) {
+                  if (widget.value() !== undefined && widget.value() != ngModel.$viewValue) {
                     ngModel.$setViewValue(widget.value());
                   }
                 }
@@ -392,6 +394,9 @@
     };
   }
 
+  var BEFORE = "$angular_beforeCreate";
+  var AFTER = "$angular_afterCreate";
+
   /* -----[ Customize widgets for Angular ]----- */
 
   // XXX: notice we can't override `init` in general for any widget,
@@ -410,7 +415,7 @@
   });
 
   // All event handlers that are strings are compiled the Angular way.
-  defadvice(kendo.ui.Widget, "$angular_beforeCreate", function(element, options) {
+  defadvice(kendo.ui.Widget, BEFORE, function(element, options) {
     var self = this.self;
     if (options && !$.isArray(options)) {
       var scope = $(element).scope();
@@ -423,7 +428,7 @@
     }
   });
 
-  defadvice(kendo.ui.Widget, "$angular_afterCreate", function(){});
+  defadvice(kendo.ui.Widget, AFTER, function(){});
 
   // most handers will only contain a kendoEvent in the scope.
   defadvice(kendo.ui.Widget, "$angular_makeEventHandler", function(event, scope, handler){
@@ -483,11 +488,11 @@
 
   // for PanelBar, TabStrip and Splitter, hook on `contentLoad` to
   // compile Angular templates.
-  defadvice([ kendo.ui.PanelBar, kendo.ui.TabStrip, kendo.ui.Splitter ], "$angular_afterCreate", function() {
+  defadvice([ kendo.ui.PanelBar, kendo.ui.TabStrip, kendo.ui.Splitter ], AFTER, function() {
     this.next();
     var self = this.self;
     var scope = self.element.scope();
-    bindBefore(self, "contentLoad", function(ev){
+    if (scope) bindBefore(self, "contentLoad", function(ev){
       //                   tabstrip/panelbar    splitter
       var contentElement = ev.contentElement || ev.pane;
       compile(ev.contentElement)(scope);
@@ -502,15 +507,17 @@
     var self = this.self;
     if (self.hint) {
       var scope = self.currentTarget.scope();
-      compile(self.hint)(scope);
-      digest(scope);
+      if (scope) {
+        compile(self.hint)(scope);
+        digest(scope);
+      }
     }
   });
 
   // If no `template` is supplied for Grid columns, provide an Angular
   // template.  The reason is that in this way AngularJS will take
   // care to update the view as the data in scope changes.
-  defadvice(kendo.ui.Grid, "$angular_beforeCreate", function(element, options){
+  defadvice(kendo.ui.Grid, BEFORE, function(element, options){
     this.next();
     if (options.columns) options.columns.forEach(function(col){
       if (col.field && !col.template && !col.format) {
@@ -522,11 +529,12 @@
   // for Grid, ListView and TreeView, provide a dataBound handler that
   // recompiles Angular templates.  We need to do this before the
   // widget is initialized so that we catch the first dataBound event.
-  defadvice([ kendo.ui.Grid, kendo.ui.ListView, kendo.ui.TreeView ], "$angular_beforeCreate", function(element, options){
+  defadvice([ kendo.ui.Grid, kendo.ui.ListView, kendo.ui.TreeView ], BEFORE, function(element, options){
     this.next();
+    var scope = $(element).scope();
+    if (!scope) return;
     var self = this.self;
     var role = self.options.name;
-    var scope = $(element).scope();
     var prev_dataBound = options.dataBound;
     options.dataBound = function(ev) {
       var widget = ev.sender;
@@ -558,10 +566,11 @@
     };
   });
 
-  defadvice([ kendo.ui.Grid, kendo.ui.ListView ], "$angular_afterCreate", function(){
+  defadvice([ kendo.ui.Grid, kendo.ui.ListView ], AFTER, function(){
     this.next();
     var self = this.self;
     var scope = $(self.element).scope();
+    if (!scope) return;
 
     // itemChange triggers when a single item is changed through our
     // DataSource mechanism.
@@ -590,19 +599,35 @@
     this.next();
     var self = this.self;
     var scope = self.element.scope();
-    compile(self.wrapper.find(".k-grid-toolbar").first())(scope);
-    digest(scope);
+    if (scope) {
+      compile(self.wrapper.find(".k-grid-toolbar").first())(scope);
+      digest(scope);
+    }
   });
 
   defadvice(kendo.ui.editor.Toolbar, "render", function(){
     this.next();
     var self = this.self;
     var scope = self.element.scope();
-    compile(self.element)(scope);
-    digest(scope);
+    if (scope) {
+      compile(self.element)(scope);
+      digest(scope);
+    }
   });
 
-}(kendo, angular, jQuery));
+  defadvice(kendo.ui.Grid, AFTER, function(){
+    this.next();
+    var self = this.self;
+    var scope = self.element.scope();
+    if (scope) bindBefore(self, "detailInit", function(ev){
+      var detailScope = scope.$new();
+      detailScope.dataItem = ev.data;
+      compile(ev.detailCell)(detailScope);
+      digest(detailScope);
+    });
+  });
+
+}, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
 
 // Local Variables:
 // js-indent-level: 2
