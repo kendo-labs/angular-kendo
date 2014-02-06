@@ -1,4 +1,6 @@
-(function(kendo, angular, $) {
+(function(f, define){
+  define([ "jquery", "angular", "kendo" ], f);
+})(function($, angular, kendo) {
 
   "use strict";
 
@@ -625,7 +627,7 @@
     });
   });
 
-}(kendo, angular, jQuery));
+}, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
 
 // Local Variables:
 // js-indent-level: 2
