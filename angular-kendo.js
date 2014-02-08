@@ -418,7 +418,7 @@
   defadvice(kendo.ui.Widget, BEFORE, function(element, options) {
     var self = this.self;
     if (options && !$.isArray(options)) {
-      var scope = $(element).scope();
+      var scope = angular.element(element).scope();
       for (var i = self.events.length; --i >= 0;) {
         var event = self.events[i];
         var handler = options[event];
@@ -491,7 +491,7 @@
   defadvice([ kendo.ui.PanelBar, kendo.ui.TabStrip, kendo.ui.Splitter ], AFTER, function() {
     this.next();
     var self = this.self;
-    var scope = self.element.scope();
+    var scope = angular.element(self.element).scope();
     if (scope) bindBefore(self, "contentLoad", function(ev){
       //                   tabstrip/panelbar    splitter
       var contentElement = ev.contentElement || ev.pane;
@@ -506,7 +506,7 @@
     this.next();
     var self = this.self;
     if (self.hint) {
-      var scope = self.currentTarget.scope();
+      var scope = angular.element(self.currentTarget).scope();
       if (scope) {
         compile(self.hint)(scope);
         digest(scope);
@@ -531,7 +531,7 @@
   // widget is initialized so that we catch the first dataBound event.
   defadvice([ kendo.ui.Grid, kendo.ui.ListView, kendo.ui.TreeView ], BEFORE, function(element, options){
     this.next();
-    var scope = $(element).scope();
+    var scope = angular.element(element).scope();
     if (!scope) return;
     var self = this.self;
     var role = self.options.name;
@@ -569,7 +569,7 @@
   defadvice([ kendo.ui.Grid, kendo.ui.ListView ], AFTER, function(){
     this.next();
     var self = this.self;
-    var scope = $(self.element).scope();
+    var scope = angular.element(self.element).scope();
     if (!scope) return;
 
     // itemChange triggers when a single item is changed through our
@@ -598,7 +598,7 @@
   defadvice(kendo.ui.Grid, "_toolbar", function(){
     this.next();
     var self = this.self;
-    var scope = self.element.scope();
+    var scope = angular.element(self.element).scope();
     if (scope) {
       compile(self.wrapper.find(".k-grid-toolbar").first())(scope);
       digest(scope);
@@ -608,7 +608,7 @@
   defadvice(kendo.ui.editor.Toolbar, "render", function(){
     this.next();
     var self = this.self;
-    var scope = self.element.scope();
+    var scope = angular.element(self.element).scope();
     if (scope) {
       compile(self.element)(scope);
       digest(scope);
@@ -619,7 +619,7 @@
     this.next();
     var self = this.self;
     if (!self.options.detailTemplate) return;
-    var scope = self.element.scope();
+    var scope = angular.element(self.element).scope();
     if (scope) bindBefore(self, "detailInit", function(ev){
       var detailScope = scope.$new();
       detailScope.dataItem = ev.data;
