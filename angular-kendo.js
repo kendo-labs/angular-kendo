@@ -435,11 +435,11 @@
     handler = parse(handler);
     return function(e) {
       if (/^\$(apply|digest)$/.test(scope.$root.$$phase)) {
-        handler({ kendoEvent: e });
+        handler(scope, { kendoEvent: e });
       } else {
         scope.$apply(function() { handler(scope, { kendoEvent: e }) });
       }
-    }
+    };
   });
 
   // for the Grid and ListView we add `data` and `selected` too.
