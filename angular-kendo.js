@@ -9,6 +9,16 @@
   var module = angular.module('kendo.directives', []);
   var parse, timeout, compile = function compile(){ return compile }, log;
 
+  function immediately(f) {
+    var save_timeout = timeout;
+    timeout = function(f) { return f() };
+    try {
+      return f();
+    } finally {
+      timeout = save_timeout;
+    }
+  }
+
   // The following disables AngularJS built-in directives for <input> fields
   // when a Kendo widget is defined.  The reason we have to do this is:
   //
@@ -618,13 +628,46 @@
   defadvice(kendo.ui.Grid, AFTER, function(){
     this.next();
     var self = this.self;
-    if (!self.options.detailTemplate) return;
     var scope = angular.element(self.element).scope();
-    if (scope) bindBefore(self, "detailInit", function(ev){
-      var detailScope = scope.$new();
-      detailScope.dataItem = ev.data;
-      compile(ev.detailCell)(detailScope);
-      digest(detailScope);
+    if (scope) {
+      if (self.options.detailTemplate) bindBefore(self, "detailInit", function(ev){
+        var detailScope = scope.$new();
+        detailScope.dataItem = ev.data;
+        compile(ev.detailCell)(detailScope);
+        digest(detailScope);
+      });
+    }
+  });
+
+  defadvice(kendo.ui.Editable, "editor", function(field){
+    this.next();
+    var self = this.self;
+    var model = self.options.model;
+    var scope = angular.element(self.element).scope();
+    if (!scope || !model || !field.editor) return;
+    scope = self.$angular_scope = scope.$new();
+    scope.dataItem = model;
+
+    // XXX: for some reason we need to disable the timeout here, or
+    // else the widget is created but immediately destroyed (focus
+    // lost).  I'm not sure why that happens.
+    immediately(function(){
+      compile(self.element)(scope);
+      digest(scope);
+    });
+  });
+
+  defadvice(kendo.ui.Editable, "destroy", function(){
+    var self = this.self;
+    if (self.$angular_scope) {
+      self.$angular_scope.$destroy();
+      self.$angular_scope = null;
+    }
+    this.next();
+    timeout(function(){
+      var scope = angular.element(self.element).scope();
+      compile(self.element)(scope);
+      digest(scope);
     });
   });
 
