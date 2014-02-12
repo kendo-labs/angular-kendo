@@ -34,7 +34,7 @@
   // https://github.com/kendo-labs/angular-kendo/issues/135
   // https://github.com/kendo-labs/angular-kendo/issues/152
   module.config([ "$provide", function($provide){
-    $provide.decorator("inputDirective", [ "$delegate", function($delegate){
+    function dismissAngular($delegate) {
       var orig_compile = $delegate[0].compile;
       $delegate[0].compile = function(element, attrs) {
         for (var i in attrs) {
@@ -47,7 +47,9 @@
         return orig_compile.apply(this, arguments);
       };
       return $delegate;
-    }]);
+    }
+    $provide.decorator("inputDirective", [ "$delegate", dismissAngular ]);
+    $provide.decorator("selectDirective", [ "$delegate", dismissAngular ]);
   }]);
 
   var factories = {
@@ -115,7 +117,8 @@
         }
 
         options.$angular = true;
-        return $(element)[widget](options).data(widget);
+        var widget = $(element)[widget](options).data(widget);
+        return widget;
       };
     }())
   };
@@ -261,10 +264,10 @@
 
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
                 if (widget.value() != ngModel.$viewValue) {
-                  if (ngModel.$viewValue !== undefined) {
+                  if (!ngModel.$isEmpty()) {
                     widget.value(makeValue(ngModel.$viewValue));
                   }
-                  if (widget.value() !== undefined && widget.value() != ngModel.$viewValue) {
+                  if (widget.value() !== undefined && widget.value() != "" && widget.value() != ngModel.$viewValue) {
                     ngModel.$setViewValue(widget.value());
                   }
                 }
