@@ -524,7 +524,7 @@
     this.next();
     if (options.columns) options.columns.forEach(function(col){
       if (col.field && !col.template && !col.format) {
-        col.template = "{{dataItem." + col.field + "}}";
+        col.template = "<span ng-bind='dataItem." + col.field + "'>#: " + col.field + "#></span>";
       }
     });
   });
