@@ -264,7 +264,7 @@
 
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
                 if (widget.value() != ngModel.$viewValue) {
-                  if (!ngModel.$isEmpty()) {
+                  if (!ngModel.$isEmpty(ngModel.$viewValue)) {
                     widget.value(makeValue(ngModel.$viewValue));
                   }
                   if (widget.value() !== undefined && widget.value() != "" && widget.value() != ngModel.$viewValue) {
