@@ -143,16 +143,6 @@
       }
     }
 
-    function makeValue(val) {
-      if (val == null) return null;
-      if (typeof val == "string") {
-        if (/^[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)$/.test(val)) {
-          return parseFloat(val);
-        }
-      }
-      return val;
-    }
-
     var create = function(role) {
 
       return {
@@ -246,7 +236,7 @@
                 // Angular will invoke $render when the view needs to be updated with the view value.
                 ngModel.$render = function() {
                   // Update the widget with the view value.
-                  widget.value(makeValue(ngModel.$viewValue));
+                  widget.value(ngModel.$modelValue);
                 };
 
                 // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
@@ -263,11 +253,11 @@
                 bindBefore(widget, "dataBound", onChange);
 
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
-                if (widget.value() != ngModel.$viewValue) {
-                  if (!ngModel.$isEmpty(ngModel.$viewValue)) {
-                    widget.value(makeValue(ngModel.$viewValue));
+                if (widget.value() != ngModel.$modelValue) {
+                  if (!ngModel.$isEmpty(ngModel.$modelValue)) {
+                    widget.value(ngModel.$modelValue);
                   }
-                  if (widget.value() !== undefined && widget.value() != "" && widget.value() != ngModel.$viewValue) {
+                  if (widget.value() !== undefined && widget.value() != "" && widget.value() != ngModel.$modelValue) {
                     ngModel.$setViewValue(widget.value());
                   }
                 }
