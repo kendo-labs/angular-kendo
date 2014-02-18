@@ -257,7 +257,7 @@
                   if (!ngModel.$isEmpty(ngModel.$modelValue)) {
                     widget.value(ngModel.$modelValue);
                   }
-                  if (widget.value() !== undefined && widget.value() != "" && widget.value() != ngModel.$modelValue) {
+                  if (widget.value() != null && widget.value() != "" && widget.value() != ngModel.$modelValue) {
                     ngModel.$setViewValue(widget.value());
                   }
                 }
