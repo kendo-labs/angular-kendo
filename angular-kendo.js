@@ -569,6 +569,47 @@
     };
   });
 
+  // templates for autocomplete and combo box
+  defadvice([ kendo.ui.AutoComplete, kendo.ui.ComboBox ], BEFORE, function(element, options){
+    this.next();
+    var scope = angular.element(element).scope();
+    if (!scope) return;
+    var self = this.self;
+    var prev_dataBound = options.dataBound;
+    options.dataBound = function(ev) {
+      var widget = ev.sender;
+      var dataSource = widget.dataSource;
+      var dirty = false;
+      $(widget.items()).each(function(){
+        var el = $(this);
+        if (!el.hasClass("ng-scope")) {
+          var item = widget.dataItem(el.index());
+          var itemScope = scope.$new();
+          itemScope.dataItem = item;
+          compile(el)(itemScope);
+          dirty = true;
+        }
+      });
+      try {
+        if (prev_dataBound) return prev_dataBound.apply(this, arguments);
+      } finally {
+        if (dirty) digest(scope);
+      }
+    };
+  });
+
+  defadvice([ kendo.ui.AutoComplete, kendo.ui.ComboBox ], AFTER, function(){
+    this.next();
+    this.self.bind("dataBinding", function(ev){
+      $(ev.sender.items()).each(function(){
+        var scope = angular.element(this).scope();
+        if (scope) {
+          scope.$destroy();
+        }
+      });
+    });
+  });
+
   defadvice([ kendo.ui.Grid, kendo.ui.ListView ], AFTER, function(){
     this.next();
     var self = this.self;
