@@ -608,6 +608,16 @@
     }
   });
 
+  defadvice(kendo.ui.Grid, "_thead", function(){
+    this.next();
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (scope) {
+      compile(self.thead)(scope);
+      digest(scope);
+    }
+  });
+
   defadvice(kendo.ui.editor.Toolbar, "render", function(){
     this.next();
     var self = this.self;
