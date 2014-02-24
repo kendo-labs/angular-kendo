@@ -381,7 +381,7 @@
   // object).
   function defadvice(klass, methodName, func) {
     if ($.isArray(klass)) {
-      return klass.forEach(function(klass){
+      return angular.forEach(klass, function(klass){
         defadvice(klass, methodName, func);
       });
     }
@@ -522,7 +522,7 @@
   // care to update the view as the data in scope changes.
   defadvice(kendo.ui.Grid, BEFORE, function(element, options){
     this.next();
-    if (options.columns) options.columns.forEach(function(col){
+    if (options.columns) angular.forEach(options.columns, function(col){
       if (col.field && !col.template && !col.format) {
         col.template = "<span ng-bind='dataItem." + col.field + "'>#: " + col.field + "#></span>";
       }
