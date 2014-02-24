@@ -130,6 +130,8 @@
     compile = $compile;
     log = $log;
 
+    var KENDO_COUNT = 0;
+
     function exposeWidget(widget, scope, attrs, kendoWidget) {
       if( attrs[kendoWidget] ) {
         // expose the widget object
@@ -174,6 +176,8 @@
           $(element)[0].removeAttribute("data-" + role.replace(/([A-Z])/g, "-$1"));
 
           var originalElement = $(element)[0].cloneNode(true);
+
+          ++KENDO_COUNT;
 
           timeout(function() {
             var widget = factories.widget(scope, element, attrs, role);
@@ -325,6 +329,11 @@
               resume();
               bindBefore(widget, "destroy", suspend);
             })();
+
+            --KENDO_COUNT;
+            if (KENDO_COUNT == 0) {
+              scope.$emit("kendoRendered");
+            }
 
           });
         }
