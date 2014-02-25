@@ -638,14 +638,23 @@
 
     // dataBinding triggers when new data is loaded.  We use this to
     // destroy() each item's scope.
-    self.bind("dataBinding", function(ev) {
-      ev.sender.items().each(function(){
-        if ($(this).attr(_UID_)) {
-          var rowScope = angular.element(this).scope();
-          rowScope.$destroy();
-        }
-      });
-    });
+    //
+    // BUG with this code on: create a simple grid with popup editing.
+    // Click edit in some row (the window opens).  Click Cancel (the
+    // window disappears).  Click Edit again (the window opens).
+    // Click Update (the window disappears, without animation).  The
+    // grid is now dead (does not respond to any more events).  I
+    // cannot figure out why this happens, but until it's fixed, gonna
+    // leave this note here and this code commented out.
+    //
+    // self.bind("dataBinding", function(ev) {
+    //   ev.sender.items().each(function(){
+    //     if ($(this).attr(_UID_)) {
+    //       var rowScope = angular.element(this).scope();
+    //       if (rowScope) rowScope.$destroy();
+    //     }
+    //   });
+    // });
   });
 
   defadvice(kendo.ui.Grid, "_toolbar", function(){
