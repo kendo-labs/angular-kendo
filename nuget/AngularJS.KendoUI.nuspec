@@ -2,7 +2,7 @@
 <package >
     <metadata>
         <id>AngularJS.KendoUI</id>
-        <version>0.7.5</version>
+        <version>0.7.6</version>
         <authors>Atanas Korchev</authors>
         <projectUrl>https://github.com/kendo-labs/angular-kendo</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
