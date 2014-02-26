@@ -243,6 +243,11 @@
                   widget.value(ngModel.$modelValue);
                 };
 
+                // set the initial value from the model.  #216
+                if (widget.value !== undefined) {
+  		  widget.value(ngModel.$viewValue || null);
+  		}
+
                 // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
                 var onChange = function(e) {
                   if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
@@ -256,15 +261,17 @@
                 bindBefore(widget, "change", onChange);
                 bindBefore(widget, "dataBound", onChange);
 
+                // XXX: the following potentially triggers ng-dirty without user interaction.
+                //
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
-                if (widget.value() != ngModel.$modelValue) {
-                  if (!ngModel.$isEmpty(ngModel.$modelValue)) {
-                    widget.value(ngModel.$modelValue);
-                  }
-                  if (widget.value() != null && widget.value() != "" && widget.value() != ngModel.$modelValue) {
-                    ngModel.$setViewValue(widget.value());
-                  }
-                }
+                // if (widget.value() != ngModel.$modelValue) {
+                //   if (!ngModel.$isEmpty(ngModel.$modelValue)) {
+                //     widget.value(ngModel.$modelValue);
+                //   }
+                //   if (widget.value() != null && widget.value() != "" && widget.value() != ngModel.$modelValue) {
+                //     ngModel.$setViewValue(widget.value());
+                //   }
+                // }
               }
             }
 
