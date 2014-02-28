@@ -1,9 +1,6 @@
 {
   "name": "angular-kendo",
   "version": "0.6.0",
-  "scripts": {
-    "preinstall": "npm install -g bower"
-  },
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.1",

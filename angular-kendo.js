@@ -9,6 +9,16 @@
   var module = angular.module('kendo.directives', []);
   var parse, timeout, compile = function compile(){ return compile }, log;
 
+  function immediately(f) {
+    var save_timeout = timeout;
+    timeout = function(f) { return f() };
+    try {
+      return f();
+    } finally {
+      timeout = save_timeout;
+    }
+  }
+
   // The following disables AngularJS built-in directives for <input> fields
   // when a Kendo widget is defined.  The reason we have to do this is:
   //
@@ -24,7 +34,7 @@
   // https://github.com/kendo-labs/angular-kendo/issues/135
   // https://github.com/kendo-labs/angular-kendo/issues/152
   module.config([ "$provide", function($provide){
-    $provide.decorator("inputDirective", [ "$delegate", function($delegate){
+    function dismissAngular($delegate) {
       var orig_compile = $delegate[0].compile;
       $delegate[0].compile = function(element, attrs) {
         for (var i in attrs) {
@@ -37,8 +47,12 @@
         return orig_compile.apply(this, arguments);
       };
       return $delegate;
-    }]);
+    }
+    $provide.decorator("inputDirective", [ "$delegate", dismissAngular ]);
+    $provide.decorator("selectDirective", [ "$delegate", dismissAngular ]);
   }]);
+
+  var OPTIONS_NOW;
 
   var factories = {
     dataSource: (function() {
@@ -105,10 +119,26 @@
         }
 
         options.$angular = true;
-        return $(element)[widget](options).data(widget);
+        var object = $(element)[widget](OPTIONS_NOW = options).data(widget);
+        exposeWidget(object, scope, attrs, widget);
+        scope.$emit("kendoWidgetCreated", object);
+        return object;
       };
     }())
   };
+
+  function exposeWidget(widget, scope, attrs, kendoWidget) {
+    if (attrs[kendoWidget]) {
+      // expose the widget object
+      var set = parse(attrs[kendoWidget]).assign;
+      if (set) {
+        // set the value of the expression to the kendo widget object to expose its api
+        set(scope, widget);
+      } else {
+        throw new Error( kendoWidget + ' attribute used but expression in it is not assignable: ' + attrs[kendoWidget]);
+      }
+    }
+  }
 
   module.factory('directiveFactory', ['$timeout', '$parse', '$compile', '$log', function($timeout, $parse, $compile, $log) {
 
@@ -117,35 +147,14 @@
     compile = $compile;
     log = $log;
 
-    function exposeWidget(widget, scope, attrs, kendoWidget) {
-      if( attrs[kendoWidget] ) {
-        // expose the widget object
-        var set = $parse(attrs[kendoWidget]).assign;
-        if( set ) {
-          // set the value of the expression to the kendo widget object to expose its api
-          set(scope, widget);
-        } else {
-          throw new Error( kendoWidget + ' attribute used but expression in it is not assignable: ' + attrs[kendoWidget]);
-        }
-      }
-    }
-
-    function makeValue(val) {
-      if (val == null) return null;
-      if (typeof val == "string") {
-        if (/^[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)$/.test(val)) {
-          return parseFloat(val);
-        }
-      }
-      return val;
-    }
+    var KENDO_COUNT = 0;
 
     var create = function(role) {
 
       return {
         // Parse the directive for attributes and classes
-        restrict: 'ACE',
-        require: '?ngModel',
+        restrict: "ACE",
+        require: [ "?ngModel", "^?form" ],
         scope: false,
 
         // // XXX: Is this transclusion needed?  We seem to do better without it.
@@ -159,7 +168,10 @@
         //   });
         // }],
 
-        link: function(scope, element, attrs, ngModel) {
+        link: function(scope, element, attrs, controllers) {
+
+          var ngModel = controllers[0];
+          var ngForm = controllers[1];
 
           // we must remove data-kendo-widget-name attribute because
           // it breaks kendo.widgetInstance; can generate all kinds
@@ -171,6 +183,8 @@
           $(element)[0].removeAttribute("data-" + role.replace(/([A-Z])/g, "-$1"));
 
           var originalElement = $(element)[0].cloneNode(true);
+
+          ++KENDO_COUNT;
 
           timeout(function() {
             var widget = factories.widget(scope, element, attrs, role);
@@ -214,7 +228,6 @@
 
             var prev_destroy = null;
             function setupBindings() {
-              exposeWidget(widget, scope, attrs, role);
 
               // Cleanup after ourselves
               if (prev_destroy) {
@@ -233,31 +246,45 @@
                 // Angular will invoke $render when the view needs to be updated with the view value.
                 ngModel.$render = function() {
                   // Update the widget with the view value.
-                  widget.value(makeValue(ngModel.$viewValue));
+                  widget.value(ngModel.$modelValue);
                 };
 
                 // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
-                var onChange = function(e) {
-                  if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
+                var onChange = function(pristine){
+                  function doit() {
+                    if (pristine && ngForm) {
+                      var formPristine = ngForm.$pristine;
+                    }
                     ngModel.$setViewValue(widget.value());
-                  } else {
-                    scope.$apply(function() {
-                      ngModel.$setViewValue(widget.value());
-                    });
+                    if (pristine) {
+                      ngModel.$setPristine();
+                      if (formPristine) {
+                        ngForm.$setPristine();
+                      }
+                    }
                   }
+                  return function(e) {
+                    if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
+                      doit();
+                    } else {
+                      scope.$apply(doit);
+                    }
+                  };
                 };
-                bindBefore(widget, "change", onChange);
-                bindBefore(widget, "dataBound", onChange);
+                bindBefore(widget, "change", onChange(false));
+                bindBefore(widget, "dataBound", onChange(true));
 
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
-                if (widget.value() != ngModel.$viewValue) {
-                  if (ngModel.$viewValue !== undefined) {
-                    widget.value(makeValue(ngModel.$viewValue));
+                if (widget.value() != ngModel.$modelValue) {
+                  if (!ngModel.$isEmpty(ngModel.$modelValue)) {
+                    widget.value(ngModel.$modelValue);
                   }
-                  if (widget.value() !== undefined && widget.value() != ngModel.$viewValue) {
+                  if (widget.value() != null && widget.value() != "" && widget.value() != ngModel.$modelValue) {
                     ngModel.$setViewValue(widget.value());
                   }
                 }
+
+                ngModel.$setPristine();
               }
             }
 
@@ -323,6 +350,11 @@
               bindBefore(widget, "destroy", suspend);
             })();
 
+            --KENDO_COUNT;
+            if (KENDO_COUNT == 0) {
+              scope.$emit("kendoRendered");
+            }
+
           });
         }
       };
@@ -378,7 +410,7 @@
   // object).
   function defadvice(klass, methodName, func) {
     if ($.isArray(klass)) {
-      return klass.forEach(function(klass){
+      return angular.forEach(klass, function(klass){
         defadvice(klass, methodName, func);
       });
     }
@@ -403,6 +435,8 @@
   // because kendo.ui.Widget === kendo.ui.Widget.prototype.init.
   // Hence we resort to the beforeCreate/afterCreate hack.
   defadvice(kendo.ui.Widget, "init", function(element, options){
+    if (!options && OPTIONS_NOW) options = OPTIONS_NOW;
+    OPTIONS_NOW = null;
     var self = this.self;
     if (options && options.$angular) {
       // call before/after hooks only for widgets instantiated by angular-kendo
@@ -418,7 +452,7 @@
   defadvice(kendo.ui.Widget, BEFORE, function(element, options) {
     var self = this.self;
     if (options && !$.isArray(options)) {
-      var scope = $(element).scope();
+      var scope = angular.element(element).scope();
       for (var i = self.events.length; --i >= 0;) {
         var event = self.events[i];
         var handler = options[event];
@@ -435,11 +469,11 @@
     handler = parse(handler);
     return function(e) {
       if (/^\$(apply|digest)$/.test(scope.$root.$$phase)) {
-        handler({ kendoEvent: e });
+        handler(scope, { kendoEvent: e });
       } else {
         scope.$apply(function() { handler(scope, { kendoEvent: e }) });
       }
-    }
+    };
   });
 
   // for the Grid and ListView we add `data` and `selected` too.
@@ -491,7 +525,7 @@
   defadvice([ kendo.ui.PanelBar, kendo.ui.TabStrip, kendo.ui.Splitter ], AFTER, function() {
     this.next();
     var self = this.self;
-    var scope = self.element.scope();
+    var scope = angular.element(self.element).scope();
     if (scope) bindBefore(self, "contentLoad", function(ev){
       //                   tabstrip/panelbar    splitter
       var contentElement = ev.contentElement || ev.pane;
@@ -506,7 +540,7 @@
     this.next();
     var self = this.self;
     if (self.hint) {
-      var scope = self.currentTarget.scope();
+      var scope = angular.element(self.currentTarget).scope();
       if (scope) {
         compile(self.hint)(scope);
         digest(scope);
@@ -519,9 +553,9 @@
   // care to update the view as the data in scope changes.
   defadvice(kendo.ui.Grid, BEFORE, function(element, options){
     this.next();
-    if (options.columns) options.columns.forEach(function(col){
+    if (options.columns) angular.forEach(options.columns, function(col){
       if (col.field && !col.template && !col.format) {
-        col.template = "{{dataItem." + col.field + "}}";
+        col.template = "<span ng-bind='dataItem." + col.field + "'>#: " + col.field + "#</span>";
       }
     });
   });
@@ -531,7 +565,7 @@
   // widget is initialized so that we catch the first dataBound event.
   defadvice([ kendo.ui.Grid, kendo.ui.ListView, kendo.ui.TreeView ], BEFORE, function(element, options){
     this.next();
-    var scope = $(element).scope();
+    var scope = angular.element(element).scope();
     if (!scope) return;
     var self = this.self;
     var role = self.options.name;
@@ -566,10 +600,51 @@
     };
   });
 
+  // templates for autocomplete and combo box
+  defadvice([ kendo.ui.AutoComplete, kendo.ui.ComboBox ], BEFORE, function(element, options){
+    this.next();
+    var scope = angular.element(element).scope();
+    if (!scope) return;
+    var self = this.self;
+    var prev_dataBound = options.dataBound;
+    options.dataBound = function(ev) {
+      var widget = ev.sender;
+      var dataSource = widget.dataSource;
+      var dirty = false;
+      $(widget.items()).each(function(){
+        var el = $(this);
+        if (!el.hasClass("ng-scope")) {
+          var item = widget.dataItem(el.index());
+          var itemScope = scope.$new();
+          itemScope.dataItem = item;
+          compile(el)(itemScope);
+          dirty = true;
+        }
+      });
+      try {
+        if (prev_dataBound) return prev_dataBound.apply(this, arguments);
+      } finally {
+        if (dirty) digest(scope);
+      }
+    };
+  });
+
+  defadvice([ kendo.ui.AutoComplete, kendo.ui.ComboBox ], AFTER, function(){
+    this.next();
+    this.self.bind("dataBinding", function(ev){
+      $(ev.sender.items()).each(function(){
+        var scope = angular.element(this).scope();
+        if (scope) {
+          scope.$destroy();
+        }
+      });
+    });
+  });
+
   defadvice([ kendo.ui.Grid, kendo.ui.ListView ], AFTER, function(){
     this.next();
     var self = this.self;
-    var scope = $(self.element).scope();
+    var scope = angular.element(self.element).scope();
     if (!scope) return;
 
     // itemChange triggers when a single item is changed through our
@@ -585,22 +660,41 @@
 
     // dataBinding triggers when new data is loaded.  We use this to
     // destroy() each item's scope.
-    self.bind("dataBinding", function(ev) {
-      ev.sender.items().each(function(){
-        if ($(this).attr(_UID_)) {
-          var rowScope = angular.element(this).scope();
-          rowScope.$destroy();
-        }
-      });
-    });
+    //
+    // BUG with this code on: create a simple grid with popup editing.
+    // Click edit in some row (the window opens).  Click Cancel (the
+    // window disappears).  Click Edit again (the window opens).
+    // Click Update (the window disappears, without animation).  The
+    // grid is now dead (does not respond to any more events).  I
+    // cannot figure out why this happens, but until it's fixed, gonna
+    // leave this note here and this code commented out.
+    //
+    // self.bind("dataBinding", function(ev) {
+    //   ev.sender.items().each(function(){
+    //     if ($(this).attr(_UID_)) {
+    //       var rowScope = angular.element(this).scope();
+    //       if (rowScope) rowScope.$destroy();
+    //     }
+    //   });
+    // });
   });
 
   defadvice(kendo.ui.Grid, "_toolbar", function(){
     this.next();
     var self = this.self;
-    var scope = self.element.scope();
+    var scope = angular.element(self.element).scope();
     if (scope) {
       compile(self.wrapper.find(".k-grid-toolbar").first())(scope);
+      digest(scope);
+    }
+  });
+
+  defadvice(kendo.ui.Grid, "_thead", function(){
+    this.next();
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (scope) {
+      compile(self.thead)(scope);
       digest(scope);
     }
   });
@@ -608,7 +702,7 @@
   defadvice(kendo.ui.editor.Toolbar, "render", function(){
     this.next();
     var self = this.self;
-    var scope = self.element.scope();
+    var scope = angular.element(self.element).scope();
     if (scope) {
       compile(self.element)(scope);
       digest(scope);
@@ -618,13 +712,50 @@
   defadvice(kendo.ui.Grid, AFTER, function(){
     this.next();
     var self = this.self;
-    if (!self.options.detailTemplate) return;
-    var scope = self.element.scope();
-    if (scope) bindBefore(self, "detailInit", function(ev){
-      var detailScope = scope.$new();
-      detailScope.dataItem = ev.data;
-      compile(ev.detailCell)(detailScope);
-      digest(detailScope);
+    var scope = angular.element(self.element).scope();
+    if (scope) {
+      if (self.options.detailTemplate) bindBefore(self, "detailInit", function(ev){
+        var detailScope = scope.$new();
+        detailScope.dataItem = ev.data;
+        compile(ev.detailCell)(detailScope);
+        digest(detailScope);
+      });
+    }
+  });
+
+  defadvice(kendo.ui.Editable, "refresh", function(){
+    this.next();
+    var self = this.self;
+    var model = self.options.model;
+    var scope = angular.element(self.element).scope();
+    if (!scope || !model) return;
+    scope = self.$angular_scope = scope.$new();
+    scope.dataItem = model;
+
+    // XXX: we need to disable the timeout here, or else the widget is
+    // created but immediately destroyed (focus lost).
+    immediately(function(){
+      compile(self.element)(scope);
+      digest(scope);
+    });
+
+    // and we still need to focus it.
+    self.element.find(":kendoFocusable").eq(0).focus();
+  });
+
+  defadvice(kendo.ui.Editable, "destroy", function(){
+    var self = this.self;
+    if (self.$angular_scope) {
+      self.$angular_scope.$destroy();
+      self.$angular_scope = null;
+    }
+    this.next();
+    timeout(function(){
+      var scope = angular.element(self.element).scope();
+      if (scope) {
+        compile(self.element)(scope);
+        digest(scope);
+      }
     });
   });
 
