@@ -52,6 +52,8 @@
     $provide.decorator("selectDirective", [ "$delegate", dismissAngular ]);
   }]);
 
+  var OPTIONS_NOW;
+
   var factories = {
     dataSource: (function() {
       var types = {
@@ -117,11 +119,26 @@
         }
 
         options.$angular = true;
-        var widget = $(element)[widget](options).data(widget);
-        return widget;
+        var object = $(element)[widget](OPTIONS_NOW = options).data(widget);
+        exposeWidget(object, scope, attrs, widget);
+        scope.$emit("kendoWidgetCreated", object);
+        return object;
       };
     }())
   };
+
+  function exposeWidget(widget, scope, attrs, kendoWidget) {
+    if (attrs[kendoWidget]) {
+      // expose the widget object
+      var set = parse(attrs[kendoWidget]).assign;
+      if (set) {
+        // set the value of the expression to the kendo widget object to expose its api
+        set(scope, widget);
+      } else {
+        throw new Error( kendoWidget + ' attribute used but expression in it is not assignable: ' + attrs[kendoWidget]);
+      }
+    }
+  }
 
   module.factory('directiveFactory', ['$timeout', '$parse', '$compile', '$log', function($timeout, $parse, $compile, $log) {
 
@@ -131,19 +148,6 @@
     log = $log;
 
     var KENDO_COUNT = 0;
-
-    function exposeWidget(widget, scope, attrs, kendoWidget) {
-      if( attrs[kendoWidget] ) {
-        // expose the widget object
-        var set = $parse(attrs[kendoWidget]).assign;
-        if( set ) {
-          // set the value of the expression to the kendo widget object to expose its api
-          set(scope, widget);
-        } else {
-          throw new Error( kendoWidget + ' attribute used but expression in it is not assignable: ' + attrs[kendoWidget]);
-        }
-      }
-    }
 
     var create = function(role) {
 
@@ -221,7 +225,6 @@
 
             var prev_destroy = null;
             function setupBindings() {
-              exposeWidget(widget, scope, attrs, role);
 
               // Cleanup after ourselves
               if (prev_destroy) {
@@ -421,6 +424,8 @@
   // because kendo.ui.Widget === kendo.ui.Widget.prototype.init.
   // Hence we resort to the beforeCreate/afterCreate hack.
   defadvice(kendo.ui.Widget, "init", function(element, options){
+    if (!options && OPTIONS_NOW) options = OPTIONS_NOW;
+    OPTIONS_NOW = null;
     var self = this.self;
     if (options && options.$angular) {
       // call before/after hooks only for widgets instantiated by angular-kendo
