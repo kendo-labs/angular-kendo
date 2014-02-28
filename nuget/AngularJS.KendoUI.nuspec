@@ -2,7 +2,7 @@
 <package >
     <metadata>
         <id>AngularJS.KendoUI</id>
-        <version>0.7.6</version>
+        <version>0.7.7</version>
         <authors>Atanas Korchev</authors>
         <projectUrl>https://github.com/kendo-labs/angular-kendo</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -14,6 +14,7 @@
         <tags>angular angularjs kendo kendo-ui</tags>
     </metadata>
     <files>
-        <file src="../angular-kendo.js" target="content\scripts" />
+        <file src="..\angular-kendo.js" target="content\scripts" />
+        <file src="..\angular-kendo.min.js" target="content\scripts" />
     </files>
 </package>
