@@ -153,8 +153,8 @@
 
       return {
         // Parse the directive for attributes and classes
-        restrict: 'ACE',
-        require: '?ngModel',
+        restrict: "ACE",
+        require: [ "?ngModel", "^?form" ],
         scope: false,
 
         // // XXX: Is this transclusion needed?  We seem to do better without it.
@@ -168,7 +168,10 @@
         //   });
         // }],
 
-        link: function(scope, element, attrs, ngModel) {
+        link: function(scope, element, attrs, controllers) {
+
+          var ngModel = controllers[0];
+          var ngForm = controllers[1];
 
           // we must remove data-kendo-widget-name attribute because
           // it breaks kendo.widgetInstance; can generate all kinds
@@ -248,15 +251,23 @@
 
                 // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
                 var onChange = function(pristine){
+                  function doit() {
+                    if (pristine && ngForm) {
+                      var formPristine = ngForm.$pristine;
+                    }
+                    ngModel.$setViewValue(widget.value());
+                    if (pristine) {
+                      ngModel.$setPristine();
+                      if (formPristine) {
+                        ngForm.$setPristine();
+                      }
+                    }
+                  }
                   return function(e) {
                     if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
-                      ngModel.$setViewValue(widget.value());
-                      if (pristine) ngModel.$setPristine();
+                      doit();
                     } else {
-                      scope.$apply(function() {
-                        ngModel.$setViewValue(widget.value());
-                        if (pristine) ngModel.$setPristine();
-                      });
+                      scope.$apply(doit);
                     }
                   };
                 };
