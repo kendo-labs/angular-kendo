@@ -15,6 +15,6 @@
     </metadata>
     <files>
         <file src="..\angular-kendo.js" target="content\scripts" />
-        <file src="..\angular-kendo.min.js" target="content\scripts" />
+        <file src="..\build\angular-kendo.min.js" target="content\scripts" />
     </files>
 </package>
