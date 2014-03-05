@@ -414,6 +414,15 @@
         defadvice(klass, methodName, func);
       });
     }
+    if (typeof klass == "string") {
+      var a = klass.split(".");
+      var x = kendo;
+      while (x && a.length > 0) x = x[a.shift()];
+      // if (!x) {
+      //   console.log("Can't advice " + klass + "::" + methodName);
+      // }
+      klass = x;
+    }
     var origMethod = klass.prototype[methodName];
     klass.prototype[methodName] = function() {
       var self = this, args = arguments;
@@ -434,7 +443,7 @@
   // XXX: notice we can't override `init` in general for any widget,
   // because kendo.ui.Widget === kendo.ui.Widget.prototype.init.
   // Hence we resort to the beforeCreate/afterCreate hack.
-  defadvice(kendo.ui.Widget, "init", function(element, options){
+  defadvice("ui.Widget", "init", function(element, options){
     if (!options && OPTIONS_NOW) options = OPTIONS_NOW;
     OPTIONS_NOW = null;
     var self = this.self;
@@ -449,7 +458,7 @@
   });
 
   // All event handlers that are strings are compiled the Angular way.
-  defadvice(kendo.ui.Widget, BEFORE, function(element, options) {
+  defadvice("ui.Widget", BEFORE, function(element, options) {
     var self = this.self;
     if (options && !$.isArray(options)) {
       var scope = angular.element(element).scope();
@@ -462,10 +471,10 @@
     }
   });
 
-  defadvice(kendo.ui.Widget, AFTER, function(){});
+  defadvice("ui.Widget", AFTER, function(){});
 
   // most handers will only contain a kendoEvent in the scope.
-  defadvice(kendo.ui.Widget, "$angular_makeEventHandler", function(event, scope, handler){
+  defadvice("ui.Widget", "$angular_makeEventHandler", function(event, scope, handler){
     handler = parse(handler);
     return function(e) {
       if (/^\$(apply|digest)$/.test(scope.$root.$$phase)) {
@@ -477,7 +486,7 @@
   });
 
   // for the Grid and ListView we add `data` and `selected` too.
-  defadvice([ kendo.ui.Grid, kendo.ui.ListView ], "$angular_makeEventHandler", function(event, scope, handler){
+  defadvice([ "ui.Grid", "ui.ListView" ], "$angular_makeEventHandler", function(event, scope, handler){
     if (event != "change") return this.next();
     handler = parse(handler);
     return function(ev) {
@@ -522,7 +531,7 @@
 
   // for PanelBar, TabStrip and Splitter, hook on `contentLoad` to
   // compile Angular templates.
-  defadvice([ kendo.ui.PanelBar, kendo.ui.TabStrip, kendo.ui.Splitter ], AFTER, function() {
+  defadvice([ "ui.PanelBar", "ui.TabStrip", "ui.Splitter" ], AFTER, function() {
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
@@ -536,7 +545,7 @@
 
   // on Draggable::_start compile the content as Angular template, if
   // an $angular_scope method is provided.
-  defadvice(kendo.ui.Draggable, "_start", function(){
+  defadvice("ui.Draggable", "_start", function(){
     this.next();
     var self = this.self;
     if (self.hint) {
@@ -551,7 +560,7 @@
   // If no `template` is supplied for Grid columns, provide an Angular
   // template.  The reason is that in this way AngularJS will take
   // care to update the view as the data in scope changes.
-  defadvice(kendo.ui.Grid, BEFORE, function(element, options){
+  defadvice("ui.Grid", BEFORE, function(element, options){
     this.next();
     if (options.columns) angular.forEach(options.columns, function(col){
       if (col.field && !col.template && !col.format) {
@@ -563,7 +572,7 @@
   // for Grid, ListView and TreeView, provide a dataBound handler that
   // recompiles Angular templates.  We need to do this before the
   // widget is initialized so that we catch the first dataBound event.
-  defadvice([ kendo.ui.Grid, kendo.ui.ListView, kendo.ui.TreeView ], BEFORE, function(element, options){
+  defadvice([ "ui.Grid", "ui.ListView", "ui.TreeView" ], BEFORE, function(element, options){
     this.next();
     var scope = angular.element(element).scope();
     if (!scope) return;
@@ -601,7 +610,7 @@
   });
 
   // templates for autocomplete and combo box
-  defadvice([ kendo.ui.AutoComplete, kendo.ui.ComboBox ], BEFORE, function(element, options){
+  defadvice([ "ui.AutoComplete", "ui.ComboBox" ], BEFORE, function(element, options){
     this.next();
     var scope = angular.element(element).scope();
     if (!scope) return;
@@ -629,7 +638,7 @@
     };
   });
 
-  defadvice([ kendo.ui.AutoComplete, kendo.ui.ComboBox ], AFTER, function(){
+  defadvice([ "ui.AutoComplete", "ui.ComboBox" ], AFTER, function(){
     this.next();
     this.self.bind("dataBinding", function(ev){
       $(ev.sender.items()).each(function(){
@@ -641,7 +650,7 @@
     });
   });
 
-  defadvice([ kendo.ui.Grid, kendo.ui.ListView ], AFTER, function(){
+  defadvice([ "ui.Grid", "ui.ListView" ], AFTER, function(){
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
@@ -674,7 +683,7 @@
     });
   });
 
-  defadvice(kendo.ui.Grid, "_toolbar", function(){
+  defadvice("ui.Grid", "_toolbar", function(){
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
@@ -684,7 +693,7 @@
     }
   });
 
-  defadvice(kendo.ui.Grid, "_thead", function(){
+  defadvice("ui.Grid", "_thead", function(){
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
@@ -694,7 +703,7 @@
     }
   });
 
-  defadvice(kendo.ui.editor.Toolbar, "render", function(){
+  defadvice("ui.editor.Toolbar", "render", function(){
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
@@ -704,7 +713,7 @@
     }
   });
 
-  defadvice(kendo.ui.Grid, AFTER, function(){
+  defadvice("ui.Grid", AFTER, function(){
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
@@ -718,7 +727,7 @@
     }
   });
 
-  defadvice(kendo.ui.Editable, "refresh", function(){
+  defadvice("ui.Editable", "refresh", function(){
     this.next();
     var self = this.self;
     var model = self.options.model;
@@ -738,7 +747,7 @@
     self.element.find(":kendoFocusable").eq(0).focus();
   });
 
-  defadvice(kendo.ui.Editable, "destroy", function(){
+  defadvice("ui.Editable", "destroy", function(){
     var self = this.self;
     if (self.$angular_scope) {
       self.$angular_scope.$destroy();
