@@ -727,6 +727,28 @@
     }
   });
 
+  defadvice("ui.Grid", "cancelRow", function(){
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    var cont = self._editContainer;
+    if (cont) {
+      var model = self._modelForContainer(cont);
+      var uid = model.uid;
+      var prevScope = angular.element(cont).scope();
+      if (prevScope !== scope) {
+        prevScope.$destroy();
+      }
+    }
+    this.next();
+    if (uid) {
+      var row = self.items().filter("[" + _UID_ + "=" + uid + "]");
+      var rowScope = scope.$new();
+      rowScope.dataItem = model;
+      compile(row)(rowScope);
+      digest(scope);
+    }
+  });
+
   defadvice("ui.Editable", "refresh", function(){
     this.next();
     var self = this.self;
@@ -754,13 +776,6 @@
       self.$angular_scope = null;
     }
     this.next();
-    setTimeout(function(){
-      var scope = angular.element(self.element).scope();
-      if (scope) {
-        compile(self.element)(scope);
-        digest(scope);
-      }
-    }, 0);
   });
 
 }, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
