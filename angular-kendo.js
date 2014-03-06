@@ -754,13 +754,13 @@
       self.$angular_scope = null;
     }
     this.next();
-    timeout(function(){
+    setTimeout(function(){
       var scope = angular.element(self.element).scope();
       if (scope) {
         compile(self.element)(scope);
         digest(scope);
       }
-    });
+    }, 0);
   });
 
 }, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
