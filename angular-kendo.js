@@ -182,16 +182,13 @@
           // console.log($(element).data(role)); // --> not undefined.  now I'm pissed.
           $(element)[0].removeAttribute("data-" + role.replace(/([A-Z])/g, "-$1"));
 
-          var originalElement = $(element)[0].cloneNode(true);
-
           ++KENDO_COUNT;
 
           timeout(function() {
-            var widget = factories.widget(scope, element, attrs, role);
-
             // if k-rebind attribute is provided, rebind the kendo widget when
             // the watched value changes
             if (attrs.kRebind) {
+              var originalElement = $(element)[0].cloneNode(true);
               // watch for changes on the expression passed in the k-rebind attribute
               scope.$watch(attrs.kRebind, function(newValue, oldValue) {
                 if (newValue !== oldValue) {
@@ -224,6 +221,7 @@
               }, true); // watch for object equality. Use native or simple values.
             }
 
+            var widget = factories.widget(scope, element, attrs, role);
             setupBindings();
 
             var prev_destroy = null;
