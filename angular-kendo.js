@@ -402,6 +402,17 @@
     }
   }
 
+  function destroyScope(scope, el) {
+    scope.$destroy();
+    if (el) {
+      // prevent leaks. https://github.com/kendo-labs/angular-kendo/issues/237
+      $(el)
+        .removeData("$scope")
+        .removeData("$isolateScope")
+        .removeData("$isolateScopeNoTemplate");
+    }
+  }
+
   // defadvice will patch a class' method with another function.  That
   // function will be called in a context containing `next` (to call
   // the next method) and `object` (a reference to the original
@@ -642,7 +653,7 @@
       $(ev.sender.items()).each(function(){
         var scope = angular.element(this).scope();
         if (scope) {
-          scope.$destroy();
+          destroyScope(scope, this);
         }
       });
     });
@@ -669,12 +680,13 @@
     // destroy() each item's scope.
     self.bind("dataBinding", function(ev) {
       ev.sender.items().each(function(){
-        if ($(this).attr(_UID_)) {
+        var el = $(this);
+        if (el.attr(_UID_)) {
           var rowScope = angular.element(this).scope();
           // avoid destroying the widget's own scope
           // no idea why we get it, but we do.... :(
           if (rowScope && rowScope !== scope) {
-            rowScope.$destroy();
+            destroyScope(rowScope, el);
           }
         }
       });
@@ -734,7 +746,7 @@
       var uid = model.uid;
       var prevScope = angular.element(cont).scope();
       if (prevScope !== scope) {
-        prevScope.$destroy();
+        destroyScope(prevScope, cont);
       }
     }
     this.next();
@@ -753,6 +765,11 @@
     var model = self.options.model;
     var scope = angular.element(self.element).scope();
     if (!scope || !model) return;
+
+    if (self.$angular_scope) {
+      destroyScope(self.$angular_scope, self.element);
+    }
+
     scope = self.$angular_scope = scope.$new();
     scope.dataItem = model;
 
@@ -770,7 +787,7 @@
   defadvice("ui.Editable", "destroy", function(){
     var self = this.self;
     if (self.$angular_scope) {
-      self.$angular_scope.$destroy();
+      destroyScope(self.$angular_scope, self.element);
       self.$angular_scope = null;
     }
     this.next();
