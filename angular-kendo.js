@@ -19,39 +19,6 @@
     }
   }
 
-  // The following disables AngularJS built-in directives for <input> fields
-  // when a Kendo widget is defined.  The reason we have to do this is:
-  //
-  // 1. user updates field.
-  //
-  // 2. widget triggers "change" event on the Widget object => angular-kendo
-  //    gets notified, updates the model with the correct value!
-  //
-  // 3. widget triggers "change" event on the <input> field => AngularJS's
-  //    built-in directive validates the *content* of the input field and
-  //    updates the model again WITH THE WRONG VALUE.
-  //
-  // https://github.com/kendo-labs/angular-kendo/issues/135
-  // https://github.com/kendo-labs/angular-kendo/issues/152
-  module.config([ "$provide", function($provide){
-    function dismissAngular($delegate) {
-      var orig_compile = $delegate[0].compile;
-      $delegate[0].compile = function(element, attrs) {
-        for (var i in attrs) {
-          if (attrs.hasOwnProperty(i)) {
-            if (/^kendo/.test(i) && typeof $.fn[i] == "function") {
-              return;           // HA!
-            }
-          }
-        }
-        return orig_compile.apply(this, arguments);
-      };
-      return $delegate;
-    }
-    $provide.decorator("inputDirective", [ "$delegate", dismissAngular ]);
-    $provide.decorator("selectDirective", [ "$delegate", dismissAngular ]);
-  }]);
-
   var OPTIONS_NOW;
 
   var factories = {
@@ -88,9 +55,10 @@
 
     widget: (function() {
       var ignoredAttributes = {
-        kDataSource: true,
-        kOptions: true,
-        kRebind: true
+        kDataSource : true,
+        kOptions    : true,
+        kRebind     : true,
+        kNgModel    : true,
       };
       return function(scope, element, attrs, widget) {
         var role = widget.replace(/^kendo/, '');
@@ -227,6 +195,11 @@
             var prev_destroy = null;
             function setupBindings() {
 
+              var isFormField = /^(input|select|textarea)$/i.test(element[0].tagName);
+              function value() {
+                return isFormField ? element.val() : widget.value();
+              }
+
               // Cleanup after ourselves
               if (prev_destroy) {
                 prev_destroy();
@@ -247,42 +220,76 @@
                   widget.value(ngModel.$modelValue);
                 };
 
-                // In order to be able to update the angular scope objects, we need to know when the change event is fired for a Kendo UI Widget.
+                // Some widgets trigger "change" on the input field
+                // and this would result in two events sent (#135)
+                var haveChangeOnElement;
+                element.on("change", function(){
+                  haveChangeOnElement = true;
+                });
+
                 var onChange = function(pristine){
-                  function doit() {
-                    if (pristine && ngForm) {
-                      var formPristine = ngForm.$pristine;
-                    }
-                    ngModel.$setViewValue(widget.value());
-                    if (pristine) {
-                      ngModel.$setPristine();
-                      if (formPristine) {
-                        ngForm.$setPristine();
+                  return function(){
+                    haveChangeOnElement = false;
+                    timeout(function(){
+                      if (haveChangeOnElement) return;
+                      if (pristine && ngForm) {
+                        var formPristine = ngForm.$pristine;
                       }
-                    }
-                  }
-                  return function(e) {
-                    if (scope.$root.$$phase === '$apply' || scope.$root.$$phase === '$digest') {
-                      doit();
-                    } else {
-                      scope.$apply(doit);
-                    }
+                      ngModel.$setViewValue(value());
+                      if (pristine) {
+                        ngModel.$setPristine();
+                        if (formPristine) {
+                          ngForm.$setPristine();
+                        }
+                      }
+                    });
                   };
                 };
+
                 bindBefore(widget, "change", onChange(false));
                 bindBefore(widget, "dataBound", onChange(true));
 
+                var currentVal = value();
+
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
-                if (widget.value() != ngModel.$modelValue) {
+                if (currentVal != ngModel.$modelValue) {
                   if (!ngModel.$isEmpty(ngModel.$modelValue)) {
                     widget.value(ngModel.$modelValue);
                   }
-                  if (widget.value() != null && widget.value() != "" && widget.value() != ngModel.$modelValue) {
-                    ngModel.$setViewValue(widget.value());
+                  if (currentVal != null && currentVal != "" && currentVal != ngModel.$modelValue) {
+                    ngModel.$setViewValue(currentVal);
                   }
                 }
 
                 ngModel.$setPristine();
+              }
+
+              // kNgModel is used for the "logical" value
+              OUT: if (attrs.kNgModel) {
+                if (typeof widget.value != "function") {
+                  log.warn("k-ng-model specified on a widget that does not have the value() method: " + (widget.options.name));
+                  break OUT;
+                }
+                var getter = parse(attrs.kNgModel);
+                var setter = getter.assign;
+                var isEmpty = widget.value() == null || widget.value() == "";
+
+                // initial value
+                if (getter(scope) !== widget.value() && !isEmpty) {
+                  setter(scope, widget.value());
+                } else if (isEmpty) {
+                  widget.value(getter(scope));
+                  widget.trigger("change");
+                }
+
+                // keep in sync
+                scope.$watch(attrs.kNgModel, function(newValue, oldValue){
+                  if (newValue === oldValue) return;
+                  widget.value(newValue);
+                });
+                widget.bind("change", function(){
+                  setter(scope, widget.value());
+                });
               }
             }
 
@@ -290,9 +297,7 @@
             // element's class to the widget wrapper.
             (function(){
 
-              if (!(window.MutationObserver
-                    && widget.wrapper
-                    && $(widget.wrapper)[0] !== $(element)[0])) {
+              if (!(window.MutationObserver && widget.wrapper)) {
                 return;
               }
 
@@ -399,6 +404,17 @@
   function digest(scope) {
     if (!/^\$(digest|apply)$/.test(scope.$root.$$phase)) {
       scope.$digest();
+    }
+  }
+
+  function destroyScope(scope, el) {
+    scope.$destroy();
+    if (el) {
+      // prevent leaks. https://github.com/kendo-labs/angular-kendo/issues/237
+      $(el)
+        .removeData("$scope")
+        .removeData("$isolateScope")
+        .removeData("$isolateScopeNoTemplate");
     }
   }
 
@@ -642,7 +658,7 @@
       $(ev.sender.items()).each(function(){
         var scope = angular.element(this).scope();
         if (scope) {
-          scope.$destroy();
+          destroyScope(scope, this);
         }
       });
     });
@@ -669,12 +685,13 @@
     // destroy() each item's scope.
     self.bind("dataBinding", function(ev) {
       ev.sender.items().each(function(){
-        if ($(this).attr(_UID_)) {
+        var el = $(this);
+        if (el.attr(_UID_)) {
           var rowScope = angular.element(this).scope();
           // avoid destroying the widget's own scope
           // no idea why we get it, but we do.... :(
           if (rowScope && rowScope !== scope) {
-            rowScope.$destroy();
+            destroyScope(rowScope, el);
           }
         }
       });
@@ -734,7 +751,7 @@
       var uid = model.uid;
       var prevScope = angular.element(cont).scope();
       if (prevScope !== scope) {
-        prevScope.$destroy();
+        destroyScope(prevScope, cont);
       }
     }
     this.next();
@@ -753,6 +770,11 @@
     var model = self.options.model;
     var scope = angular.element(self.element).scope();
     if (!scope || !model) return;
+
+    if (self.$angular_scope) {
+      destroyScope(self.$angular_scope, self.element);
+    }
+
     scope = self.$angular_scope = scope.$new();
     scope.dataItem = model;
 
@@ -770,7 +792,7 @@
   defadvice("ui.Editable", "destroy", function(){
     var self = this.self;
     if (self.$angular_scope) {
-      self.$angular_scope.$destroy();
+      destroyScope(self.$angular_scope, self.element);
       self.$angular_scope = null;
     }
     this.next();

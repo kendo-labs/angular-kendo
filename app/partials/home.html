@@ -188,9 +188,38 @@ function HomeCtrl($scope) {
   </div>
 </div>
 
+<h4><code>k-ng-model</code></h4>
+
+<p>
+  <strong>Note after <a href="https://github.com/kendo-labs/angular-kendo/commit/6e27524ce1712f5aaa04bb92d411bdae4c28395a">6e27524</a>:</strong> if you are using widgets that are form elements (e.g. <code>&lt;input&gt;</code> or <code>&lt;select&gt;</code>> — generally those responding to jQuery `val()` function) then <code>ng-model</code> will simply bind the value of the elements, and not the “logical” value of the Kendo widget.  This seems to be consistent with what most Angular users expect.  Here's an example to illustrate the difference:
+</p>
+
+<div class="pure-g demo-section">
+  <div class="pure-u-2-3">
+    <h4>Code</h4>
+    <pre class="prettyprint ng-non-bindable">
+&lt;input kendo-date-picker
+       ng-model="datePickerAsString"
+       k-ng-model="datePickerAsDate" /&gt;
+&lt;br/&gt;&lt;b&gt;ng-model:&lt;/b&gt; {{datePickerAsString}}
+&lt;br/&gt;&lt;b&gt;k-ng-model:&lt;/b&gt; {{datePickerAsDate}}
+&lt;br/&gt;it's a date: {{datePickerAsDate|date:'yyyy/MM/dd'}}
+    </pre>
+  </div>
+  <div class="pure-u-1-3">
+    <h4>Demo</h4>
+<input kendo-date-picker
+       ng-model="datePickerAsString"
+       k-ng-model="datePickerAsDate" />
+<br/><b>ng-model:</b> {{datePickerAsString}}
+<br/><b>k-ng-model:</b> {{datePickerAsDate}}
+<br/>it's a date: {{datePickerAsDate|date:'yyyy/MM/dd'}}
+  </div>
+</div>
+
 <h3>Assigning Widget References</h3>
 
-<p>Sometimes, you need to get a reference to your widget in the controller.  Pass in the desired controller property into the directive.  You can then call methods on the widget from the controller.</p>
+<p>Sometimes, you need to get a reference to your widget in the controller. Pass in the desired controller property into the directive.  You can then call methods on the widget from the controller.</p>
 
 <div class="pure-g demo-section">
   <div class="pure-u-2-3">
@@ -254,7 +283,7 @@ $scope.window = {
   <div class="pure-u-1-3">
     <div kendo-chart k-options="column"></div>
   </div>
-  <div class="pure-u-1-3">
+  <div class="pure-u-1-3"><p><b>VALUE: {{value}}</b></p>
     <div class="gauge">
       <div kendo-radial-gauge ng-model="value"></div>
       <input class="gauge-slider" kendo-slider k-min="0" k-max="100" k-large-step="20" k-tick-placement="'none'" ng-model="value" class="span4 offset1"/>
