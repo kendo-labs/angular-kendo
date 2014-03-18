@@ -290,9 +290,7 @@
             // element's class to the widget wrapper.
             (function(){
 
-              if (!(window.MutationObserver
-                    && widget.wrapper
-                    && $(widget.wrapper)[0] !== $(element)[0])) {
+              if (!(window.MutationObserver && widget.wrapper)) {
                 return;
               }
 
