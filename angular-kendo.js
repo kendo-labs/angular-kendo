@@ -255,8 +255,7 @@
                 if (currentVal != ngModel.$viewValue) {
                   if (!ngModel.$isEmpty(ngModel.$viewValue)) {
                     widget.value(ngModel.$viewValue);
-                  }
-                  if (currentVal != null && currentVal != "" && currentVal != ngModel.$viewValue) {
+                  } else if (currentVal != null && currentVal != "" && currentVal != ngModel.$viewValue) {
                     ngModel.$setViewValue(currentVal);
                   }
                 }
