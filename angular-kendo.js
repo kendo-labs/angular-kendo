@@ -217,7 +217,7 @@
                 // Angular will invoke $render when the view needs to be updated with the view value.
                 ngModel.$render = function() {
                   // Update the widget with the view value.
-                  widget.value(ngModel.$modelValue);
+                  widget.value(ngModel.$viewValue);
                 };
 
                 // Some widgets trigger "change" on the input field
@@ -252,11 +252,11 @@
                 var currentVal = value();
 
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
-                if (currentVal != ngModel.$modelValue) {
-                  if (!ngModel.$isEmpty(ngModel.$modelValue)) {
-                    widget.value(ngModel.$modelValue);
+                if (currentVal != ngModel.$viewValue) {
+                  if (!ngModel.$isEmpty(ngModel.$viewValue)) {
+                    widget.value(ngModel.$viewValue);
                   }
-                  if (currentVal != null && currentVal != "" && currentVal != ngModel.$modelValue) {
+                  if (currentVal != null && currentVal != "" && currentVal != ngModel.$viewValue) {
                     ngModel.$setViewValue(currentVal);
                   }
                 }
