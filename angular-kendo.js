@@ -172,7 +172,10 @@
                      ****************************************************************/
                     var _wrapper = $(widget.wrapper)[0];
                     var _element = $(widget.element)[0];
-                    widget.destroy();
+                    if (widget) {
+                      widget.destroy();
+                      widget = null;
+                    }
                     if (_wrapper && _element) {
                       _wrapper.parentNode.replaceChild(_element, _wrapper);
                       var clone = originalElement.cloneNode(true);
@@ -205,7 +208,10 @@
                 prev_destroy();
               }
               prev_destroy = scope.$on("$destroy", function() {
-                widget.destroy();
+                if (widget) {
+                  widget.destroy();
+                  widget = null;
+                }
               });
 
               // 2 way binding: ngModel <-> widget.value()
