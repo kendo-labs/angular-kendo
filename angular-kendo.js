@@ -87,7 +87,12 @@
         }
 
         options.$angular = true;
-        var object = $(element)[widget](OPTIONS_NOW = options).data(widget);
+        var ctor = $(element)[widget];
+        if (!ctor) {
+          console.error("Could not find: " + widget);
+          return null;
+        }
+        var object = ctor.call(element, OPTIONS_NOW = options).data(widget);
         exposeWidget(object, scope, attrs, widget);
         scope.$emit("kendoWidgetCreated", object);
         return object;
@@ -374,19 +379,25 @@
   }]);
 
   // create directives for every widget.
-  angular.forEach([ kendo.ui, kendo.dataviz && kendo.dataviz.ui ], function(namespace) {
-    angular.forEach(namespace, function(value, key) {
-      if (key.match(/^[A-Z]/) && key !== 'Widget') {
-        var widget = "kendo" + key;
-        module.directive(widget, [
-          "directiveFactory",
-          function(directiveFactory) {
-            return directiveFactory.create(widget);
+  (function(){
+    function createDirectives(prefix) {
+      return function(namespace) {
+        angular.forEach(namespace, function(value, key) {
+          if (key.match(/^[A-Z]/) && key !== 'Widget') {
+            var widget = "kendo" + prefix + key;
+            module.directive(widget, [
+              "directiveFactory",
+              function(directiveFactory) {
+                return directiveFactory.create(widget);
+              }
+            ]);
           }
-        ]);
+        });
       }
-    });
-  });
+    }
+    angular.forEach([ kendo.ui, kendo.dataviz && kendo.dataviz.ui ], createDirectives(""));
+    angular.forEach([ kendo.mobile && kendo.mobile.ui ], createDirectives("Mobile"));
+  })();
 
   /* -----[ utils ]----- */
 
