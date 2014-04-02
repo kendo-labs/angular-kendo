@@ -87,7 +87,12 @@
         }
 
         options.$angular = true;
-        var object = $(element)[widget](OPTIONS_NOW = options).data(widget);
+        var ctor = $(element)[widget];
+        if (!ctor) {
+          console.error("Could not find: " + widget);
+          return null;
+        }
+        var object = ctor.call(element, OPTIONS_NOW = options).data(widget);
         exposeWidget(object, scope, attrs, widget);
         scope.$emit("kendoWidgetCreated", object);
         return object;
@@ -172,7 +177,10 @@
                      ****************************************************************/
                     var _wrapper = $(widget.wrapper)[0];
                     var _element = $(widget.element)[0];
-                    widget.destroy();
+                    if (widget) {
+                      widget.destroy();
+                      widget = null;
+                    }
                     if (_wrapper && _element) {
                       _wrapper.parentNode.replaceChild(_element, _wrapper);
                       var clone = originalElement.cloneNode(true);
@@ -205,7 +213,10 @@
                 prev_destroy();
               }
               prev_destroy = scope.$on("$destroy", function() {
-                widget.destroy();
+                if (widget) {
+                  widget.destroy();
+                  widget = null;
+                }
               });
 
               // 2 way binding: ngModel <-> widget.value()
@@ -217,7 +228,7 @@
                 // Angular will invoke $render when the view needs to be updated with the view value.
                 ngModel.$render = function() {
                   // Update the widget with the view value.
-                  widget.value(ngModel.$modelValue);
+                  widget.value(ngModel.$viewValue);
                 };
 
                 // Some widgets trigger "change" on the input field
@@ -252,11 +263,10 @@
                 var currentVal = value();
 
                 // if the model value is undefined, then we set the widget value to match ( == null/undefined )
-                if (currentVal != ngModel.$modelValue) {
-                  if (!ngModel.$isEmpty(ngModel.$modelValue)) {
-                    widget.value(ngModel.$modelValue);
-                  }
-                  if (currentVal != null && currentVal != "" && currentVal != ngModel.$modelValue) {
+                if (currentVal != ngModel.$viewValue) {
+                  if (!ngModel.$isEmpty(ngModel.$viewValue)) {
+                    widget.value(ngModel.$viewValue);
+                  } else if (currentVal != null && currentVal != "" && currentVal != ngModel.$viewValue) {
                     ngModel.$setViewValue(currentVal);
                   }
                 }
@@ -305,6 +315,7 @@
 
               var mo = new MutationObserver(function(changes, mo){
                 suspend();    // make sure we don't trigger a loop
+                if (!widget) return;
 
                 changes.forEach(function(chg){
                   var w = $(widget.wrapper)[0];
@@ -369,19 +380,25 @@
   }]);
 
   // create directives for every widget.
-  angular.forEach([ kendo.ui, kendo.dataviz && kendo.dataviz.ui ], function(namespace) {
-    angular.forEach(namespace, function(value, key) {
-      if (key.match(/^[A-Z]/) && key !== 'Widget') {
-        var widget = "kendo" + key;
-        module.directive(widget, [
-          "directiveFactory",
-          function(directiveFactory) {
-            return directiveFactory.create(widget);
+  (function(){
+    function createDirectives(prefix) {
+      return function(namespace) {
+        angular.forEach(namespace, function(value, key) {
+          if (key.match(/^[A-Z]/) && key !== 'Widget') {
+            var widget = "kendo" + prefix + key;
+            module.directive(widget, [
+              "directiveFactory",
+              function(directiveFactory) {
+                return directiveFactory.create(widget);
+              }
+            ]);
           }
-        ]);
+        });
       }
-    });
-  });
+    }
+    angular.forEach([ kendo.ui, kendo.dataviz && kendo.dataviz.ui ], createDirectives(""));
+    angular.forEach([ kendo.mobile && kendo.mobile.ui ], createDirectives("Mobile"));
+  })();
 
   /* -----[ utils ]----- */
 
@@ -577,7 +594,7 @@
   defadvice("ui.Grid", BEFORE, function(element, options){
     this.next();
     if (options.columns) angular.forEach(options.columns, function(col){
-      if (col.field && !col.template && !col.format) {
+      if (col.field && !col.template && !col.format && !col.values) {
         col.template = "<span ng-bind='dataItem." + col.field + "'>#: " + col.field + "#</span>";
       }
     });
@@ -620,6 +637,45 @@
       } finally {
         if (dirty) digest(scope);
       }
+    };
+  });
+
+  // DropDownList
+  defadvice("ui.DropDownList", BEFORE, function(element, options){
+    this.next();
+    var scope = angular.element(element).scope();
+    if (!scope) return;
+    var self = this.self;
+
+    // compile {{angular}} on dataBound
+    var prev_dataBound = options.dataBound;
+    options.dataBound = function(ev) {
+      var widget = ev.sender;
+      widget.ul.find("li").each(function(idx){
+        var itemScope = scope.$new();
+        itemScope.dataItem = widget.dataItem(idx);
+        compile(this)(itemScope);
+      });
+      try {
+        if (prev_dataBound)
+          return prev_dataBound.apply(this, arguments);
+      } finally {
+        digest(scope);
+      }
+    };
+
+    // destroy scopes on dataBinding
+    var prev_dataBinding = options.dataBinding;
+    options.dataBinding = function(ev) {
+      var widget = ev.sender;
+      widget.ul.find("li").each(function(){
+        var itemScope = angular.element(this).scope();
+        if (itemScope && itemScope !== scope) {
+          destroyScope(itemScope);
+        }
+      });
+      if (prev_dataBinding)
+        return prev_dataBinding.apply(this, arguments);
     };
   });
 
