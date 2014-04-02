@@ -593,7 +593,7 @@
   defadvice("ui.Grid", BEFORE, function(element, options){
     this.next();
     if (options.columns) angular.forEach(options.columns, function(col){
-      if (col.field && !col.template && !col.format) {
+      if (col.field && !col.template && !col.format && !col.values) {
         col.template = "<span ng-bind='dataItem." + col.field + "'>#: " + col.field + "#</span>";
       }
     });
