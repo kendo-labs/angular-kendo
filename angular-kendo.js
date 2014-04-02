@@ -315,6 +315,7 @@
 
               var mo = new MutationObserver(function(changes, mo){
                 suspend();    // make sure we don't trigger a loop
+                if (!widget) return;
 
                 changes.forEach(function(chg){
                   var w = $(widget.wrapper)[0];
