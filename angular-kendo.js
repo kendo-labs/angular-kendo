@@ -854,6 +854,16 @@
     this.next();
   });
 
+  defadvice("ui.Window", "content", function(){
+    this.next();
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (scope) {
+      compile(self.element)(scope);
+      digest(scope);
+    }
+  });
+
 }, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
 
 // Local Variables:
