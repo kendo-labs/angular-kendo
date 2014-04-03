@@ -220,9 +220,9 @@
               });
 
               // 2 way binding: ngModel <-> widget.value()
-              if (ngModel) {
+              OUT: if (ngModel) {
                 if (!widget.value) {
-                  throw new Error('ng-model used but ' + role + ' does not define a value accessor');
+                  break OUT;
                 }
 
                 // Angular will invoke $render when the view needs to be updated with the view value.
