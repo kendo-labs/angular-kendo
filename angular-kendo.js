@@ -24,10 +24,13 @@
   var factories = {
     dataSource: (function() {
       var types = {
-        TreeView: 'HierarchicalDataSource',
-        Scheduler: 'SchedulerDataSource'
+        TreeView  : 'HierarchicalDataSource',
+        Scheduler : 'SchedulerDataSource',
+        PanelBar  : '$PLAIN',
       };
       var toDataSource = function(dataSource, type) {
+        if (type == '$PLAIN')
+          return dataSource;
         return kendo.data[type].create(dataSource);
       };
       return function(scope, element, attrs, role) {
