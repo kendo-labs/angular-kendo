@@ -237,9 +237,11 @@
                 // Some widgets trigger "change" on the input field
                 // and this would result in two events sent (#135)
                 var haveChangeOnElement;
-                element.on("change", function(){
-                  haveChangeOnElement = true;
-                });
+                if (isFormField) {
+                  element.on("change", function(){
+                    haveChangeOnElement = true;
+                  });
+                }
 
                 var onChange = function(pristine){
                   return function(){
