@@ -684,6 +684,25 @@
     };
   });
 
+  defadvice("ui.DropDownList", "_textAccessor", function(text){
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (text !== undefined) {
+      var itemScope = angular.element(self.span).scope();
+      if (itemScope && itemScope !== scope) {
+        destroyScope(itemScope);
+      }
+    }
+    var ret = this.next();
+    if (text !== undefined) {
+      var itemScope = scope.$new();
+      itemScope.dataItem = text;
+      compile(self.span)(itemScope);
+      digest(itemScope);
+    }
+    return ret;
+  });
+
   // templates for autocomplete and combo box
   defadvice([ "ui.AutoComplete", "ui.ComboBox" ], BEFORE, function(element, options){
     this.next();
