@@ -436,7 +436,8 @@
       $(el)
         .removeData("$scope")
         .removeData("$isolateScope")
-        .removeData("$isolateScopeNoTemplate");
+        .removeData("$isolateScopeNoTemplate")
+        .removeClass("ng-scope");
     }
   }
 
@@ -608,7 +609,7 @@
   // for Grid, ListView and TreeView, provide a dataBound handler that
   // recompiles Angular templates.  We need to do this before the
   // widget is initialized so that we catch the first dataBound event.
-  defadvice([ "ui.Grid", "ui.ListView", "ui.TreeView" ], BEFORE, function(element, options){
+  defadvice([ "ui.Grid", "ui.ListView", "mobile.ui.ListView", "ui.TreeView" ], BEFORE, function(element, options){
     this.next();
     var scope = angular.element(element).scope();
     if (!scope) return;
@@ -744,7 +745,7 @@
     });
   });
 
-  defadvice([ "ui.Grid", "ui.ListView" ], AFTER, function(){
+  defadvice([ "ui.Grid", "ui.ListView", "mobile.ui.ListView" ], AFTER, function(){
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
@@ -755,8 +756,14 @@
     self.bind("itemChange", function(ev) {
       var dataSource = ev.sender.dataSource;
       var itemElement = ev.item[0];
-      var itemScope = scope.$new();
-      itemScope.dataItem = dataSource.getByUid(ev.item.attr(_UID_));
+      var item = ev.item;
+      if ($.isArray(item)) item = item[0];
+      item = $(item);
+      var itemScope = angular.element(item).scope();
+      if (!itemScope || itemScope === scope) {
+        itemScope = scope.$new();
+      }
+      itemScope.dataItem = dataSource.getByUid(item.attr(_UID_));
       compile(itemElement)(itemScope);
       digest(itemScope);
     });
@@ -886,6 +893,14 @@
       compile(self.element)(scope);
       digest(scope);
     }
+  });
+
+  defadvice("mobile.ui.ListView", "destroy", function(){
+    var self = this.self;
+    if (self._itemBinder && self._itemBinder.dataSource) {
+      this.self._itemBinder._unbindDataSource();
+    }
+    this.next();
   });
 
 }, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
