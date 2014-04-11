@@ -455,9 +455,10 @@
       var a = klass.split(".");
       var x = kendo;
       while (x && a.length > 0) x = x[a.shift()];
-      // if (!x) {
-      //   console.log("Can't advice " + klass + "::" + methodName);
-      // }
+      if (!x) {
+        //console.log("Can't advice " + klass + "::" + methodName);
+        return;
+      }
       klass = x;
     }
     var origMethod = klass.prototype[methodName];
