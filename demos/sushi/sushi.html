@@ -16,32 +16,42 @@
     <script src="lib/angular-kendo.js"></script>
 
     <script src="sushi.js"></script>
+
+    <style type="text/css">
+      body {
+        padding: 0; margin: 0;
+      }
+    </style>
   </head>
   <body ng-app="SushiApp" ng-controller="SushiController" class="km-ios">
 
-    <header data-role="header">
-      <div kendo-mobile-nav-bar>
-        <span data-role="view-title">{{ pool.viewTitle }}</span>
-        <a class="about-button" data-align="right" href="#about" kendo-mobile-button>About</a>
-      </div>
-    </header>
+    <div kendo-mobile-view="mainView">
 
-    <div ng-view></div>
+      <header data-role="header">
+        <div kendo-mobile-nav-bar>
+          <span data-role="view-title">{{ pool.viewTitle }}</span>
+          <a class="about-button" data-align="right" href="#about" kendo-mobile-button>About</a>
+        </div>
+      </header>
 
-    <footer data-role="footer" data-id="default">
-      <div kendo-mobile-tab-strip="tabStrip">
-        <a href="#" data-icon="home">Home</a>
-        <a href="#menu" data-icon="organize">Our menu</a>
-        <a href="#cart" data-icon="cart">Cart</a>
-        <a href="#account" data-icon="contacts">Account</a>
-      </div>
-    </footer>
+      <div ng-view></div>
+
+      <footer data-role="footer" data-id="default">
+        <div kendo-mobile-tab-strip="tabStrip">
+          <a href="#" data-icon="home">Home</a>
+          <a href="#menu" data-icon="organize">Our menu</a>
+          <a href="#cart" data-icon="cart">Cart</a>
+          <a href="#account" data-icon="contacts">Account</a>
+        </div>
+      </footer>
+
+    </div>
 
     <!-- templates -->
 
     <script type="text/x-kendo-template" id="menuTemplate">
       <a kendo-mobile-button
-         ng-click="addToCart(dataItem)">{{ dataItem.price | currency }}</a>
+         k-on-click="addToCart(dataItem)">{{ dataItem.price | currency }}</a>
 
       <a class="details-link"
          data-role="listview-link"
@@ -55,7 +65,7 @@
     <script id="cartItemTemplate" type="text/x-kendo-template">
       <a class="red-button"
          kendo-mobile-button
-         ng-click="removeItem(dataItem)"
+         k-on-click="removeItem(dataItem)"
          >&nbsp;&#x2716;&nbsp;</a>
 
       <a class="details-link"

@@ -12,8 +12,8 @@
     <aside>
       <img src="images/200/{{ item.image }}" />
       <span class="price">{{ item.price | currency }}</span>
-      <a kendo-mobile-button ng-click="addToCart(item)">Order</a>
-      <a kendo-mobile-button class="red-button" ng-click="removeItem(item)" ng-show="item.ordered">Remove from cart</a>
+      <a kendo-mobile-button k-on-click="addToCart(item)">Order</a>
+      <a kendo-mobile-button class="red-button" k-on-click="removeItem(item)" ng-show="item.ordered">Remove from cart</a>
     </aside>
     <h2>{{ item.name }}</h2>
     <p>{{ item.description }}</p>

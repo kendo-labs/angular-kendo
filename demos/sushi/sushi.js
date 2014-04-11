@@ -105,6 +105,15 @@
             })();
         });
 
+        $scope.$on("kendoWidgetCreated", function(ev, widget){
+            if (widget === $scope.mainView) {
+                widget.element.css({
+                    display: "",
+                    height: $(window).innerHeight(),
+                });
+            }
+        });
+
     }]);
 
     app.controller("HomeController", [ "$scope", function($scope){
@@ -131,7 +140,7 @@
                 $scope.added.forEach(function(item){
                     item.set("ordered", 0);
                 });
-                $scope.added = new kendo.data.ObservableArray([]);
+                $scope.added.splice(0, $scope.added.length);
             }, 400);
         };
     }]);
