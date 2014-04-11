@@ -688,14 +688,14 @@
   defadvice("ui.DropDownList", "_textAccessor", function(text){
     var self = this.self;
     var scope = angular.element(self.element).scope();
-    if (text !== undefined) {
+    if (scope && text !== undefined) {
       var itemScope = angular.element(self.span).scope();
       if (itemScope && itemScope !== scope) {
         destroyScope(itemScope);
       }
     }
     var ret = this.next();
-    if (text !== undefined) {
+    if (scope && text !== undefined) {
       var itemScope = scope.$new();
       itemScope.dataItem = text;
       compile(self.span)(itemScope);
