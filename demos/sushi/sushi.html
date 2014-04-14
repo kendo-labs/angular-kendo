@@ -56,7 +56,7 @@
       <a class="details-link"
          data-role="listview-link"
          href="#details/{{ dataItem.id }}">
-        <img src="images/75/{{ dataItem.image }}" />
+        <img ng-src="images/75/{{ dataItem.image }}" />
         <h2>{{ dataItem.name }}</h2>
         <span class="added" ng-show="dataItem.ordered">Item added to cart {{dataItem.ordered}} times.</span>
       </a>
@@ -71,7 +71,7 @@
       <a class="details-link"
          data-role="listview-link"
          href="#details/{{ dataItem.id }}">
-        <img src="images/75/{{ dataItem.image }}" />
+        <img ng-src="images/75/{{ dataItem.image }}" />
         <h2>{{ dataItem.name }} (x {{ dataItem.ordered }})</h2>
         <span class="price">total: {{ dataItem.price * dataItem.ordered | currency }}</span>
       </a>

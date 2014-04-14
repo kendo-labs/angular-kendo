@@ -10,7 +10,7 @@
 
   <div data-role="content">
     <aside>
-      <img src="images/200/{{ item.image }}" />
+      <img ng-src="images/200/{{ item.image }}" />
       <span class="price">{{ item.price | currency }}</span>
       <a kendo-mobile-button k-on-click="addToCart(item)">Order</a>
       <a kendo-mobile-button class="red-button" k-on-click="removeItem(item)" ng-show="item.ordered">Remove from cart</a>
