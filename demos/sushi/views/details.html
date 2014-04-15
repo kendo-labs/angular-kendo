@@ -1,14 +1,12 @@
 <div id="details">
 
-  <header data-role="header">
-    <div kendo-mobile-navbar>
-      <!-- XXX: the kendo.mobile.ui.BackButton doesn't work, we need the onclick below -->
-      <a kendo-mobile-back-button k-align="'left'" onclick="window.history.back(); return false;">Back</a>
-      <span data-role="view-title">Item</span>
-    </div>
-  </header>
+  <div kendo-mobile-navbar style="position: fixed; top: 0.4em; left: 0.4em; z-index: 200">
+    <!-- XXX: the kendo.mobile.ui.BackButton doesn't work, we need the onclick below -->
+    <a kendo-mobile-back-button k-align="'left'" onclick="window.history.back(); return false;">Back</a>
+    <span data-role="view-title">Item</span>
+  </div>
 
-  <div data-role="content">
+  <div class="km-content">
     <aside>
       <img ng-src="images/200/{{ item.image }}" />
       <span class="price">{{ item.price | currency }}</span>

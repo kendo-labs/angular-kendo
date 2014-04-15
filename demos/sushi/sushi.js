@@ -105,15 +105,15 @@
             })();
         });
 
-        $scope.$on("kendoWidgetCreated", function(ev, widget){
-            if (widget === $scope.mainView) {
-                widget.element.css({
-                    display: "",
-                    height: $(window).innerHeight(),
-                });
-            }
-        });
-
+        // adjust the main view vertical padding to account for header and footer
+        function adjustView() {
+            $("#mainView").css({
+                paddingTop: $("header").height(),
+                paddingBottom: $("footer").height()
+            });
+        }
+        $scope.$on("kendoRendered", adjustView);
+        $(window).resize(adjustView);
     }]);
 
     app.controller("HomeController", [ "$scope", function($scope){
