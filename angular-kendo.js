@@ -924,6 +924,19 @@
     });
   }
 
+  {
+    // same for mobile/ScrollView, except that we don't need the
+    // "change" event.
+
+    defadvice("mobile.ui.ScrollView", "value", function(mew){
+      var self = this.self;
+      if (mew != null) {
+        self.scrollTo(mew);
+      }
+      return self.page;
+    });
+  }
+
 }, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
 
 // Local Variables:
