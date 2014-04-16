@@ -904,6 +904,26 @@
     this.next();
   });
 
+  {
+    // mobile/ButtonGroup does not have a "value" method, but looks
+    // like it would be useful.  We provide it here.
+
+    defadvice("mobile.ui.ButtonGroup", "value", function(mew){
+      var self = this.self;
+      if (mew != null) {
+        self.select(self.element.children("li.km-button").eq(mew));
+        self.trigger("change");
+        self.trigger("select", { index: self.selectedIndex });
+      }
+      return self.selectedIndex;
+    });
+
+    defadvice("mobile.ui.ButtonGroup", "_select", function(){
+      this.next();
+      this.self.trigger("change");
+    });
+  }
+
 }, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
 
 // Local Variables:
