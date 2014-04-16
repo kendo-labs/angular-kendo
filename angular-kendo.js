@@ -136,13 +136,13 @@
         // // XXX: Is this transclusion needed?  We seem to do better without it.
         // //      https://github.com/kendo-labs/angular-kendo/issues/90
         //
-        // transclude: true,
-        // controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
-        //   // Make the element's contents available to the kendo widget to allow creating some widgets from existing elements.
-        //   $transclude(function(clone){
-        //     $element.append(clone);
-        //   });
-        // }],
+        transclude: true,
+        controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
+          // Make the element's contents available to the kendo widget to allow creating some widgets from existing elements.
+          $transclude($scope, function(clone){
+            $element.append(clone);
+          });
+        }],
 
         link: function(scope, element, attrs, controllers) {
 
