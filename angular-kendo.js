@@ -630,10 +630,11 @@
         // XXX HACK: the tree view will call dataBound multiple
         // times, sometimes for LI-s containing nested items that
         // may have been already compiled.  Therefore in this
-        // situation we compile the ".k-in" element, which contains
-        // only the template for a single item.
+        // situation we compile the first div element, which contains
+        // only the template for a single item (both the list item
+	// and the item checkbox if one exists).
         var elementToCompile = role == "TreeView"
-          ? $(this).find(".k-in").first()
+          ? $(this).find("div").first()
           : $(this);
         if (!elementToCompile.hasClass("ng-scope")) {
           var itemUid = $(this).attr(_UID_);
