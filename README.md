@@ -18,7 +18,7 @@ angular-kendo has not been tested against any other versions of these libraries.
 
 ## Source Code and Downloads
 
-This repository contains both the full and minified version of angular-kendo in the **build** folder.
+This repository contains the full source code in `angular-kendo.js`. To get a minified version, just run `grunt` with no arguments in the top directory and it will create `build/angular-kendo.min.js` (before that you need to run `npm install` if you haven't already).
 
 ## Documentation
 
