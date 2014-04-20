@@ -1,0 +1,21 @@
+<div id="details">
+
+  <div kendo-mobile-navbar style="position: fixed; top: 0.4em; left: 0.4em; z-index: 200">
+    <!-- XXX: the kendo.mobile.ui.BackButton doesn't work, we need the onclick below -->
+    <a kendo-mobile-back-button k-align="'left'" onclick="window.history.back(); return false;">Back</a>
+    <span data-role="view-title">Item</span>
+  </div>
+
+  <div class="km-content">
+    <aside>
+      <img ng-src="images/200/{{ item.image }}" />
+      <span class="price">{{ item.price | currency }}</span>
+      <a kendo-mobile-button k-on-click="addToCart(item)">Order</a>
+      <a kendo-mobile-button class="red-button" k-on-click="removeItem(item)" ng-show="item.ordered">Remove from cart</a>
+    </aside>
+    <h2>{{ item.name }}</h2>
+    <p>{{ item.description }}</p>
+    <span class="added" ng-show="item.ordered">Item added to cart {{ item.ordered }} times.</span>
+  </div>
+
+</div>

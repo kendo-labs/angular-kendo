@@ -24,10 +24,13 @@
   var factories = {
     dataSource: (function() {
       var types = {
-        TreeView: 'HierarchicalDataSource',
-        Scheduler: 'SchedulerDataSource'
+        TreeView  : 'HierarchicalDataSource',
+        Scheduler : 'SchedulerDataSource',
+        PanelBar  : '$PLAIN',
       };
       var toDataSource = function(dataSource, type) {
+        if (type == '$PLAIN')
+          return dataSource;
         return kendo.data[type].create(dataSource);
       };
       return function(scope, element, attrs, role) {
@@ -133,13 +136,13 @@
         // // XXX: Is this transclusion needed?  We seem to do better without it.
         // //      https://github.com/kendo-labs/angular-kendo/issues/90
         //
-        // transclude: true,
-        // controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
-        //   // Make the element's contents available to the kendo widget to allow creating some widgets from existing elements.
-        //   $transclude(function(clone){
-        //     $element.append(clone);
-        //   });
-        // }],
+        transclude: true,
+        controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
+          // Make the element's contents available to the kendo widget to allow creating some widgets from existing elements.
+          $transclude($scope, function(clone){
+            $element.append(clone);
+          });
+        }],
 
         link: function(scope, element, attrs, controllers) {
 
@@ -220,9 +223,9 @@
               });
 
               // 2 way binding: ngModel <-> widget.value()
-              if (ngModel) {
+              OUT: if (ngModel) {
                 if (!widget.value) {
-                  throw new Error('ng-model used but ' + role + ' does not define a value accessor');
+                  break OUT;
                 }
 
                 // Angular will invoke $render when the view needs to be updated with the view value.
@@ -234,9 +237,11 @@
                 // Some widgets trigger "change" on the input field
                 // and this would result in two events sent (#135)
                 var haveChangeOnElement;
-                element.on("change", function(){
-                  haveChangeOnElement = true;
-                });
+                if (isFormField) {
+                  element.on("change", function(){
+                    haveChangeOnElement = true;
+                  });
+                }
 
                 var onChange = function(pristine){
                   return function(){
@@ -431,7 +436,8 @@
       $(el)
         .removeData("$scope")
         .removeData("$isolateScope")
-        .removeData("$isolateScopeNoTemplate");
+        .removeData("$isolateScopeNoTemplate")
+        .removeClass("ng-scope");
     }
   }
 
@@ -449,9 +455,10 @@
       var a = klass.split(".");
       var x = kendo;
       while (x && a.length > 0) x = x[a.shift()];
-      // if (!x) {
-      //   console.log("Can't advice " + klass + "::" + methodName);
-      // }
+      if (!x) {
+        //console.log("Can't advice " + klass + "::" + methodName);
+        return;
+      }
       klass = x;
     }
     var origMethod = klass.prototype[methodName];
@@ -603,7 +610,7 @@
   // for Grid, ListView and TreeView, provide a dataBound handler that
   // recompiles Angular templates.  We need to do this before the
   // widget is initialized so that we catch the first dataBound event.
-  defadvice([ "ui.Grid", "ui.ListView", "ui.TreeView" ], BEFORE, function(element, options){
+  defadvice([ "ui.Grid", "ui.ListView", "mobile.ui.ListView", "ui.TreeView" ], BEFORE, function(element, options){
     this.next();
     var scope = angular.element(element).scope();
     if (!scope) return;
@@ -679,6 +686,25 @@
     };
   });
 
+  defadvice("ui.DropDownList", "_textAccessor", function(text){
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (scope && text !== undefined) {
+      var itemScope = angular.element(self.span).scope();
+      if (itemScope && itemScope !== scope) {
+        destroyScope(itemScope);
+      }
+    }
+    var ret = this.next();
+    if (scope && text !== undefined) {
+      var itemScope = scope.$new();
+      itemScope.dataItem = text;
+      compile(self.span)(itemScope);
+      digest(itemScope);
+    }
+    return ret;
+  });
+
   // templates for autocomplete and combo box
   defadvice([ "ui.AutoComplete", "ui.ComboBox" ], BEFORE, function(element, options){
     this.next();
@@ -720,7 +746,7 @@
     });
   });
 
-  defadvice([ "ui.Grid", "ui.ListView" ], AFTER, function(){
+  defadvice([ "ui.Grid", "ui.ListView", "mobile.ui.ListView" ], AFTER, function(){
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
@@ -731,8 +757,14 @@
     self.bind("itemChange", function(ev) {
       var dataSource = ev.sender.dataSource;
       var itemElement = ev.item[0];
-      var itemScope = scope.$new();
-      itemScope.dataItem = dataSource.getByUid(ev.item.attr(_UID_));
+      var item = ev.item;
+      if ($.isArray(item)) item = item[0];
+      item = $(item);
+      var itemScope = angular.element(item).scope();
+      if (!itemScope || itemScope === scope) {
+        itemScope = scope.$new();
+      }
+      itemScope.dataItem = dataSource.getByUid(item.attr(_UID_));
       compile(itemElement)(itemScope);
       digest(itemScope);
     });
@@ -853,6 +885,57 @@
     }
     this.next();
   });
+
+  defadvice("ui.Window", "content", function(){
+    this.next();
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (scope) {
+      compile(self.element)(scope);
+      digest(scope);
+    }
+  });
+
+  defadvice("mobile.ui.ListView", "destroy", function(){
+    var self = this.self;
+    if (self._itemBinder && self._itemBinder.dataSource) {
+      this.self._itemBinder._unbindDataSource();
+    }
+    this.next();
+  });
+
+  {
+    // mobile/ButtonGroup does not have a "value" method, but looks
+    // like it would be useful.  We provide it here.
+
+    defadvice("mobile.ui.ButtonGroup", "value", function(mew){
+      var self = this.self;
+      if (mew != null) {
+        self.select(self.element.children("li.km-button").eq(mew));
+        self.trigger("change");
+        self.trigger("select", { index: self.selectedIndex });
+      }
+      return self.selectedIndex;
+    });
+
+    defadvice("mobile.ui.ButtonGroup", "_select", function(){
+      this.next();
+      this.self.trigger("change");
+    });
+  }
+
+  {
+    // same for mobile/ScrollView, except that we don't need the
+    // "change" event.
+
+    defadvice("mobile.ui.ScrollView", "value", function(mew){
+      var self = this.self;
+      if (mew != null) {
+        self.scrollTo(mew);
+      }
+      return self.page;
+    });
+  }
 
 }, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
 

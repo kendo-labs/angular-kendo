@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html class="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+
+    <link href="http://cdn.kendostatic.com/2014.1.318/styles/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.kendostatic.com/2014.1.318/styles/kendo.silver.min.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.kendostatic.com/2014.1.318/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
+
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://cdn.kendostatic.com/2014.1.318/js/kendo.all.min.js"></script>
+
+    <!-- <link href="../../tmp/kendo/dist/styles/web/kendo.common.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="../../tmp/kendo/dist/styles/web/kendo.silver.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="../../tmp/kendo/dist/styles/mobile/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" /> -->
+
+    <!-- <script src="../../tmp/kendo/dist/js/jquery.min.js"></script> -->
+    <!-- <script src="../../tmp/kendo/dist/js/kendo.all.js"></script> -->
+
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <script src="lib/angular.js"></script>
+    <script src="lib/angular-route.js"></script>
+    <script src="lib/angular-kendo.js"></script>
+
+    <script src="sushi.js"></script>
+
+    <style type="text/css">
+      body {
+        padding: 0; margin: 0;
+      }
+      header {
+        position: fixed;
+        top: 0px; left: 0px; width: 100%; z-index: 100;
+      }
+      footer {
+        position: fixed;
+        bottom: 0px; left: 0px; width: 100%; z-index: 100;
+      }
+    </style>
+  </head>
+  <body ng-app="SushiApp" ng-controller="SushiController" class="km-ios7">
+
+    <header>
+      <div kendo-mobile-nav-bar>
+        <span data-role="view-title">{{ pool.viewTitle }}</span>
+        <a class="about-button" data-align="right" href="#about" kendo-mobile-button>About</a>
+      </div>
+    </header>
+
+    <div id="mainView" ng-view></div>
+
+    <footer>
+      <div kendo-mobile-tab-strip="tabStrip">
+        <a href="#" data-icon="home">Home</a>
+        <a href="#menu" data-icon="organize">Our menu</a>
+        <a href="#cart" data-icon="cart">Cart</a>
+        <a href="#account" data-icon="contacts">Account</a>
+      </div>
+    </footer>
+
+    <!-- templates -->
+
+    <script type="text/x-kendo-template" id="menuTemplate">
+      <a kendo-mobile-button
+         k-on-click="addToCart(dataItem)">{{ dataItem.price | currency }}</a>
+
+      <a class="details-link"
+         data-role="listview-link"
+         href="#details/{{ dataItem.id }}">
+        <img ng-src="images/75/{{ dataItem.image }}" />
+        <h2>{{ dataItem.name }}</h2>
+        <span class="added" ng-show="dataItem.ordered">Item added to cart {{dataItem.ordered}} times.</span>
+      </a>
+    </script>
+
+    <script id="cartItemTemplate" type="text/x-kendo-template">
+      <a class="red-button"
+         kendo-mobile-button
+         k-on-click="removeItem(dataItem)"
+         >&nbsp;&#x2716;&nbsp;</a>
+
+      <a class="details-link"
+         data-role="listview-link"
+         href="#details/{{ dataItem.id }}">
+        <img ng-src="images/75/{{ dataItem.image }}" />
+        <h2>{{ dataItem.name }} (x {{ dataItem.ordered }})</h2>
+        <span class="price">total: {{ dataItem.price * dataItem.ordered | currency }}</span>
+      </a>
+    </script>
+
+  </body>
+</html>

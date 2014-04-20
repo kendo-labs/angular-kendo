@@ -1,0 +1,17 @@
+<div id="cart">
+
+  <h2 id="total">{{ total() | currency }}</h2>
+
+  <img src="images/sad.png" id="empty-icon" ng-show="added.length == 0" />
+
+  <a kendo-mobile-button id="checkout" ng-show="added.length > 0"
+     k-on-click="checkout()" class="red-button" href="#done"
+     >Checkout</a>
+
+  <ul class="item-list" id="cartList"
+      kendo-mobile-list-view
+      k-template="template('cartItemTemplate')"
+      k-data-source="added"
+      k-style="'inset'"></ul>
+
+</div>
