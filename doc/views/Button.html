@@ -1,0 +1,39 @@
+<script id="the-javascript">
+function MyCtrl($scope) {
+}
+</script>
+
+<div class="demo" id="the-html"><div ng-controller="MyCtrl">
+  <p>
+    <button kendo-button class="k-primary">Primary Button</button>
+    <button kendo-button>Button</button>
+  </p>
+  <p>
+    <a kendo-button k-enable="false" class="k-primary">Disabled Primary Button</a>
+    <a kendo-button k-enable="false">Disabled Button</a>
+  </p>
+  <p>
+    <a kendo-button k-sprite-css-class="'k-icon k-i-funnel'">Filter</a>
+    <a kendo-button k-icon="'funnel-clear'">Clear Filter</a>
+    <em kendo-button k-sprite-css-class="'k-icon k-i-refresh'"><span class="k-sprite">Refresh</span></em>
+  </p>
+</div></div>
+
+<h2>Source</h2>
+
+<div kendo-tab-strip>
+  <ul>
+    <li class="k-state-active">HTML</li>
+    <li>JavaScript</li>
+  </ul>
+
+  <div>
+    <pre class="code language-markup" data-code-id="the-html"></pre>
+  </div>
+
+  <div>
+    <pre class="code language-javascript" data-code-id="the-javascript"></pre>
+  </div>
+</div>
+
+<script> fixSampleCode() </script>

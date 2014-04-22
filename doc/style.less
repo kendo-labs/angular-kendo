@@ -1,0 +1,181 @@
+// -*- mode: less-css; less-css-compile-at-save: t; -*-
+
+body {
+  background: #eee;
+  color: #000;
+  padding: 0;
+  margin: 0;
+  font-family: sans-serif;
+  font-size: 1em;
+}
+
+a, a:link, a:visited {
+  color: #22c;
+  text-decoration: none;
+  &:hover {
+    color: #c82;
+  }
+}
+
+header {
+  z-index: 10000;
+  box-sizing: border-box;
+  background-color: #777;
+  color: #fff;
+  font: 2em Georgia,"Times New Roman",serif;
+  line-height: 1em;
+  padding: 0.3em;
+  text-align: center;
+  width: 100%;
+  &.fixed {
+    position: fixed;
+  }
+  &.spacer {
+    visibility: hidden;
+  }
+  box-shadow: 0 2px 5px #999;
+}
+.logolink {
+  width: 133px;
+  height: 95px;
+  background: url("angular-kendo.png") no-repeat 50% 50%;
+  background-size: 100% auto;
+  z-index: 10001;
+  position: absolute;
+  left: 40px;
+  top: 10px;
+  opacity: 0.6;
+  transition-duration: 0.2s;
+  &:hover {
+    opacity: 1;
+  }
+  &.fixed {
+    position: fixed;
+    left: 10px;
+    width: 60px;
+    height: 50px;
+    top: 0;
+  }
+}
+
+.demolist {
+  padding-top: 50px;
+  font-size: 90%;
+  box-sizing: border-box;
+  float: left;
+  width: 15em;
+  background: #ddd;
+  box-shadow: 2px 0 5px #999;
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 1em 0;
+    li {
+      margin: 0;
+      padding: 0;
+      a {
+        transition-duration: 0.2s;
+        display: block;
+        padding: 4px 2em;
+        &:hover {
+          background-color: #fff;
+        }
+      }
+      &.current {
+        a {
+          background-color: #777;
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+.mainview {
+  margin-left: 15em;
+  padding: 1em;
+  h1.title {
+    margin-top: 0;
+  }
+  .weblinks {
+    font-size: 90%;
+    background-color: #ddd;
+    float: right;
+    border: 1px solid #777;
+    a {
+      display: block;
+      &:before {
+        content: "» ";
+      }
+    }
+    .title {
+      background-color: #777;
+      color: #fff;
+      padding: 4px 0;
+      text-align: center;
+      font-weight: bold;
+    }
+    .body {
+      padding: 0.6em;
+    }
+  }
+  .demo {
+    margin: 1em;
+  }
+}
+
+pre.code {
+  padding: 1em !important;
+  margin: 1em !important;
+  font-family: "ubuntu mono","monaco","consolas","andale mono",monospace !important;
+  code {
+    font-family: inherit !important;
+  }
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+code {
+  font-family: "ubuntu mono","monaco","consolas","andale mono",monospace !important;
+  font-size: 90%;
+  padding: 2px 4px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px #999;
+}
+
+table.sample {
+  width: 100%;
+  td {
+    width: 50%;
+    vertical-align: top;
+    pre.code {
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none;
+      background: transparent;
+    }
+  }
+  &.col3 {
+    td {
+      width: 33% !important;
+    }
+  }
+}
+
+p, blockquote {
+  line-height: 1.4em;
+}
+
+footer {
+  font-size: 90%;
+  color: #777;
+  margin-top: 1em;
+  padding: 1em;
+  border-top: 1px solid #aaa;
+  text-align: center;
+  a, a:link, a:visited {
+    text-decoration: underline;
+    color: #777;
+  }
+}

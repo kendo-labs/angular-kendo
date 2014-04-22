@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.common.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.default.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.dataviz.default.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <script src="//code.jquery.com/jquery-1.9.1.min.js"></script> -->
+    <!-- <script src="//cdn.kendostatic.com/2014.1.318/js/kendo.all.min.js"></script> -->
+
+    <link rel="stylesheet " href="../tmp/kendo/dist/styles/web/kendo.common.css" />
+    <link rel="stylesheet " href="../tmp/kendo/dist/styles/web/kendo.silver.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="../tmp/kendo/dist/js/jquery.js"></script>
+    <script src="../tmp/kendo/dist/js/kendo.all.js"></script>
+
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-route.js"></script>
+    <script src="../angular-kendo.js"></script>
+    <script src="doc.js"></script>
+
+    <link rel="stylesheet" href="lib/prism/prism.css" />
+    <script src="lib/prism/prism.js" data-manual></script>
+  </head>
+  <body ng-app="DemoApp" ng-controller="DemoController">
+    <header class="fixed">
+      Angular-Kendo.js
+      <span ng-if="$route.current.widget">/ {{ $route.current.title }} widget</span>
+    </header>
+    <a class="logolink" href="#/"></a>
+    <header class="spacer">A</header>
+    <div class="demolist">
+      <ul>
+        <li ng-repeat="item in demos" class="{{ item.widget == $route.current.widget ? 'current' : '' }}">
+          <a href="#/{{ item.widget }}">{{item.widget}}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="mainview">
+      <div class="weblinks" ng-if="$route.current.widget">
+        <div class="title">{{ $route.current.widget }}</div>
+        <div class="body">
+          <a href="http://demos.telerik.com/kendo-ui/web/{{ $route.current.widget | lowercase }}/index.html"
+             >Demos at telerik.com</a>
+          <a href="http://docs.telerik.com/kendo-ui/api/web/{{ $route.current.widget | lowercase }}"
+             >Complete documentation</a>
+        </div>
+      </div>
+      <h1 class="title">{{ $route.current.title }}</h1>
+      <div ng-view></div>
+    </div>
+    <footer>
+      This site was built with <a href="http://angularjs.org">AngularJS</a> and <a href="http://www.kendoui.com">Kendo UI</a>
+    </footer>
+  </body>
+</html>
