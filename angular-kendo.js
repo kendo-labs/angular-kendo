@@ -304,6 +304,7 @@
                 });
                 widget.bind("change", function(){
                   setter(scope, widget.value());
+                  digest(scope);
                 });
               }
             }
