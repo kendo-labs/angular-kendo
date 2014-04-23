@@ -1,0 +1,55 @@
+<script id="the-javascript">
+function MyCtrl($scope) {
+  $scope.onClick1 = function() {
+    alert("Primary button click");
+  };
+  $scope.onClick2 = function() {
+    alert("Second button click");
+  };
+}
+</script>
+
+<script id="the-html" type="x/ignore">
+<div ng-controller="MyCtrl">
+  <p>
+    <button kendo-button class="k-primary" ng-click="onClick1()">Primary Button</button>
+    <button kendo-button k-on-click="onClick2()">Button</button>
+  </p>
+  <p>
+    <a kendo-button k-enable="false" class="k-primary">Disabled Primary Button</a>
+    <a kendo-button k-enable="false">Disabled Button</a>
+  </p>
+  <p>
+    <button kendo-button ng-disabled="disabled">Support for ngDisabled</button>
+    <label><input type="checkbox" ng-model="disabled" /> Disable</label>
+  </p>
+  <p>
+    <a kendo-button k-sprite-css-class="'k-icon k-i-funnel'">Filter</a>
+    <a kendo-button k-icon="'funnel-clear'">Clear Filter</a>
+    <em kendo-button k-sprite-css-class="'k-icon k-i-refresh'"><span class="k-sprite">Refresh</span></em>
+  </p>
+</div>
+</script>
+
+<div class="includeHtml demo" data-code-id="the-html"></div>
+
+<button class="try-kendo" data-js="the-javascript" data-html="the-html">Edit on Kendo UI Dojo</button>
+
+<h2>Source</h2>
+
+<div kendo-tab-strip>
+  <ul>
+    <li class="k-state-active">HTML</li>
+    <li>JavaScript</li>
+  </ul>
+
+  <div>
+    <pre class="code language-markup" data-code-id="the-html"></pre>
+  </div>
+
+  <div>
+    <pre class="code language-javascript" data-code-id="the-javascript"></pre>
+  </div>
+</div>
+
+<script> fixSampleCode() </script>

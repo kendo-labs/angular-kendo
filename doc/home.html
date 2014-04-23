@@ -1,0 +1,91 @@
+<p>Kendo UI is a comprehensive HTML5/JavaScript framework for modern web and
+mobile app development.  It contains many widgets for web, a core framework,
+a mobile suite, and a complete Data Visualization solution.</p>
+
+<p>The Angular Kendo project aims to provide deep integration between Kendo
+UI Web/DataViz and AngularJS.</p>
+
+<h2>Easy as Pie!</h2>
+
+<table class="sample"><tr><td>
+<pre class="code language-markup">
+&lt;!-- markup --&gt;
+&lt;div kendo-chart k-options="pie"&gt;&lt;/div&gt;
+</pre>
+<br />
+<pre class="code language-javascript">
+// in controller:
+$scope.pie = {
+    title: {
+        position: "bottom",
+        text: "Share of Internet Population Growth"
+    },
+    ...
+};
+</pre>
+</td><td>
+
+<div ng-controller="MyCtrl">
+  <div kendo-chart k-options="pie"></div>
+</div>
+
+<script>
+    function MyCtrl($scope) {
+        $scope.pie = {
+            title: {
+                position: "bottom",
+                text: "Share of Internet Population Growth"
+            },
+            legend: {
+                visible: false
+            },
+            chartArea: {
+                background: ""
+            },
+            seriesDefaults: {
+                labels: {
+                    visible: true,
+                    background: "transparent",
+                    template: "#= category #: #= value#%"
+                }
+            },
+            series: [{
+                type: "pie",
+                startAngle: 150,
+                data: [{
+                    category: "Asia",
+                    value: 53.8,
+                    color: "#9de219"
+                },{
+                    category: "Europe",
+                    value: 16.1,
+                    color: "#90cc38"
+                },{
+                    category: "Latin America",
+                    value: 11.3,
+                    color: "#068c35"
+                },{
+                    category: "Africa",
+                    value: 9.6,
+                    color: "#006634"
+                },{
+                    category: "Middle East",
+                    value: 5.2,
+                    color: "#004d38"
+                },{
+                    category: "North America",
+                    value: 3.6,
+                    color: "#033939"
+                }]
+            }],
+            tooltip: {
+                visible: true,
+                format: "{0}%"
+            }
+        };
+    }
+</script>
+
+</td></tr></table>
+
+<script> fixSampleCode() </script>
