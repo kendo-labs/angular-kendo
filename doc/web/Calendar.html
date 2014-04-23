@@ -1,0 +1,71 @@
+<script type="x/ignore" id="the-html">
+<div ng-controller="MyCtrl">
+  <!-- remember good ol' tables? -->
+  <table><tr style="vertical-align: top">
+    <td>
+      <p><b>Start date: </b><code>{{startDate | date:"MMM d, yyyy"}}</code></p>
+      <div kendo-calendar="cal1" k-ng-model="startDate" k-rebind="endDate" k-max="endDate"></div>
+    </td>
+    <td ng-show="startDate">
+      <p><b>End date: </b><code>{{endDate | date:"MMM d, yyyy"}}</code></p>
+      <div kendo-calendar="cal2" k-ng-model="endDate" k-rebind="startDate" k-min="startDate" k-max="maxEndDate"></div>
+    </td>
+  </tr></table>
+</div>
+</script>
+
+<script id="the-javascript">
+function MyCtrl($scope) {
+  $scope.$watch("startDate", function(val){
+    var maxEndDate = new Date(val);
+    maxEndDate.setDate(maxEndDate.getDate() + 14);
+    $scope.maxEndDate = maxEndDate;
+    delete $scope.endDate;
+  });
+}
+</script>
+
+<p>
+  This sample shows two linked calendars allowing selection of a start date
+  and an end date that can fall at most two weeks after the start date.  The
+  second calendar is initially hidden using Angular's <code>ng-show</code>
+  directive — it'll be shown only if <code>startDate</code> is defined in
+  scope.  It will appear as soon as you select a start date.
+</p>
+
+<p>
+  Limiting of date range is done with the Calendar's <code>min</code>
+  and <code>max</code> config options.  We use <code>k-rebind</code> to
+  reset the calendars whenever the <code>startDate</code>
+  and <code>endDate</code> change in the scope.
+</p>
+
+<p>
+  In order to allow selection of a date at most two weeks from the start
+  date in the second calendar, we're using <code>$scope.watch</code> (see
+  the controller) to compute the max end date
+  whenever <code>startDate</code> changes.
+</p>
+
+<div class="demo includeHtml" data-code-id="the-html"></div>
+
+<button class="try-kendo" data-js="the-javascript" data-html="the-html">Edit on Kendo UI Dojo</button>
+
+<h2>Source</h2>
+
+<div kendo-tab-strip>
+  <ul>
+    <li class="k-state-active">HTML</li>
+    <li>JavaScript</li>
+  </ul>
+
+  <div>
+    <pre class="code language-markup" data-code-id="the-html"></pre>
+  </div>
+
+  <div>
+    <pre class="code language-javascript" data-code-id="the-javascript"></pre>
+  </div>
+</div>
+
+<script> fixSampleCode() </script>
