@@ -279,13 +279,15 @@ to see the Angular binding.</p>
 <p>Kendo UI Comes with a powerful data visualization suite.  In this demo,
 move the slider to see the binding to the radial gauges.</p>
 
-<table class="sample col3"><tr><td>
+<table class="sample col3" style="width: 80%"><tr><td>
   <div kendo-chart k-options="column"></div>
 </td><td>
   <p><b>VALUE: {{value}}</b></p>
   <div class="gauge">
     <div kendo-radial-gauge ng-model="value"></div>
-    <input class="gauge-slider" kendo-slider k-min="0" k-max="100" k-large-step="20" k-tick-placement="'none'" ng-model="value" />
+    <div style="text-align: center; margin-top: 1em">
+      <input kendo-slider class="gauge-slider" k-min="0" k-max="100" k-large-step="20" k-tick-placement="'none'" ng-model="value" />
+    </div>
   </div>
 </td><td>
   <div kendo-chart k-options="pie"/>
@@ -300,7 +302,7 @@ the <a href="http://demos.kendoui.com">Kendo UI Demos site</a>.</p>
 need?
 Please <a href="https://github.com/kendo-labs/angular-kendo/issues">enter an
 issue</a>, or better yet
-- <a href="https://github.com/kendo-labs/angular-kendo">fork us</a> and
+— <a href="https://github.com/kendo-labs/angular-kendo">fork us</a> and
 submit a pull request!</p>
 
 

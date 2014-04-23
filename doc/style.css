@@ -27,7 +27,7 @@ header {
   padding: 0.3em;
   text-align: center;
   width: 100%;
-  box-shadow: 0 2px 5px #999;
+  box-shadow: 0 2px 10px #000;
 }
 header.fixed {
   position: fixed;
@@ -63,8 +63,9 @@ header.spacer {
   box-sizing: border-box;
   float: left;
   width: 15em;
-  background: #ddd;
+  background: #777;
   box-shadow: 2px 0 5px #999;
+  color: #eee;
 }
 .demolist ul {
   list-style-type: none;
@@ -76,6 +77,7 @@ header.spacer {
   padding: 0;
 }
 .demolist ul li a {
+  color: #aef;
   transition-duration: 0.2s;
   display: block;
   padding: 4px 2em;
@@ -83,16 +85,20 @@ header.spacer {
 .demolist ul li a:hover {
   background-color: #fff;
 }
+.demolist ul li.current {
+  background-color: #eee;
+  margin-right: -7px;
+}
 .demolist ul li.current a {
-  background-color: #777;
-  color: #fff;
+  background-color: #eee;
+  color: #000;
 }
 .mainview {
   margin-left: 15em;
   padding: 1em;
 }
 .mainview h1.title {
-  margin-top: 0;
+  margin-top: 0.5em;
 }
 .mainview .weblinks {
   font-size: 90%;
