@@ -191,6 +191,31 @@
 
 })();
 
+function makeHtmlForDojo(args) {
+    function indent(spacing) {
+        return function(str) {
+            return str.replace(/^[\n\r]+|\s*$/g, "")
+                .split(/[\n\r]+/)
+                .map(function(line){ return spacing + line })
+                .join("\n");
+        };
+    }
+    var js = "";
+    if (args.js) {
+        js = args.js.map(indent("      ")).join("\n\n");
+        js = "    <script>\n" + js + "\n    </script>";
+    }
+    var html = "";
+    if (args.html) {
+        html = args.html.map(indent("    ")).join("\n\n");
+    }
+    return $("#html-for-dojo").html()
+        .replace(/^\s*<!--\s*|\s*-->\s*$/g, "")
+        .replace(/\$JS/g, js)
+        .replace(/\$HTML/g, html)
+        .replace(/\$CDNROOT/g, dojo.cdnRoot);
+}
+
 function fixSampleCode() {
     $("pre.code").each(function(){
         this.setAttribute("ng-non-bindable", true);
@@ -223,4 +248,21 @@ $(document).ready(function(){
         }
     }
     fixlogo();
+});
+
+$(document).on("click", ".try-kendo", function(ev){
+    var btn = $(ev.target);
+    var js = btn.data("js");
+    var html = btn.data("html");
+    function getHTML(id) {
+        return $("#" + id).html();
+    }
+    if (js) {
+        js = js.split(",").map(getHTML);
+    }
+    if (html) {
+        html = html.split(",").map(getHTML);
+    }
+    var code = makeHtmlForDojo({ js: js, html: html });
+    dojo.postSnippet(code, window.location.href);
 });

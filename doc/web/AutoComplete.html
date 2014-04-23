@@ -55,12 +55,18 @@ function MyCtrl($scope){
 }
 </script>
 
-<div class="demo" id="the-html"><div ng-controller="MyCtrl">
+<script id="the-html" type="x/ignore">
+<div ng-controller="MyCtrl">
   <input kendo-auto-complete ng-model="country" k-data-source="countryNames" />
   <p>
     Your selection: {{ country }}
   </p>
-</div></div>
+</div>
+</script>
+
+<div class="demo includeHtml" data-code-id="the-html"></div>
+
+<button class="try-kendo" data-js="the-javascript" data-html="the-html">Edit on Kendo UI Dojo</button>
 
 <h2>Source</h2>
 
