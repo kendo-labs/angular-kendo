@@ -1,17 +1,17 @@
 <!doctype html>
 <html>
   <head>
-    <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.common.min.css" rel="stylesheet" type="text/css" />
-    <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.default.min.css" rel="stylesheet" type="text/css" />
-    <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" />
-    <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.dataviz.default.min.css" rel="stylesheet" type="text/css" />
-    <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="//cdn.kendostatic.com/2014.1.318/js/kendo.all.min.js"></script>
+    <!-- <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.common.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.default.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.dataviz.default.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <script src="//code.jquery.com/jquery-1.9.1.min.js"></script> -->
+    <!-- <script src="//cdn.kendostatic.com/2014.1.318/js/kendo.all.min.js"></script> -->
 
-    <!-- <link rel="stylesheet " href="../tmp/kendo/dist/styles/web/kendo.common.css" /> -->
-    <!-- <link rel="stylesheet " href="../tmp/kendo/dist/styles/web/kendo.silver.css" /> -->
-    <!-- <script src="../tmp/kendo/dist/js/jquery.js"></script> -->
-    <!-- <script src="../tmp/kendo/dist/js/kendo.all.js"></script> -->
+    <link rel="stylesheet " href="../tmp/kendo/dist/styles/web/kendo.common.css" />
+    <link rel="stylesheet " href="../tmp/kendo/dist/styles/web/kendo.silver.css" />
+    <script src="../tmp/kendo/dist/js/jquery.js"></script>
+    <script src="../tmp/kendo/dist/js/kendo.all.js"></script>
 
     <link rel="stylesheet" href="style.css" />
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
@@ -29,13 +29,23 @@
     </header>
     <a class="logolink" href="#/"></a>
     <header class="spacer">A</header>
+
     <div class="demolist">
+      <h1>Documentation</h1>
       <ul>
-        <li ng-repeat="item in demos" class="{{ item.widget == $route.current.widget ? 'current' : '' }}">
+        <li ng-repeat="item in docPages" class="{{ item.page == $route.current.page ? 'current' : '' }}">
+          <a href="#/{{ item.page }}">{{item.title}}</a>
+        </li>
+      </ul>
+
+      <h1>Web widget demos</h1>
+      <ul>
+        <li ng-repeat="item in webDemos" class="{{ item.widget == $route.current.widget ? 'current' : '' }}">
           <a href="#/{{ item.widget }}">{{item.widget}}</a>
         </li>
       </ul>
     </div>
+
     <div class="mainview">
       <div class="weblinks" ng-if="$route.current.widget">
         <div class="title">{{ $route.current.widget }}</div>
@@ -47,8 +57,9 @@
         </div>
       </div>
       <h1 class="title">{{ $route.current.title }}</h1>
-      <div ng-view></div>
+      <div ng-view ng-cloak></div>
     </div>
+
     <footer>
       This site was built with <a href="http://angularjs.org">AngularJS</a> and <a href="http://www.kendoui.com">Kendo UI</a>
     </footer>

@@ -1,6 +1,6 @@
 (function(){
 
-    var DEMOS = [
+    var WEB_DEMOS = [
         { widget: "AutoComplete" },
         { widget: "Button" },
         { widget: "Calendar" },
@@ -31,14 +31,44 @@
         { widget: "Window" },
     ];
 
+    var DOCS = [
+        { page: "basics", title: "Basic usage", controller: "BasicDocsController" },
+        { page: "datasource", title: "Data source vs. Angular" }
+    ];
+
     var app = angular.module("DemoApp", [ "kendo.directives", "ngRoute" ]);
 
+    app.config([ "$routeProvider", function($routeProvider){
+        WEB_DEMOS.forEach(function(x){
+            var props = {
+                templateUrl: "web/" + x.widget + ".html",
+                widget: x.widget,
+                title: x.widget
+            };
+            if (x.controller) props.controller = x.controller;
+            $routeProvider.when("/" + x.widget, props);
+        });
+        DOCS.forEach(function(x){
+            var props = {
+                templateUrl: "docs/" + x.page + ".html",
+                page: x.page,
+                title: x.title
+            };
+            if (x.controller) props.controller = x.controller;
+            $routeProvider.when("/" + x.page, props);
+        });
+        $routeProvider.when("/", {
+            templateUrl: "home.html",
+        });
+    }]);
+
     app.controller("DemoController", [ "$scope", "$route", function($scope, $route){
-        $scope.demos = DEMOS;
+        $scope.webDemos = WEB_DEMOS;
+        $scope.docPages = DOCS;
         $scope.$route = $route;
     }]);
 
-    app.controller("HomeController", [ "$scope", function($scope){
+    app.controller("BasicDocsController", [ "$scope", function($scope){
         $scope.selection = 1;
         $scope.things = {
             data: [{ name: "Thing 1", id: 1 },
@@ -105,7 +135,7 @@
                 background: ""
             }
         };
-        $scope.pie = ({
+        $scope.pie = {
             title: {
                 position: "bottom",
                 text: "Share of Internet Population Growth"
@@ -156,23 +186,7 @@
                 visible: true,
                 format: "{0}%"
             }
-        });
-    }]);
-
-    app.config([ "$routeProvider", function($routeProvider){
-        DEMOS.forEach(function(x){
-            var props = {
-                templateUrl: "views/" + x.widget + ".html",
-                widget: x.widget,
-                title: x.widget
-            };
-            if (x.controller) props.controller = x.controller;
-            $routeProvider.when("/" + x.widget, props);
-        });
-        $routeProvider.when("/", {
-            templateUrl: "home.html",
-            controller: "HomeController",
-        });
+        };
     }]);
 
 })();
@@ -190,6 +204,10 @@ function fixSampleCode() {
             this.appendChild(text);
         }
         Prism.highlightElement(this);
+    });
+    $("div.includeHtml").each(function(){
+        var id = $(this).data("code-id");
+        $(this).html($("#" + id).html());
     });
 }
 

@@ -1,0 +1,304 @@
+<p>
+  You have to load (in this order) jQuery, AngularJS, Kendo and
+  Angular-Kendo bindings.  You can get the latest version of Angular-Kendo
+  from the Github
+  repository: <a href="https://github.com/kendo-labs/angular-kendo/">github.com/kendo-labs/angular-kendo</a>.
+</p>
+
+<pre class="code language-markup"
+>&lt;script src="js/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="js/angular-1.2.14.min.js"&gt;&lt;/script&gt;
+&lt;script src="js/kendo.all.min.js"&gt;&lt;/script&gt;
+&lt;script src="js/angular-kendo.js"&gt;&lt;/script&gt;</pre>
+
+<p>
+  In your AngularJS app definition, pass the <code>kendo.directives</code>
+  module dependency:
+</p>
+
+<pre class="code language-javascript"
+>var app = angular.module('your-angular-app', ['kendo.directives']);</pre>
+
+<p>
+  Now you can use the Angular directives for Kendo UI to create widgets in a
+  declarative way.  Here is a simple drop down list:
+</p>
+
+<table class="sample"><tr><td>
+<pre class="code language-markup">
+&lt;select kendo-drop-down-list&gt;
+  &lt;option value="1"&gt;Thing 1&lt;/option&gt;
+  &lt;option value="2"&gt;Thing 2&lt;/option&gt;
+  &lt;option value="3"&gt;Thing 3&lt;/option&gt;
+&lt;/select&gt;
+</pre>
+</td><td>
+<select kendo-drop-down-list>
+  <option value="1">Thing 1</option>
+  <option value="2">Thing 2</option>
+  <option value="3">Thing 3</option>
+</select>
+</td></tr></table>
+
+<p>
+  Any widget can be created using a directive (attribute or class). There is
+  one directive per Kendo UI widget and they are named using a
+  dash-separated version of the Kendo UI widget name. For example,
+  the <code>DropDownList</code> Kendo UI widget becomes a
+  <code>kendo-drop-down-list</code> attribute. It doesn't have to have a
+  value; it just has to be present.
+</p>
+
+<h3>Configuring Widget Options (k- Attributes)</h3>
+
+<p>You can specify any widget configuration attributes
+with <code>k-</code> attributes.  Your data source should exist in the
+controller, as that is the only place the directive will look for
+the <code>k-data-source</code> attribute.  Notice that all strings
+values <strong>must be quoted with single-quotes</strong> as per AngularJS
+standards.</p>
+
+<table class="sample"><tr><td>
+<pre class="code language-javascript">
+// controller
+function HomeCtrl($scope) {
+  $scope.things = {
+    data: [{ name: &quot;Thing 1&quot;, id: 1 },
+           { name: &quot;Thing 2&quot;, id: 2 },
+           { name: &quot;Thing 3&quot;, id: 3 }]
+  };
+}
+</pre>
+<br/>
+<pre class="code language-markup">
+&lt;!-- markup --&gt;
+&lt;select kendo-drop-down-list
+        k-option-label="'Select A Thing'"
+        k-data-text-field="'name'"
+        k-data-value-field="'id'"
+        k-data-source="things"&gt;&lt;/select&gt;
+</pre>
+</td><td>
+<select kendo-drop-down-list
+        k-option-label="'Select A Thing'"
+        k-data-text-field="'name'"
+        k-data-value-field="'id'"
+        k-data-source="things"></select>
+</td></tr></table>
+
+<h3>Configuring Widget Options From The Controller</h3>
+
+<p>You may not want to have your configuration in the widget itself.  In
+that case, you can pass the object that contains your widgets configuration
+into the <code>k-options</code> attribute.</p>
+
+<table class="sample"><tr><td>
+<pre class="code language-javascript">
+// controller
+function HomeCtrl($scope) {
+  $scope.thingsOptions = {
+    dataSource: {
+      data: [{ name: &quot;Thing 1&quot;, id: 1 },
+             { name: &quot;Thing 2&quot;, id: 2 },
+             { name: &quot;Thing 3&quot;, id: 3 }]
+    },
+    dataTextField: &quot;name&quot;,
+    dataValueField: &quot;id&quot;,
+    optionLabel: &quot;Select A Thing&quot;
+  };
+}
+</pre>
+<br />
+<pre class="code language-markup">
+&lt;!-- markup --&gt;
+&lt;select kendo-drop-down-list k-options=&quot;thingsOptions&quot;&gt;&lt;/select&gt;
+</pre>
+</td><td>
+<select kendo-drop-down-list k-options="thingsOptions"></select>
+</td></tr></table>
+
+<h3>Binding To Events</h3>
+
+<p>Events can be specified either in markup, or in the options object passed
+to <code>k-options</code>.  Any events passed to <code>k-options</code> are
+specified according to the <a href="http://docs.kendoui.com/api">Kendo UI
+API Docs</a>.</p>
+
+<p>Events specified in Markup need a <code>k-on</code> prefix and must pass
+a <code>kendoEvent</code> argument.</p>
+
+<table class="sample"><tr><td>
+<pre class="code language-javascript">
+// controller
+function HomeCtrl($scope) {
+  $scope.thingsOptions = {
+    dataSource: {
+      data: [{ name: &quot;Thing 1&quot;, id: 1 },
+             { name: &quot;Thing 2&quot;, id: 2 },
+             { name: &quot;Thing 3&quot;, id: 3 }]
+    },
+    dataTextField: &quot;name&quot;,
+    dataValueField: &quot;id&quot;,
+    optionLabel: &quot;Select A Thing&quot;
+  };
+
+  $scope.thingsChange = function(e) {
+    console.log(e.sender.text());
+  };
+}
+</pre>
+<br />
+<pre class="code language-markup">
+&lt;!-- markup --&gt;
+&lt;select kendo-drop-down-list
+        k-options="thingsOptions"
+        k-on-change="thingsChange(kendoEvent)"&gt;&lt;/select&gt;
+</pre>
+</td><td>
+<select kendo-drop-down-list
+        k-options="thingsOptions"
+        k-on-change="thingsChange(kendoEvent)"></select>
+</td></tr></table>
+
+<h3>Integration With AngularJS Models</h3>
+
+<p>Kendo UI Widgets raise their changed events so that AngularJS is notified
+to update the model.  Simply specify which model property to update by
+adding the <code>ng-model</code> attribute.</p>
+
+<table class="sample"><tr><td>
+<pre class="code language-markup">
+&lt;select kendo-drop-down-list k-options="thingsOptions"
+        ng-model="selectedThing"&gt;&lt;/select&gt;
+&lt;h5&gt;You Selected: {{ selectedThing }}&lt;/h5&gt;
+</pre>
+</td><td>
+<select kendo-drop-down-list k-options="thingsOptions"
+        ng-model="selectedThing"></select>
+<h5>You Selected: {{ selectedThing }}</h5>
+</td></tr></table>
+
+<p>
+  One thing to note is that if you are using form elements that respond to
+  jQuery's <code>val()</code> function (e.g. <code>&lt;input&gt;</code>
+  or <code>&lt;textarea&gt;</code>), by using <code>ng-model</code> you will
+  get that element's value (as a string), instead of a Kendo UI widget
+  value.  For example a <code>DatePicker</code>
+  widget's <code>value()</code> method returns a
+  JavaScript <code>Date</code> object, instead of a string.  If you are
+  after the “logical” value then you can use <code>k-ng-model</code>:
+</p>
+
+<table class="sample"><tr><td>
+<pre class="code language-markup">
+&lt;input kendo-date-picker
+       ng-model="datePickerAsString"
+       k-ng-model="datePickerAsDate" /&gt;
+&lt;br/&gt;&lt;b&gt;ng-model:&lt;/b&gt; {{datePickerAsString}}
+&lt;br/&gt;&lt;b&gt;k-ng-model:&lt;/b&gt; {{datePickerAsDate}}
+&lt;br/&gt;it's a date: {{datePickerAsDate|date:'yyyy/MM/dd'}}
+</pre>
+</td><td>
+<input kendo-date-picker
+       ng-model="datePickerAsString"
+       k-ng-model="datePickerAsDate" />
+<br/><b>ng-model:</b> {{datePickerAsString}}
+<br/><b>k-ng-model:</b> {{datePickerAsDate}}
+<br/>it's a date: {{datePickerAsDate|date:'yyyy/MM/dd'}}
+</td></tr></table>
+
+<h3>Assigning Widget References</h3>
+
+<p>
+  Sometimes you might need a reference to some widget, so that you can call
+  functions on it from your controller or event handlers.  To get it, pass
+  the desired name in the directive attribute.  The example below
+  uses <code>kendo-window="modal"</code> — this will instantiate a Window
+  widget and save a reference to it in <code>$scope.modal</code>.  Then the
+  button can just use <code>ng-click="modal.center().open()"</code> to open
+  the window on click.
+</p>
+
+<table class="sample"><tr><td>
+<pre class="code language-markup">
+&lt;button class="k-button"
+        ng-click="modal.center().open()"&gt;Open Modal&lt;/button&gt;
+&lt;div kendo-window="modal"
+     k-title="'Sample Window'" k-width="400" k-height="300"
+     k-visible="false" k-modal="true"&gt;&lt;/div&gt;
+</pre>
+</td><td>
+<button class="k-button" ng-click="modal.center().open()">Open Modal</button>
+<div kendo-window="modal" k-title="'Sample Window'" k-visible="false" k-modal="true" k-animation="{'open': { 'effects': 'slideIn:down fadeIn' }, 'close': { 'effects': 'slideIn:up fadeIn', 'reverse': true }}">
+  <h1>Hello!  I'm a modal window.</h1>
+  <p>Pretty nifty eh?</p>
+</div>
+</td></tr></table>
+
+<h2>DropDown Lists are great, but what about REAL widgets?</h2>
+
+<p>Kendo UI includes Grids, TreeViews, MultiSelects, ColorPickers — over
+twenty widgets in all, and that's not including the complete DataViz suite —
+which provides bar, pie, line, donut, gauge charts and much more.</p>
+
+<p>Just for fun, here are a few of those widgets in action:</p>
+
+<h2>Grid</h2>
+
+<p>This grid is pageable, sortable, groupable and filterable.  Select a row
+to see the Angular binding.</p>
+
+<div class="demo-section">
+  <div kendo-grid k-data-source="products" k-selectable="'row'"
+       k-pageable='{ "refresh": true, "pageSizes": true }'
+       k-columns='[{ "field": "ProductName", "title": "Name"},
+                      { "field": "Supplier.SupplierName", "title": "Supplier"},
+                      { "field": "Category.CategoryName", "title": "Category" }]'
+       k-sortable="true" k-groupable="true" k-filterable="true"
+       k-on-change="selectedItem = data" >
+ </div>
+  <div>
+    <h3>{{selectedItem.ProductName}} <small>(Product ID: {{selectedItem.ProductID}})</small></h3>
+    <p><strong>Quantity in stock: </strong>{{selectedItem.UnitsInStock}}</p>
+    <p><strong>Price per unit: </strong>{{selectedItem.UnitPrice | currency}}</p>
+    <p><strong>Value of stock: </strong>{{selectedItem.UnitsInStock * selectedItem.UnitPrice | currency}}</p>
+  </div>
+</div>
+
+<h3>DataViz</h3>
+
+<p>Kendo UI Comes with a powerful data visualization suite.  In this demo,
+move the slider to see the binding to the radial gauges.</p>
+
+<table class="sample col3" style="width: 80%"><tr><td>
+  <div kendo-chart k-options="column"></div>
+</td><td>
+  <p><b>VALUE: {{value}}</b></p>
+  <div class="gauge">
+    <div kendo-radial-gauge ng-model="value"></div>
+    <div style="text-align: center; margin-top: 1em">
+      <input kendo-slider class="gauge-slider" k-min="0" k-max="100" k-large-step="20" k-tick-placement="'none'" ng-model="value" />
+    </div>
+  </div>
+</td><td>
+  <div kendo-chart k-options="pie"/>
+</td></tr></table>
+
+<h1>Complete Kendo UI Demos</h1>
+
+<p>For a complete list of all widgets and demos, visit
+the <a href="http://demos.kendoui.com">Kendo UI Demos site</a>.</p>
+
+<p>Have suggestions for this project?  Something that you don't see that you
+need?
+Please <a href="https://github.com/kendo-labs/angular-kendo/issues">enter an
+issue</a>, or better yet
+— <a href="https://github.com/kendo-labs/angular-kendo">fork us</a> and
+submit a pull request!</p>
+
+
+
+
+
+
+<script> fixSampleCode() </script>
