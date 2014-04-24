@@ -190,8 +190,7 @@
                       $(element).replaceWith(clone);
                       element = $(clone);
                     }
-                    widget = factories.widget(scope, element, attrs, role);
-                    setupBindings();
+                    compile(element)(scope);
                   } catch(ex) {
                     console.error(ex);
                     console.error(ex.stack);
