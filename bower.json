@@ -10,5 +10,5 @@
     "angular-mocks": "~1.0.7",
     "kendo-ui": "~2014.1.318"
   }, 
-  "main": "build/angular-kendo.js"
+  "main": "build/angular-kendo.min.js"
 }
