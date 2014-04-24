@@ -600,11 +600,16 @@
   // care to update the view as the data in scope changes.
   defadvice("ui.Grid", BEFORE, function(element, options){
     this.next();
-    if (options.columns) angular.forEach(options.columns, function(col){
-      if (col.field && !col.template && !col.format && !col.values) {
-        col.template = "<span ng-bind='dataItem." + col.field + "'>#: " + col.field + "#</span>";
-      }
-    });
+    if (options.columns) {
+      var settings = $.extend({}, kendo.Template, options.templateSettings);
+      angular.forEach(options.columns, function(col){
+        if (col.field && !col.template && !col.format && !col.values) {
+          col.template = "<span ng-bind='"
+            + kendo.expr(col.field, "dataItem") + "'>#: "
+            + kendo.expr(col.field, settings.paramName) + "#</span>";
+        }
+      });
+    }
   });
 
   // for Grid, ListView and TreeView, provide a dataBound handler that
