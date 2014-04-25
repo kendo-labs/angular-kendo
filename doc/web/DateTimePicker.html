@@ -1,0 +1,28 @@
+<script type="x/ignore" id="the-html">
+<div ng-controller="MyCtrl">
+  <p>
+    <input kendo-date-time-picker
+           ng-model="str"
+           k-ng-model="obj" />
+  </p>
+  <pre>
+    str: {{ str }}
+    obj: {{ obj }}
+    typeof obj: {{ getType(obj) }}
+    obj instanceof Date: {{ isDate(obj) }}
+  </pre>
+</div>
+</script>
+
+<script id="the-javascript">
+function MyCtrl($scope) {
+  $scope.getType = function(x) {
+    return typeof x;
+  };
+  $scope.isDate = function(x) {
+    return x instanceof Date;
+  };
+}
+</script>
+
+<div ng-include src="'web/_source.html'"></div>

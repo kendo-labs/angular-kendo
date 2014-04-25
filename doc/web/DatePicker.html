@@ -1,5 +1,73 @@
-    <label>
-      Select month:
+<p>
+  There are two date pickers below:
+</p>
+
+<ul class="spaced">
+  <li>The first is to demonstrate the difference
+  between <code>ng-model="dateString"</code>
+  and <code>k-ng-model="dateObject"</code>.  <code>dateString</code> is
+  bound to the input field's contents as a string — so it gets the formatted
+  string date, while <code>dateObject</code> is bound to the
+  widget's <code>value()</code> which in the case of <code>DatePicker</code>
+  returns a JS <code>Date</code> object.  As you can see, we can apply the
+  Angular <code>date</code> filter on it.</li>
+
+  <li>The second date picker shows that you can mix
+  the <code>k-options</code> argument (to set the options from the
+  controller) with other <code>k-*</code> attributes.  If the same option is
+  specified in both, the one in the attribute takes precedence.</li>
+</ul>
+
+<p class="important">
+  The second calendar defines the <code>start</code> option in JS, rather
+  than using the <code>k-start</code> attribute — it wouldn't work, because
+  of
+  <a href="https://github.com/angular/angular.js/pull/5372">Angular bug
+  5372</a>.  We hope that will be fixed, until then the only way to
+  specify <code>start</code> and <code>end</code> options is via the
+  controller.
+</p>
+
+<script type="x/ignore" id="the-html">
+<div ng-controller="MyCtrl">
+  <p>
+    <label>Select date:
       <input kendo-date-picker
-             k-start-start="'year'" k-depth="'year'" k-format="'MMMM yyyy'" />
+             ng-model="dateString"
+             k-ng-model="dateObject" />
     </label>
+  </p>
+
+  <pre>
+    dateString: {{ dateString }}
+    dateObject: {{ dateObject | date:"EEEE, MMMM d, yyyy" }}
+    typeof dateObject: {{ getType(dateObject) }}
+    dateObject instanceof Date: {{ isDate(dateObject) }}
+  </pre>
+
+  <p>
+    <label>Select month:
+      <input kendo-date-picker
+             k-options="monthSelectorOptions"
+             k-format="'MMMM yyyy'" />
+    </label>
+  </p>
+</div>
+</script>
+
+<script id="the-javascript">
+function MyCtrl($scope) {
+  $scope.monthSelectorOptions = {
+    start: "year",
+    depth: "year",
+  };
+  $scope.getType = function(x) {
+    return typeof x;
+  };
+  $scope.isDate = function(x) {
+    return x instanceof Date;
+  };
+}
+</script>
+
+<div ng-include src="'web/_source.html'"></div>
