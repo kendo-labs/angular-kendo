@@ -430,14 +430,17 @@
   }
 
   function destroyScope(scope, el) {
-    scope.$destroy();
-    if (el) {
-      // prevent leaks. https://github.com/kendo-labs/angular-kendo/issues/237
-      $(el)
-        .removeData("$scope")
-        .removeData("$isolateScope")
-        .removeData("$isolateScopeNoTemplate")
-        .removeClass("ng-scope");
+    // prevent TypeError: Cannot read property '$destroy' of undefined
+    if (typeof scope != 'undefined') {
+      scope.$destroy();
+      if (el) {
+        // prevent leaks. https://github.com/kendo-labs/angular-kendo/issues/237
+        $(el)
+          .removeData("$scope")
+          .removeData("$isolateScope")
+          .removeData("$isolateScopeNoTemplate")
+          .removeClass("ng-scope");
+      }
     }
   }
 
