@@ -286,24 +286,20 @@
                 }
                 var getter = parse(attrs.kNgModel);
                 var setter = getter.assign;
-                var isEmpty = widget.value() == null || widget.value() == "";
-
-                // initial value
-                if (getter(scope) !== widget.value() && !isEmpty) {
-                  setter(scope, widget.value());
-                } else if (isEmpty) {
-                  widget.value(getter(scope));
-                  widget.trigger("change");
-                }
+                var updating = false;
+                widget.value(getter(scope));
 
                 // keep in sync
                 scope.$watch(attrs.kNgModel, function(newValue, oldValue){
+                  if (updating) return;
                   if (newValue === oldValue) return;
                   widget.value(newValue);
                 });
                 widget.bind("change", function(){
+                  updating = true;
                   setter(scope, widget.value());
                   digest(scope);
+                  updating = false;
                 });
               }
             }
