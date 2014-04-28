@@ -844,7 +844,7 @@
       var model = self._modelForContainer(cont);
       var uid = model.uid;
       var prevScope = angular.element(cont).scope();
-      if (prevScope !== scope) {
+      if (prevScope && prevScope !== scope) {
         destroyScope(prevScope, cont);
       }
     }
