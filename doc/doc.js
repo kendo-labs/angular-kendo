@@ -36,7 +36,7 @@
         { page: "datasource", title: "Data source vs. Angular" }
     ];
 
-    var app = angular.module("DemoApp", [ "kendo.directives", "ngRoute" ]);
+    var app = angular.module("DemoApp", [ "kendo.directives", "ngRoute", "ngSanitize" ]);
 
     app.config([ "$routeProvider", function($routeProvider){
         WEB_DEMOS.forEach(function(x){
@@ -217,11 +217,14 @@ function makeHtmlForDojo(args) {
 }
 
 function fixSampleCode() {
+    function getCode(id) {
+        return $("#" + id).html().replace(/^\s*<!--\s*|\s*-->\s*$/g, "");
+    }
     $("pre.code").each(function(){
         this.setAttribute("ng-non-bindable", true);
         var code = $(this).data("code-id");
         if (code) {
-            code = $("#" + code).html();
+            code = getCode(code);
             code = code.replace(/^[\n\r]+/, "");
             code = code.replace(/(kendo-[a-z-]+)=\"\"/g, "$1");
             this.innerHTML = "";
@@ -232,7 +235,7 @@ function fixSampleCode() {
     });
     $("div.includeHtml").each(function(){
         var id = $(this).data("code-id");
-        $(this).html($("#" + id).html());
+        $(this).html(getCode(id));
     });
 }
 

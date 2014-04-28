@@ -1,0 +1,29 @@
+<script type="x/ignore" id="the-html">
+<div ng-controller="MyCtrl">
+  <select kendo-multi-select k-options="selectOptions" k-ng-model="selectedIds"></select>
+  <p ng-show="selectedIds.length">Selected: {{ selectedIds }}</p>
+</div>
+</script>
+
+<script id="the-javascript">
+function MyCtrl($scope) {
+    $scope.selectOptions = {
+        placeholder: "Select products...",
+        dataTextField: "ProductName",
+        dataValueField: "ProductID",
+        autoBind: false,
+        dataSource: {
+            type: "odata",
+            serverFiltering: true,
+            transport: {
+                read: {
+                    url: "http://demos.telerik.com/kendo-ui/service/Northwind.svc/Products",
+                }
+            }
+        }
+    };
+    $scope.selectedIds = [ 4, 7 ];
+}
+</script>
+
+<div ng-include src="'web/_source.html'"></div>

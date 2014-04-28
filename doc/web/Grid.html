@@ -1,0 +1,110 @@
+<script type="x/ignore" id="the-html"><!--
+<div ng-controller="MyCtrl">
+  <div kendo-grid k-options="mainGridOptions"></div>
+
+  <script type="text/x-kendo-template" id="template">
+    <div kendo-tab-strip>
+      <ul>
+        <li class="k-state-active">Orders</li>
+        <li>Contact information</li>
+      </ul>
+      <div>
+        <div kendo-grid k-options="detailGridOptions(dataItem)"></div>
+      </div>
+      <div>
+        <ul>
+          <li>Country: <input ng-model="dataItem.Country" /></li>
+          <li>City: <input ng-model="dataItem.City" /></li>
+          <li>Address: {{dataItem.Address}}</li>
+          <li>Home phone: {{dataItem.HomePhone}}</li>
+        </ul>
+      </div>
+    </div>
+  </script>
+
+</div>
+--></script>
+
+<script id="the-javascript">
+function MyCtrl($scope) {
+    $scope.mainGridOptions = {
+        dataSource: {
+            type: "odata",
+            transport: {
+                read: "http://demos.telerik.com/kendo-ui/service/Northwind.svc/Employees"
+            },
+            pageSize: 5,
+            serverPaging: true,
+            serverSorting: true
+        },
+        sortable: true,
+        pageable: true,
+        detailTemplate: kendo.template($("#template").html()),
+        dataBound: function() {
+            this.expandRow(this.tbody.find("tr.k-master-row").first());
+        },
+        columns: [{
+            field: "FirstName",
+            title: "First Name",
+            width: "120px"
+        },{
+            field: "LastName",
+            title: "Last Name",
+            width: "120px"
+        },{
+            field: "Country",
+            width: "120px"
+        },{
+            field: "City",
+            width: "120px"
+        },{
+            field: "Title"
+        }]
+    };
+
+    $scope.detailGridOptions = function(dataItem) {
+        return {
+            dataSource: {
+                type: "odata",
+                transport: {
+                    read: "http://demos.telerik.com/kendo-ui/service/Northwind.svc/Orders"
+                },
+                serverPaging: true,
+                serverSorting: true,
+                serverFiltering: true,
+                pageSize: 5,
+                filter: { field: "EmployeeID", operator: "eq", value: dataItem.EmployeeID }
+            },
+            scrollable: false,
+            sortable: true,
+            pageable: true,
+            columns: [
+                { field: "OrderID", title:"ID", width: "56px" },
+                { field: "ShipCountry", title:"Ship Country", width: "110px" },
+                { field: "ShipAddress", title:"Ship Address" },
+                { field: "ShipName", title: "Ship Name", width: "190px" }
+            ]
+        };
+    };
+}
+</script>
+
+<p>
+  Here's a more complex Grid sample.  It fetches data from remote.  It
+  uses <code>detailTemplate</code> to specify the content of row details.
+  The template is compiled through Angular, so it can
+  use <code>{{angular}}</code> expressions and instantiate widgets as usual.
+  As you can see, it creates a TabStrip widget with two panes, the first
+  being also a Grid and the second just displaying some data.  When you edit
+  the data in the input fields from the second tab, the changes are
+  immediately reflected in the main grid, thanks to Angular.
+</p>
+
+<p>
+  Most of the Grid's supported templates are compiled with Angular.
+  Wherever it makes sense (such as in <code>detailTemplate</code>) a
+  variable named <code>dataItem</code> will be available in scope, pointing
+  to the model of the current row.
+</p>
+
+<div ng-include src="'web/_source.html'"></div>

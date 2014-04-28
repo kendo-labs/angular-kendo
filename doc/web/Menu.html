@@ -1,24 +1,156 @@
+<script type="x/ignore" id="the-html">
 <div ng-controller="MyCtrl">
-<ul kendo-menu k-orientation="orientation" k-rebind="orientation">
-  <li>Item 1
-    <ul>
-      <li>Subitem 1.1</li>
-      <li>Subitem 1.2</li>
-      <li>Subitem 1.3</li>
-    </ul>
-  </li>
-  <li>Item 2</li>
-  <li>Item 3</li>
-</ul>
-
-<select kendo-drop-down-list k-ng-model="orientation">
-  <option>horizontal</option>
-  <option>vertical</option>
-</select>
+  <select kendo-drop-down-list k-ng-model="menuOrientation">
+    <option value="horizontal">Horizontal</option>
+    <option value="vertical">Vertical</option>
+  </select>
+  <p></p>
+  <ul kendo-menu style="display: inline-block"
+      k-orientation="menuOrientation"
+      k-rebind="menuOrientation"
+      k-on-select="onSelect(kendoEvent)">
+    <li>
+      Men's
+      <ul>
+        <li>Footwear
+          <ul>
+            <li>Leisure Trainers</li>
+            <li>Running Shoes</li>
+            <li>Outdoor Footwear</li>
+            <li>Sandals/Flip Flops</li>
+            <li>Footwear Accessories</li>
+          </ul>
+        </li>
+        <li>Leisure Clothing
+          <ul>
+            <li>T-Shirts</li>
+            <li>Hoodies &amp; Sweatshirts</li>
+            <li>Jackets</li>
+            <li>Pants</li>
+            <li>Shorts</li>
+          </ul>
+        </li>
+        <li>Sports Clothing
+          <ul>
+            <li>Football</li>
+            <li>Basketball</li>
+            <li>Golf</li>
+            <li>Tennis</li>
+            <li>Swimwear</li>
+          </ul>
+        </li>
+        <li>Accessories</li>
+      </ul>
+    </li>
+    <li>
+      Women's
+      <ul>
+        <li>Footwear
+          <ul>
+            <li>Leisure Trainers</li>
+            <li>Running Shoes</li>
+            <li>Outdoor Footwear</li>
+            <li>Sandals/Flip Flops</li>
+            <li>Footwear Accessories</li>
+          </ul>
+        </li>
+        <li>Leisure Clothing
+          <ul>
+            <li>T-Shirts</li>
+            <li>Jackets</li>
+          </ul>
+        </li>
+        <li>Sports Clothing
+          <ul>
+            <li>Basketball</li>
+            <li>Golf</li>
+            <li>Tennis</li>
+            <li>Swimwear</li>
+          </ul>
+        </li>
+        <li>Accessories</li>
+      </ul>
+    </li>
+    <li>
+      Boy's
+      <ul>
+        <li>Footwear
+          <ul>
+            <li>Leisure Trainers</li>
+            <li>Running Shoes</li>
+            <li>Outdoor Footwear</li>
+            <li>Sandals/Flip Flops</li>
+            <li>Footwear Accessories</li>
+          </ul>
+        </li>
+        <li>Leisure Clothing
+          <ul>
+            <li>T-Shirts</li>
+            <li>Hoodies &amp; Sweatshirts</li>
+            <li>Jackets</li>
+            <li>Pants</li>
+            <li>Shorts</li>
+          </ul>
+        </li>
+        <li>Sports Clothing
+          <ul>
+            <li>Football</li>
+            <li>Basketball</li>
+            <li>Rugby</li>
+            <li>Tennis</li>
+            <li>Swimwear</li>
+          </ul>
+        </li>
+        <li>Accessories</li>
+      </ul>
+    </li>
+    <li>
+      Girl's
+      <ul>
+        <li>Footwear
+          <ul>
+            <li>Leisure Trainers</li>
+            <li>Running Shoes</li>
+            <li>Fitness Trainers</li>
+            <li>Sandals/Flip Flops</li>
+            <li>Footwear Accessories</li>
+          </ul>
+        </li>
+        <li>Leisure Clothing
+          <ul>
+            <li>T-Shirts</li>
+            <li>Hoodies &amp; Sweatshirts</li>
+            <li>Jackets</li>
+            <li>Pants</li>
+            <li>Shorts</li>
+          </ul>
+        </li>
+        <li>Sports Clothing
+          <ul>
+            <li>Basketball</li>
+            <li>Tennis</li>
+            <li>Swimwear</li>
+          </ul>
+        </li>
+        <li>Accessories</li>
+      </ul>
+    </li>
+  </ul>
 </div>
+</script>
 
-<script>
+<script id="the-javascript">
 function MyCtrl($scope) {
-  $scope.orientation = "horizontal";
+  $scope.menuOrientation = "horizontal";
+  $scope.onSelect = function(ev) {
+    alert($(ev.item.firstChild).text());
+  };
 }
 </script>
+
+<p>
+  This sample uses <code>k-rebind</code> to rebuild the menu when
+  orientation changes.
+</p>
+
+<div ng-include src="'web/_source.html'"></div>

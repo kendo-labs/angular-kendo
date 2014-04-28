@@ -60,10 +60,10 @@ header {
 }
 
 .demolist {
+  position: absolute;
   padding-top: 50px;
   font-size: 90%;
   box-sizing: border-box;
-  float: left;
   width: @navbarWidth;
   background: #777;
   box-shadow: 2px 0 5px #999;
@@ -187,6 +187,8 @@ pre.code {
   }
   border: 1px solid #ccc;
   border-radius: 5px;
+  max-height: 20em;
+  overflow: auto;
 }
 
 code {
