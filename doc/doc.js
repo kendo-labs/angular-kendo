@@ -191,6 +191,10 @@
 
 })();
 
+function getCode(id) {
+    return $("#" + id).html().replace(/^\s*<!--\s*|\s*-->\s*$/g, "");
+}
+
 function makeHtmlForDojo(args) {
     function indent(spacing) {
         return function(str) {
@@ -209,17 +213,13 @@ function makeHtmlForDojo(args) {
     if (args.html) {
         html = args.html.map(indent("    ")).join("\n\n");
     }
-    return $("#html-for-dojo").html()
-        .replace(/^\s*<!--\s*|\s*-->\s*$/g, "")
+    return getCode("html-for-dojo")
         .replace(/\$JS/g, js)
         .replace(/\$HTML/g, html)
         .replace(/\$CDNROOT/g, dojo.cdnRoot);
 }
 
 function fixSampleCode() {
-    function getCode(id) {
-        return $("#" + id).html().replace(/^\s*<!--\s*|\s*-->\s*$/g, "");
-    }
     $("pre.code").each(function(){
         this.setAttribute("ng-non-bindable", true);
         var code = $(this).data("code-id");
@@ -257,14 +257,11 @@ $(document).on("click", ".try-kendo", function(ev){
     var btn = $(ev.target);
     var js = btn.data("js");
     var html = btn.data("html");
-    function getHTML(id) {
-        return $("#" + id).html();
-    }
     if (js) {
-        js = js.split(",").map(getHTML);
+        js = js.split(",").map(getCode);
     }
     if (html) {
-        html = html.split(",").map(getHTML);
+        html = html.split(",").map(getCode);
     }
     var code = makeHtmlForDojo({ js: js, html: html });
     dojo.postSnippet(code, window.location.href);
