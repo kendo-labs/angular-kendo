@@ -27,7 +27,6 @@
         { widget: "TimePicker" },
         { widget: "Tooltip" },
         { widget: "TreeView" },
-        { widget: "Upload" },
         { widget: "Window" },
     ];
 
@@ -36,7 +35,7 @@
         { page: "datasource", title: "Data source vs. Angular" }
     ];
 
-    var app = angular.module("DemoApp", [ "kendo.directives", "ngRoute" ]);
+    var app = angular.module("DemoApp", [ "kendo.directives", "ngRoute", "ngSanitize" ]);
 
     app.config([ "$routeProvider", function($routeProvider){
         WEB_DEMOS.forEach(function(x){
@@ -191,6 +190,10 @@
 
 })();
 
+function getCode(id) {
+    return $("#" + id).html().replace(/^\s*<!--\s*|\s*-->\s*$/g, "");
+}
+
 function makeHtmlForDojo(args) {
     function indent(spacing) {
         return function(str) {
@@ -209,8 +212,7 @@ function makeHtmlForDojo(args) {
     if (args.html) {
         html = args.html.map(indent("    ")).join("\n\n");
     }
-    return $("#html-for-dojo").html()
-        .replace(/^\s*<!--\s*|\s*-->\s*$/g, "")
+    return getCode("html-for-dojo")
         .replace(/\$JS/g, js)
         .replace(/\$HTML/g, html)
         .replace(/\$CDNROOT/g, dojo.cdnRoot);
@@ -221,7 +223,7 @@ function fixSampleCode() {
         this.setAttribute("ng-non-bindable", true);
         var code = $(this).data("code-id");
         if (code) {
-            code = $("#" + code).html();
+            code = getCode(code);
             code = code.replace(/^[\n\r]+/, "");
             code = code.replace(/(kendo-[a-z-]+)=\"\"/g, "$1");
             this.innerHTML = "";
@@ -232,7 +234,7 @@ function fixSampleCode() {
     });
     $("div.includeHtml").each(function(){
         var id = $(this).data("code-id");
-        $(this).html($("#" + id).html());
+        $(this).html(getCode(id));
     });
 }
 
@@ -254,14 +256,11 @@ $(document).on("click", ".try-kendo", function(ev){
     var btn = $(ev.target);
     var js = btn.data("js");
     var html = btn.data("html");
-    function getHTML(id) {
-        return $("#" + id).html();
-    }
     if (js) {
-        js = js.split(",").map(getHTML);
+        js = js.split(",").map(getCode);
     }
     if (html) {
-        html = html.split(",").map(getHTML);
+        html = html.split(",").map(getCode);
     }
     var code = makeHtmlForDojo({ js: js, html: html });
     dojo.postSnippet(code, window.location.href);

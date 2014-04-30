@@ -190,8 +190,7 @@
                       $(element).replaceWith(clone);
                       element = $(clone);
                     }
-                    widget = factories.widget(scope, element, attrs, role);
-                    setupBindings();
+                    compile(element)(scope);
                   } catch(ex) {
                     console.error(ex);
                     console.error(ex.stack);
@@ -231,7 +230,12 @@
                 // Angular will invoke $render when the view needs to be updated with the view value.
                 ngModel.$render = function() {
                   // Update the widget with the view value.
-                  widget.value(ngModel.$viewValue);
+
+                  // delaying with setTimout for cases where the datasource is set thereafter.
+                  // https://github.com/kendo-labs/angular-kendo/issues/304
+                  setTimeout(function(){
+                    widget.value(ngModel.$viewValue);
+                  }, 0);
                 };
 
                 // Some widgets trigger "change" on the input field
@@ -287,24 +291,20 @@
                 }
                 var getter = parse(attrs.kNgModel);
                 var setter = getter.assign;
-                var isEmpty = widget.value() == null || widget.value() == "";
-
-                // initial value
-                if (getter(scope) !== widget.value() && !isEmpty) {
-                  setter(scope, widget.value());
-                } else if (isEmpty) {
-                  widget.value(getter(scope));
-                  widget.trigger("change");
-                }
+                var updating = false;
+                widget.value(getter(scope));
 
                 // keep in sync
                 scope.$watch(attrs.kNgModel, function(newValue, oldValue){
+                  if (updating) return;
                   if (newValue === oldValue) return;
                   widget.value(newValue);
                 });
                 widget.bind("change", function(){
+                  updating = true;
                   setter(scope, widget.value());
                   digest(scope);
+                  updating = false;
                 });
               }
             }
@@ -525,7 +525,7 @@
   });
 
   // for the Grid and ListView we add `data` and `selected` too.
-  defadvice([ "ui.Grid", "ui.ListView" ], "$angular_makeEventHandler", function(event, scope, handler){
+  defadvice([ "ui.Grid", "ui.ListView", "ui.TreeView" ], "$angular_makeEventHandler", function(event, scope, handler){
     if (event != "change") return this.next();
     handler = parse(handler);
     return function(ev) {
@@ -560,7 +560,7 @@
       }
 
       if (!multiple) {
-        locals.data = items[0];
+        locals.dataItem = locals.data = items[0];
         locals.selected = elems[0];
       }
 
@@ -601,11 +601,16 @@
   // care to update the view as the data in scope changes.
   defadvice("ui.Grid", BEFORE, function(element, options){
     this.next();
-    if (options.columns) angular.forEach(options.columns, function(col){
-      if (col.field && !col.template && !col.format && !col.values) {
-        col.template = "<span ng-bind='dataItem." + col.field + "'>#: " + col.field + "#</span>";
-      }
-    });
+    if (options.columns) {
+      var settings = $.extend({}, kendo.Template, options.templateSettings);
+      angular.forEach(options.columns, function(col){
+        if (col.field && !col.template && !col.format && !col.values) {
+          col.template = "<span ng-bind='"
+            + kendo.expr(col.field, "dataItem") + "'>#: "
+            + kendo.expr(col.field, settings.paramName) + "#</span>";
+        }
+      });
+    }
   });
 
   // for Grid, ListView and TreeView, provide a dataBound handler that
@@ -626,10 +631,11 @@
         // XXX HACK: the tree view will call dataBound multiple
         // times, sometimes for LI-s containing nested items that
         // may have been already compiled.  Therefore in this
-        // situation we compile the ".k-in" element, which contains
-        // only the template for a single item.
+        // situation we compile the first div element, which contains
+        // only the template for a single item (both the list item
+	// and the item checkbox if one exists).
         var elementToCompile = role == "TreeView"
-          ? $(this).find(".k-in").first()
+          ? $(this).find("div").first()
           : $(this);
         if (!elementToCompile.hasClass("ng-scope")) {
           var itemUid = $(this).attr(_UID_);
@@ -839,7 +845,7 @@
       var model = self._modelForContainer(cont);
       var uid = model.uid;
       var prevScope = angular.element(cont).scope();
-      if (prevScope !== scope) {
+      if (prevScope && prevScope !== scope) {
         destroyScope(prevScope, cont);
       }
     }
@@ -887,14 +893,18 @@
     this.next();
   });
 
-  defadvice("ui.Window", "content", function(){
+  defadvice("ui.Window", AFTER, function(){
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
-    if (scope) {
-      compile(self.element)(scope);
+    if (!scope) return;
+    bindBefore(self, "refresh", function(){
+      var content = self.wrapper.children(".k-window-content");
+      var scrollContainer = content.children(".km-scroll-container");
+      content = scrollContainer[0] ? scrollContainer : content;
+      compile(content.children())(scope);
       digest(scope);
-    }
+    });
   });
 
   defadvice("mobile.ui.ListView", "destroy", function(){
@@ -903,6 +913,17 @@
       this.self._itemBinder._unbindDataSource();
     }
     this.next();
+  });
+
+  defadvice("ui.Tooltip", "_appendContent", function(){
+    this.next();
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (scope) {
+      console.log("Compiling Tooltip");
+      compile(self.content)(scope);
+      digest(scope);
+    }
   });
 
   {

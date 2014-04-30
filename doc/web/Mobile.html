@@ -1,0 +1,60 @@
+<script type="x/ignore" id="the-html">
+<div ng-controller="MyCtrl">
+  <ul kendo-mobile-action-sheet="actions" k-type="'tablet'" k-on-command="onCommand(kendoEvent)">
+    <li><a href="#" data-command="view">View</a></li>
+    <li><a href="#" data-command="rename">Rename</a></li>
+    <li><a href="#" data-command="delete">Delete</a></li>
+    <li><a href="#" data-command="perms">Set permissions ...</a></li>
+  </ul>
+  <div ng-show="command">Selected: {{command}}</div>
+  <div kendo-grid k-options="gridOptions" k-on-change="actions.open(selected)"></div>
+</div>
+</script>
+
+<script id="the-javascript">
+function MyCtrl($scope) {
+  var data = new kendo.data.ObservableArray([
+    { name: "index.html", type: "HTML", size: "1 KB" },
+    { name: "services.html", type: "HTML", size: "1 KB" },
+    { name: "about.html", type: "HTML", size: "1 KB" },
+    { name: "logo.png", type: "PNG", size: "15 KB" },
+  ]);
+  $scope.gridOptions = {
+    dataSource: data,
+    columns: [
+      { field: "name", title: "Name" },
+      { field: "type", title: "Type" },
+      { field: "size", title: "Size" }
+    ],
+    selectable: true,
+    sortable: true,
+  };
+  $scope.onCommand = function(kendoEvent) {
+    $scope.command = kendoEvent.currentTarget.data("command");
+  };
+}
+</script>
+
+<p>
+  This is an example for MobileActionSheet.
+  The <a href="http://demos.telerik.com/kendo-ui/web/mobile/actionsheet.html">official</a>
+  (Kendo only) sample uses the <code>data-action</code> attribute to specify
+  a global function to call.  We avoid that here and instead
+  use <code>k-on-command</code> to call a function defined in scope.  We can
+  fetch a reference to the clicked link
+  with <code>kendoEvent.currentTarget</code> and can find what command was
+  clicked by reading its <code>data-command</code> attribute.  Note we
+  couldn't have done the following:
+</p>
+
+<pre class="code language-markup">k-on-change="command = kendoEvent.currentTarget.data('command')"</pre>
+
+<p>
+  because
+  AngularJS <a href="https://github.com/angular/angular.js/commit/be0b4856699334ff51bacf2d1fd3394663d6bd28">disallows
+  referencing DOM nodes in Angular expressions</a>.  For some reason
+  though, <code>k-on-change="actions.open(selected)"</code> works
+  (<code>selected</code> is a DOM node here).
+</p>
+
+<div ng-include src="'web/_source.html'"></div>

@@ -3,8 +3,7 @@ body {
   color: #000;
   padding: 0;
   margin: 0;
-  font-family: sans-serif;
-  font-size: 1em;
+  font: 14px arial, helvetica, sans-serif;
 }
 a,
 a:link,
@@ -24,7 +23,7 @@ header {
   color: #fff;
   font: 2em Georgia, "Times New Roman", serif;
   line-height: 1em;
-  padding: 0.3em;
+  padding: 0.3em 0;
   text-align: center;
   width: 100%;
   box-shadow: 0 2px 10px #000;
@@ -42,8 +41,8 @@ header.spacer {
   background-size: 100% auto;
   z-index: 10001;
   position: absolute;
-  left: 40px;
-  top: 10px;
+  left: 30px;
+  top: 0;
   opacity: 0.6;
   transition-duration: 0.2s;
 }
@@ -58,11 +57,11 @@ header.spacer {
   top: 0;
 }
 .demolist {
+  position: absolute;
   padding-top: 50px;
   font-size: 90%;
   box-sizing: border-box;
-  float: left;
-  width: 15em;
+  width: 200px;
   background: #777;
   box-shadow: 2px 0 5px #999;
   color: #eee;
@@ -126,7 +125,7 @@ header.spacer {
   background: #777;
 }
 .mainview {
-  margin-left: 15em;
+  margin-left: 200px;
   padding: 1em;
 }
 .mainview h1.title {
@@ -137,6 +136,7 @@ header.spacer {
   background-color: #ddd;
   float: right;
   border: 1px solid #777;
+  margin: 0 0 1em 1em;
 }
 .mainview .weblinks a {
   display: block;
@@ -160,6 +160,15 @@ header.spacer {
 .mainview .try-kendo {
   float: right;
 }
+fieldset {
+  margin-bottom: 1em;
+}
+.important {
+  font-weight: bold;
+  padding: 1em;
+  border: 1px solid #444;
+  background-color: #fed;
+}
 .try-kendo {
   color: #fff;
   padding: 5px 10px 5px 30px;
@@ -180,6 +189,8 @@ pre.code {
   font-family: "ubuntu mono", "monaco", "consolas", "andale mono", monospace !important;
   border: 1px solid #ccc;
   border-radius: 5px;
+  max-height: 20em;
+  overflow: auto;
 }
 pre.code code {
   font-family: inherit !important;
@@ -188,9 +199,11 @@ code {
   font-family: "ubuntu mono", "monaco", "consolas", "andale mono", monospace !important;
   font-size: 90%;
   padding: 2px 4px;
-  border: 1px solid #bbb;
+  border: 1px solid #ccc;
   border-radius: 3px;
-  box-shadow: 0 1px 2px #999;
+  box-shadow: 0 1px 2px #aaa;
+  position: relative;
+  top: -1px;
 }
 table.sample {
   width: 100%;
@@ -209,14 +222,19 @@ table.sample.col3 td {
   width: 33% !important;
 }
 p,
-blockquote {
+blockquote,
+li {
   line-height: 1.4em;
+}
+ul.spaced li {
+  margin: 1em 0;
 }
 footer {
   font-size: 90%;
   color: #777;
   margin-top: 1em;
   padding: 1em;
+  padding-bottom: 30em;
   border-top: 1px solid #aaa;
   text-align: center;
 }

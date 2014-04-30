@@ -3,11 +3,11 @@
   <!-- remember good ol' tables? -->
   <table><tr style="vertical-align: top">
     <td>
-      <p><b>Start date: </b><code>{{startDate | date:"MMM d, yyyy"}}</code></p>
+      <p><b>Start date: </b><code ng-show="startDate">{{startDate | date:"MMM d, yyyy"}}</code></p>
       <div kendo-calendar="cal1" k-ng-model="startDate" k-rebind="endDate" k-max="endDate"></div>
     </td>
     <td ng-show="startDate">
-      <p><b>End date: </b><code>{{endDate | date:"MMM d, yyyy"}}</code></p>
+      <p><b>End date: </b><code ng-show="endDate">{{endDate | date:"MMM d, yyyy"}}</code></p>
       <div kendo-calendar="cal2" k-ng-model="endDate" k-rebind="startDate" k-min="startDate" k-max="maxEndDate"></div>
     </td>
   </tr></table>
@@ -47,25 +47,4 @@ function MyCtrl($scope) {
   whenever <code>startDate</code> changes.
 </p>
 
-<div class="demo includeHtml" data-code-id="the-html"></div>
-
-<button class="try-kendo" data-js="the-javascript" data-html="the-html">Edit on Kendo UI Dojo</button>
-
-<h2>Source</h2>
-
-<div kendo-tab-strip>
-  <ul>
-    <li class="k-state-active">HTML</li>
-    <li>JavaScript</li>
-  </ul>
-
-  <div>
-    <pre class="code language-markup" data-code-id="the-html"></pre>
-  </div>
-
-  <div>
-    <pre class="code language-javascript" data-code-id="the-javascript"></pre>
-  </div>
-</div>
-
-<script> fixSampleCode() </script>
+<div ng-include src="'web/_source.html'"></div>

@@ -1,12 +1,13 @@
 // -*- mode: less-css; less-css-compile-at-save: t; -*-
 
+@navbarWidth: 200px;
+
 body {
   background: #eee;
   color: #000;
   padding: 0;
   margin: 0;
-  font-family: sans-serif;
-  font-size: 1em;
+  font: 14px arial,helvetica,sans-serif;
 }
 
 a, a:link, a:visited {
@@ -24,7 +25,7 @@ header {
   color: #fff;
   font: 2em Georgia,"Times New Roman",serif;
   line-height: 1em;
-  padding: 0.3em;
+  padding: 0.3em 0;
   text-align: center;
   width: 100%;
   &.fixed {
@@ -42,8 +43,8 @@ header {
   background-size: 100% auto;
   z-index: 10001;
   position: absolute;
-  left: 40px;
-  top: 10px;
+  left: 30px;
+  top: 0;
   opacity: 0.6;
   transition-duration: 0.2s;
   &:hover {
@@ -59,11 +60,11 @@ header {
 }
 
 .demolist {
+  position: absolute;
   padding-top: 50px;
   font-size: 90%;
   box-sizing: border-box;
-  float: left;
-  width: 15em;
+  width: @navbarWidth;
   background: #777;
   box-shadow: 2px 0 5px #999;
   color: #eee;
@@ -117,7 +118,7 @@ header {
 }
 
 .mainview {
-  margin-left: 15em;
+  margin-left: @navbarWidth;
   padding: 1em;
   h1.title {
     margin-top: 0.5em;
@@ -127,6 +128,7 @@ header {
     background-color: #ddd;
     float: right;
     border: 1px solid #777;
+    margin: 0 0 1em 1em;
     a {
       display: block;
       &:before {
@@ -150,6 +152,16 @@ header {
   .try-kendo {
     float: right;
   }
+}
+
+fieldset {
+  margin-bottom: 1em;
+}
+.important {
+  font-weight: bold;
+  padding: 1em;
+  border: 1px solid #444;
+  background-color: #fed;
 }
 
 .try-kendo {
@@ -176,15 +188,19 @@ pre.code {
   }
   border: 1px solid #ccc;
   border-radius: 5px;
+  max-height: 20em;
+  overflow: auto;
 }
 
 code {
   font-family: "ubuntu mono","monaco","consolas","andale mono",monospace !important;
   font-size: 90%;
   padding: 2px 4px;
-  border: 1px solid #bbb;
+  border: 1px solid #ccc;
   border-radius: 3px;
-  box-shadow: 0 1px 2px #999;
+  box-shadow: 0 1px 2px #aaa;
+  position: relative;
+  top: -1px;
 }
 
 table.sample {
@@ -206,8 +222,14 @@ table.sample {
   }
 }
 
-p, blockquote {
+p, blockquote, li {
   line-height: 1.4em;
+}
+
+ul.spaced {
+  li {
+    margin: 1em 0;
+  }
 }
 
 footer {
@@ -215,6 +237,7 @@ footer {
   color: #777;
   margin-top: 1em;
   padding: 1em;
+  padding-bottom: 30em;
   border-top: 1px solid #aaa;
   text-align: center;
   a, a:link, a:visited {

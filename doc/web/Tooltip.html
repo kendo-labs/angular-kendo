@@ -1,0 +1,44 @@
+<script type="x/ignore" id="the-html">
+<div ng-controller="MyCtrl">
+  <div kendo-tooltip k-content="'The <b>tooltip</b><br />Time is: {{time}}'" class="tooltip">
+    I have a tooltip.
+  </div>
+
+  <div kendo-tooltip k-content="theContent" class="tooltip">
+    I also have a tooltip.
+  </div>
+
+  <style>
+    .tooltip {
+      border: 1px solid red;
+      background: #fea;
+      padding: 1em;
+      margin: 1em
+    }
+  </style>
+</div>
+</script>
+
+<script id="the-javascript">
+function MyCtrl($scope, $timeout) {
+  function updateTime() {
+    $scope.time = kendo.toString(new Date(), "H:mm:ss.fff tt");
+    $timeout(updateTime, 78);
+  };
+  $scope.theContent = "The <b>tooltip</b><br />Time is: {{time}}";
+  updateTime();
+}
+</script>
+
+<p>
+  Here are two examples of the Tooltip widget.  The first one passes a
+  string to <code>k-content</code> (you can also use <code>title</code> with
+  the same effect).  That string uses the <code>time</code> variable from
+  scope, but even though we update it from JavaScript notice it doesn't
+  update in the tooltip — that's because the attribute is evaluated by
+  Angular even before our directive runs.  If you need to be able to
+  dynamically update a tooltip's content by changing the scope, place the
+  content in a scope variable like in the second sample.
+</p>
+
+<div ng-include src="'web/_source.html'"></div>
