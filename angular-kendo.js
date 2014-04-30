@@ -525,7 +525,7 @@
   });
 
   // for the Grid and ListView we add `data` and `selected` too.
-  defadvice([ "ui.Grid", "ui.ListView" ], "$angular_makeEventHandler", function(event, scope, handler){
+  defadvice([ "ui.Grid", "ui.ListView", "ui.TreeView" ], "$angular_makeEventHandler", function(event, scope, handler){
     if (event != "change") return this.next();
     handler = parse(handler);
     return function(ev) {
@@ -560,7 +560,7 @@
       }
 
       if (!multiple) {
-        locals.data = items[0];
+        locals.dataItem = locals.data = items[0];
         locals.selected = elems[0];
       }
 
