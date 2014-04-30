@@ -911,6 +911,17 @@
     this.next();
   });
 
+  defadvice("ui.Tooltip", "_appendContent", function(){
+    this.next();
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (scope) {
+      console.log("Compiling Tooltip");
+      compile(self.content)(scope);
+      digest(scope);
+    }
+  });
+
   {
     // mobile/ButtonGroup does not have a "value" method, but looks
     // like it would be useful.  We provide it here.
