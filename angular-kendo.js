@@ -230,7 +230,12 @@
                 // Angular will invoke $render when the view needs to be updated with the view value.
                 ngModel.$render = function() {
                   // Update the widget with the view value.
-                  widget.value(ngModel.$viewValue);
+
+                  // delaying with setTimout for cases where the datasource is set thereafter.
+                  // https://github.com/kendo-labs/angular-kendo/issues/304
+                  setTimeout(function(){
+                    widget.value(ngModel.$viewValue);
+                  }, 0);
                 };
 
                 // Some widgets trigger "change" on the input field
