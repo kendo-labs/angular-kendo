@@ -27,7 +27,6 @@
         { widget: "TimePicker" },
         { widget: "Tooltip" },
         { widget: "TreeView" },
-        { widget: "Upload" },
         { widget: "Window" },
     ];
 
