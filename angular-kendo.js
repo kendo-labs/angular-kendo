@@ -893,14 +893,18 @@
     this.next();
   });
 
-  defadvice("ui.Window", "content", function(){
+  defadvice("ui.Window", AFTER, function(){
     this.next();
     var self = this.self;
     var scope = angular.element(self.element).scope();
-    if (scope) {
-      compile(self.element)(scope);
+    if (!scope) return;
+    bindBefore(self, "refresh", function(){
+      var content = self.wrapper.children(".k-window-content");
+      var scrollContainer = content.children(".km-scroll-container");
+      content = scrollContainer[0] ? scrollContainer : content;
+      compile(content.children())(scope);
       digest(scope);
-    }
+    });
   });
 
   defadvice("mobile.ui.ListView", "destroy", function(){
