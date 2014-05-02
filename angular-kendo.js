@@ -926,7 +926,7 @@
   });
 
   // scheduler
-  (function(){
+  {
     defadvice("ui.Scheduler", AFTER, function(){
       this.next();
       var self = this.self;
@@ -962,7 +962,7 @@
       this.next();
     });
 
-    function handleEventTemplate(event){
+    defadvice([ "ui.MultiDayView", "ui.MonthView" ], "_createEventElement", function(event){
       var element = this.next();
       var self = this.self;
       var scope = angular.element(self.element).scope();
@@ -971,12 +971,8 @@
       compile(element)(itemScope);
       digest(itemScope);
       return element;
-    }
-
-    defadvice("ui.MultiDayView", "_createEventElement", handleEventTemplate);
-    defadvice("ui.MonthView", "_createEventElement", handleEventTemplate);
-
-  })();
+    });
+  }
 
   {
     // mobile/ButtonGroup does not have a "value" method, but looks
