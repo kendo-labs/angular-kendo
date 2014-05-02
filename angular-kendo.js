@@ -920,9 +920,32 @@
     var self = this.self;
     var scope = angular.element(self.element).scope();
     if (scope) {
-      console.log("Compiling Tooltip");
       compile(self.content)(scope);
       digest(scope);
+    }
+  });
+
+  defadvice("ui.Scheduler", AFTER, function(){
+    this.next();
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (scope) {
+      bindBefore(self, "edit", function(ev){
+        var subScope = scope.$new();
+        self.$editScope = subScope;
+        subScope.dataItem = ev.model;
+        compile(ev.container)(subScope);
+      });
+      var destroy = function(ev){
+        var subScope = self.$editScope;
+        if (subScope !== scope) {
+          destroyScope(subScope, ev.container);
+          self.$editScope = null;
+        }
+      };
+      bindBefore(self, "cancel", destroy);
+      bindBefore(self, "save", destroy);
+      bindBefore(self, "remove", destroy);
     }
   });
 
