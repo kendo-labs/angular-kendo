@@ -925,29 +925,58 @@
     }
   });
 
-  defadvice("ui.Scheduler", AFTER, function(){
-    this.next();
-    var self = this.self;
-    var scope = angular.element(self.element).scope();
-    if (scope) {
-      bindBefore(self, "edit", function(ev){
-        var subScope = scope.$new();
-        self.$editScope = subScope;
-        subScope.dataItem = ev.model;
-        compile(ev.container)(subScope);
-      });
-      var destroy = function(ev){
-        var subScope = self.$editScope;
-        if (subScope !== scope) {
-          destroyScope(subScope, ev.container);
-          self.$editScope = null;
-        }
-      };
-      bindBefore(self, "cancel", destroy);
-      bindBefore(self, "save", destroy);
-      bindBefore(self, "remove", destroy);
+  // scheduler
+  (function(){
+    defadvice("ui.Scheduler", AFTER, function(){
+      this.next();
+      var self = this.self;
+      var scope = angular.element(self.element).scope();
+      if (scope) {
+        self.$eventsScope = scope.$new();
+        bindBefore(self, "edit", function(ev){
+          var editScope = self.$editScope = scope.$new();
+          editScope.dataItem = ev.model;
+          compile(ev.container)(editScope);
+        });
+        var destroy = function(ev){
+          var editScope = self.$editScope;
+          if (editScope !== scope) {
+            destroyScope(editScope, ev.container);
+            self.$editScope = null;
+          }
+        };
+        bindBefore(self, "cancel", destroy);
+        bindBefore(self, "save", destroy);
+        bindBefore(self, "remove", destroy);
+        bindBefore(self, "navigate", function(){
+          self.$eventsScope.$destroy();
+          self.$eventsScope = scope.$new();
+        });
+      }
+    });
+
+    defadvice("ui.Scheduler", "destroy", function(){
+      if (this.$eventsScope) {
+        this.$eventsScope.$destroy();
+      }
+      this.next();
+    });
+
+    function handleEventTemplate(event){
+      var element = this.next();
+      var self = this.self;
+      var scope = angular.element(self.element).scope();
+      var itemScope = scope.$new();
+      itemScope.dataItem = event;
+      compile(element)(itemScope);
+      digest(itemScope);
+      return element;
     }
-  });
+
+    defadvice("ui.MultiDayView", "_createEventElement", handleEventTemplate);
+    defadvice("ui.MonthView", "_createEventElement", handleEventTemplate);
+
+  })();
 
   {
     // mobile/ButtonGroup does not have a "value" method, but looks
