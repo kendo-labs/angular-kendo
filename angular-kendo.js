@@ -37,15 +37,10 @@
         var type = types[role] || 'DataSource';
         var ds = toDataSource(scope.$eval(attrs.kDataSource), type);
 
-        // Set $kendoDataSource in the element's data. 3rd parties can define their own dataSource creation
-        // directive and provide this data on the element.
-        element.data('$kendoDataSource', ds);
-
         // not recursive -- this triggers when the whole data source changed
         scope.$watch(attrs.kDataSource, function(mew, old){
           if (mew !== old) {
             var ds = toDataSource(mew, type);
-            element.data('$kendoDataSource', ds);
             var widget = kendoWidgetInstance(element);
             if (widget && typeof widget.setDataSource == "function") {
               widget.setDataSource(ds);
@@ -82,7 +77,6 @@
             }
           }
         });
-        options.dataSource = element.inheritedData('$kendoDataSource') || options.dataSource;
 
         // parse the datasource attribute
         if (attrs.kDataSource) {
