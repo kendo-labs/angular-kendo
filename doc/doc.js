@@ -1,3 +1,5 @@
+var URLPREFIX = "./doc/";
+
 (function(){
 
     var WEB_DEMOS = [
@@ -41,7 +43,7 @@
     app.config([ "$routeProvider", function($routeProvider){
         WEB_DEMOS.forEach(function(x){
             var props = {
-                templateUrl: "web/" + x.widget + ".html",
+                templateUrl: URLPREFIX + "web/" + x.widget + ".html",
                 widget: x.widget,
                 title: x.widget
             };
@@ -50,7 +52,7 @@
         });
         DOCS.forEach(function(x){
             var props = {
-                templateUrl: "docs/" + x.page + ".html",
+                templateUrl: URLPREFIX + "docs/" + x.page + ".html",
                 page: x.page,
                 title: x.title
             };
@@ -58,7 +60,7 @@
             $routeProvider.when("/" + x.page, props);
         });
         $routeProvider.when("/", {
-            templateUrl: "home.html",
+            templateUrl: URLPREFIX + "home.html",
         });
     }]);
 
@@ -66,6 +68,8 @@
         $scope.webDemos = WEB_DEMOS;
         $scope.docPages = DOCS;
         $scope.$route = $route;
+        $scope.URLPREFIX = URLPREFIX;
+        $scope.SHOW_SOURCE = URLPREFIX + "web/show-source.html";
         $scope.$on("kendoRendered", function(){
             $("#pageview").css({ visibility: "visible", display: "none" });
             $("#pageview").fadeIn();
@@ -97,7 +101,7 @@
         };
         $scope.products = new kendo.data.DataSource({
             transport: {
-                read: "data/products.json"
+                read: URLPREFIX + "data/products.json"
             },
             pageSize: 5
         });
