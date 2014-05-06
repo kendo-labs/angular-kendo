@@ -37,15 +37,10 @@
         var type = types[role] || 'DataSource';
         var ds = toDataSource(scope.$eval(attrs.kDataSource), type);
 
-        // Set $kendoDataSource in the element's data. 3rd parties can define their own dataSource creation
-        // directive and provide this data on the element.
-        element.data('$kendoDataSource', ds);
-
         // not recursive -- this triggers when the whole data source changed
         scope.$watch(attrs.kDataSource, function(mew, old){
           if (mew !== old) {
             var ds = toDataSource(mew, type);
-            element.data('$kendoDataSource', ds);
             var widget = kendoWidgetInstance(element);
             if (widget && typeof widget.setDataSource == "function") {
               widget.setDataSource(ds);
@@ -82,7 +77,6 @@
             }
           }
         });
-        options.dataSource = element.inheritedData('$kendoDataSource') || options.dataSource;
 
         // parse the datasource attribute
         if (attrs.kDataSource) {
@@ -577,7 +571,7 @@
     if (scope) bindBefore(self, "contentLoad", function(ev){
       //                   tabstrip/panelbar    splitter
       var contentElement = ev.contentElement || ev.pane;
-      compile(ev.contentElement)(scope);
+      compile(contentElement)(scope);
       digest(scope);
     });
   });
@@ -920,11 +914,59 @@
     var self = this.self;
     var scope = angular.element(self.element).scope();
     if (scope) {
-      console.log("Compiling Tooltip");
       compile(self.content)(scope);
       digest(scope);
     }
   });
+
+  // scheduler
+  {
+    defadvice("ui.Scheduler", AFTER, function(){
+      this.next();
+      var self = this.self;
+      var scope = angular.element(self.element).scope();
+      if (scope) {
+        self.$eventsScope = scope.$new();
+        bindBefore(self, "edit", function(ev){
+          var editScope = self.$editScope = scope.$new();
+          editScope.dataItem = ev.model;
+          compile(ev.container)(editScope);
+        });
+        var destroy = function(ev){
+          var editScope = self.$editScope;
+          if (editScope !== scope) {
+            destroyScope(editScope, ev.container);
+            self.$editScope = null;
+          }
+        };
+        bindBefore(self, "cancel", destroy);
+        bindBefore(self, "save", destroy);
+        bindBefore(self, "remove", destroy);
+        bindBefore(self, "navigate", function(){
+          self.$eventsScope.$destroy();
+          self.$eventsScope = scope.$new();
+        });
+      }
+    });
+
+    defadvice("ui.Scheduler", "destroy", function(){
+      if (this.$eventsScope) {
+        this.$eventsScope.$destroy();
+      }
+      this.next();
+    });
+
+    defadvice([ "ui.MultiDayView", "ui.MonthView" ], "_createEventElement", function(event){
+      var element = this.next();
+      var self = this.self;
+      var scope = angular.element(self.element).scope();
+      var itemScope = scope.$new();
+      itemScope.dataItem = event;
+      compile(element)(itemScope);
+      digest(itemScope);
+      return element;
+    });
+  }
 
   {
     // mobile/ButtonGroup does not have a "value" method, but looks

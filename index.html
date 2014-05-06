@@ -1,106 +1,112 @@
 <!doctype html>
-<html ng-app="SampleApp">
-<head>
-  <meta charset="utf-8">
-  <title>Angular Kendo</title>
-  <link href="app/components/google-code-prettify-lite/prettify.css" rel="stylesheet">
-  <link rel="stylesheet" href="app/css/pure-min.css">
-  <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.common.min.css" rel="stylesheet">
-  <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.default.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="app/css/site.css">
-</head>
-<body>
-  <a href="https://github.com/kendo-labs/angular-kendo"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
-  <div class="pure-g content">
-    <div class="pure-u-1-6">
-      <img src="app/css/img/angular-kendo.png" class="logo">
-    </div>
-    <div class="pure-u-5-6">
-      <h1>Angular Kendo UI</h1>
-      <p class="subtitle">A Complete UI Framework For AngularJS</p>
-    </div>
-    <div class="pure-u-1 negative">
-      <ul kendo-menu class="menu ng-cloak">
-        <li>
-          Web Widgets
-          <ul>
-            <li><a href="http://demos.kendoui.com/web/autocomplete">AutoComplete</a></li>
-            <li><a href="http://demos.kendoui.com/web/calendar">Calendar</a></li>
-            <li><a href="http://demos.kendoui.com/web/colorpicker">ColorPicker</a></li>
-            <li><a href="http://demos.kendoui.com/web/combobox">ComboBox</a></li>
-            <li><a href="http://demos.kendoui.com/web/datepicker">DatePicker</a></li>
-            <li><a href="http://demos.kendoui.com/web/datetimepicker">DateTimePicker</a></li>
-            <li><a href="http://demos.kendoui.com/web/dropdownlist">DropDownList</a></li>
-            <li><a href="http://demos.kendoui.com/web/editor">Editor</a></li>
-            <li><a href="http://demos.kendoui.com/web/grid">Grid</a></li>
-            <li><a href="http://demos.kendoui.com/web/listview">ListView</a></li>
-            <li><a href="http://demos.kendoui.com/web/menu">Menu</a></li>
-            <li><a href="http://demos.kendoui.com/web/multiselect">MultiSelect</a></li>
-            <li><a href="http://demos.kendoui.com/web/numerictextbox">Numeric Textbox</a></li>
-            <li><a href="http://demos.kendoui.com/web/panelbar">Panel Bar</a></li>
-            <li><a href="http://demos.kendoui.com/web/scheduler/index.html">Scheduler</a></li>
-            <li><a href="http://demos.kendoui.com/web/slider">Slider</a></li>
-            <li><a href="http://demos.kendoui.com/web/splitter">Splitter</a></li>
-            <li><a href="http://demos.kendoui.com/web/tabstrip">Tabstrip</a></li>
-            <li><a href="http://demos.kendoui.com/web/timepicker">TimePicker</a></li>
-            <li><a href="http://demos.kendoui.com/web/tooltip">Tooltip</a></li>
-            <li><a href="http://demos.kendoui.com/web/treeview">TreeView</a></li>
-            <li><a href="http://demos.kendoui.com/web/upload">Upload</a></li>
-            <li><a href="http://demos.kendoui.com/web/window">Window</a></li>
-          </ul>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Kendo UI directives for AngularJS</title>
+
+    <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.silver.min.css" rel="stylesheet" type="text/css" />
+    <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.silver.mobile.min.css" rel="stylesheet" type="text/css" />
+    <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" />
+    <link href="//cdn.kendostatic.com/2014.1.318/styles/kendo.dataviz.default.min.css" rel="stylesheet" type="text/css" />
+    <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="//cdn.kendostatic.com/2014.1.318/js/kendo.all.min.js"></script>
+
+    <!-- <link rel="stylesheet " href="tmp/kendo/dist/styles/web/kendo.common.css" /> -->
+    <!-- <link rel="stylesheet " href="tmp/kendo/dist/styles/web/kendo.silver.css" /> -->
+    <!-- <link rel="stylesheet " href="tmp/kendo/dist/styles/web/kendo.silver.mobile.css" /> -->
+    <!-- <script src="tmp/kendo/dist/js/jquery.js"></script> -->
+    <!-- <script src="tmp/kendo/dist/js/kendo.all.js"></script> -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-route.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-sanitize.js"></script>
+    <script src="./angular-kendo.js"></script>
+
+    <script src="./doc/doc.js"></script>
+    <script src="./doc/lib/trykendo.js"></script>
+    <link rel="stylesheet" href="./doc/style.css" />
+
+    <link rel="stylesheet" href="./doc/lib/prism/prism.css" />
+    <script src="./doc/lib/prism/prism.js" data-manual></script>
+  </head>
+
+  <body ng-app="DemoApp" ng-controller="DemoController">
+    <header class="fixed">
+      <div class="title">
+        Angular-Kendo.js
+        <span ng-if="$route.current.widget">/ {{ $route.current.title }} widget</span>
+      </div>
+    </header>
+    <a class="logolink" href="#/"></a>
+    <header class="spacer">A</header>
+
+    <div class="demolist">
+      <h1>Documentation</h1>
+      <ul>
+        <li ng-repeat="item in docPages" class="{{ item.page == $route.current.page ? 'current' : '' }}">
+          <a href="#/{{ item.page }}">{{item.title}}</a>
         </li>
-        <li>
-          Data Vizualization
-          <ul>
-            <li>
-              Charts
-              <ul>
-                <li><a href="http://demos.kendoui.com/dataviz/area-charts">Area Charts</a></li>
-                <li><a href="http://demos.kendoui.com/dataviz/bar-charts">Bar Charts</a></li>
-                <li><a href="http://demos.kendoui.com/dataviz/bubble-charts">Bubble Charts</a></li>
-                <li><a href="http://demos.kendoui.com/dataviz/bullet-charts">Bullet Charts</a></li>
-                <li><a href="http://demos.kendoui.com/dataviz/line-charts">Line Charts</a></li>
-                <li><a href="http://demos.kendoui.com/dataviz/donut-charts">Donut Charts</a></li>
-                <li><a href="http://demos.kendoui.com/dataviz/pie-charts">Pie Charts</a></li>
-              </ul>
-            </li>
-            <li>
-              Gauges
-              <ul>
-                <li><a href="http://demos.kendoui.com/dataviz/radial-gauge">Radial Gauge</a></li>
-                <li><a href="http://demos.kendoui.com/dataviz/linear-gauge">Linear Gauge</a></li>
-              </ul>
-            </li>
-            <li>Bar & QR Codes
-              <ul>
-                <li><a href="http://demos.kendoui.com/dataviz/barcode/index.html">Barcode</a></li>
-                <li><a href="http://demos.kendoui.com/dataviz/qrcode/index.html">QR Code</a></li>
-              </ul>
-            </li>
-            <li>
-              Financial
-              <ul>
-                <li><a href="http://demos.kendoui.com/dataviz/financial">Stock Chart</a></li>
-              </ul>
-            </li>
-          </ul>
+      </ul>
+
+      <h1>Web widget demos</h1>
+      <ul>
+        <li ng-repeat="item in webDemos" class="{{ item.widget == $route.current.widget ? 'current' : '' }}">
+          <a href="#/{{ item.widget }}">{{item.widget}}</a>
         </li>
-        <li><a href="http://labs.kendoui.com">Kendo UI Labs</a></li>
       </ul>
     </div>
-    <div class="pure-u">
-      <div class="container" ng-view></div>
+
+    <div class="mainview">
+      <div class="weblinks" ng-if="$route.current.widget">
+        <div class="title">{{ $route.current.widget }}</div>
+        <div class="body">
+          <a href="http://demos.telerik.com/kendo-ui/web/{{ $route.current.widget | lowercase }}/index.html"
+             >Demos at telerik.com</a>
+          <a href="http://docs.telerik.com/kendo-ui/api/web/{{ $route.current.widget | lowercase }}"
+             >Complete documentation</a>
+        </div>
+      </div>
+      <h1 class="title">{{ $route.current.title }}</h1>
+      <div ng-view id="pageview" style="visibility: hidden"></div>
     </div>
-  </div>
 
-  <script src="app/components/google-code-prettify-lite/prettify.js"></script>
-  <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-route.js"></script>
-  <script src="//cdn.kendostatic.com/2014.1.318/js/kendo.all.min.js"></script>
-  <script src="angular-kendo.js"></script>
-  <script src="app/js/app.js"></script>
-  <script src="app/js/controllers.js"></script>
+    <footer>
+      This site was built with <a href="http://angularjs.org">AngularJS</a> and <a href="http://www.kendoui.com">Kendo UI</a>
+    </footer>
 
-</body>
+    <!-- the following comment is important. -->
+    <script id="html-for-dojo" type="x/ignore"><!--
+<!docroot html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Untitled</title>
+
+    <link rel="stylesheet" href="$CDNROOT/styles/kendo.common.min.css">
+    <link rel="stylesheet" href="$CDNROOT/styles/kendo.rtl.min.css">
+    <link rel="stylesheet" href="$CDNROOT/styles/kendo.default.min.css">
+    <link rel="stylesheet" href="$CDNROOT/styles/kendo.dataviz.min.css">
+    <link rel="stylesheet" href="$CDNROOT/styles/kendo.dataviz.default.min.css">
+    <link rel="stylesheet" href="$CDNROOT/styles/kendo.mobile.all.min.css">
+
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="$CDNROOT/js/kendo.all.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-route.js"></script>
+    <script src="./angular-kendo.js"></script>
+    <script>
+      angular.module("MyApp", [ "kendo.directives" ]);
+    </script>
+  </head>
+  <body ng-app="MyApp">
+
+$JS
+
+$HTML
+
+  </body>
+</html>--></script>
+  </body>
+
 </html>

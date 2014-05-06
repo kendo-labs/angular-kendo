@@ -2,6 +2,15 @@
 <div ng-controller="MyCtrl">
   <div kendo-scheduler k-options="schedulerOptions"></div>
 </div>
+<style>
+  .custom-event {
+    text-shadow: 1px 2px 5px #000;
+  }
+  .custom-all-day-event {
+    text-align: center;
+    font-family: serif;
+  }
+</style>
 </script>
 
 <script id="the-javascript">
@@ -15,8 +24,9 @@ function MyCtrl($scope) {
             { type: "workWeek", selected: true },
             "week",
             "month",
-            "agenda"
         ],
+        eventTemplate: "<span class='custom-event'>{{dataItem.title}}</span>",
+        allDayEventTemplate: "<div class='custom-all-day-event'>{{dataItem.title}}</div>",
         timezone: "Etc/UTC",
         dataSource: {
             batch: true,
@@ -86,9 +96,11 @@ function MyCtrl($scope) {
 </script>
 
 <p>
-  Note: the scheduler is a very complex widget and at this time we don't
-  support <code ng-non-bindable>{{angular}}</code> expressions in its
-  customizable templates.
+  The Scheduler supports <code ng-non-bindable>{{angular}}</code>
+  expressions in
+  its <code>editable.template</code>, <code>eventTemplate</code>
+  and <code>allDayEventTemplate</code>.  Refer to the current event using
+  the <code>dataItem</code> variable which is available in scope.
 </p>
 
-<div ng-include src="'web/show-source.html'"></div>
+<div ng-include src="SHOW_SOURCE"></div>

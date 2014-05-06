@@ -23,11 +23,14 @@ header {
   box-sizing: border-box;
   background-color: #777;
   color: #fff;
-  font: 2em Georgia,"Times New Roman",serif;
   line-height: 1em;
-  padding: 0.3em 0;
   text-align: center;
   width: 100%;
+  height: 52px;
+  .title {
+    font: 32px Georgia,"Times New Roman",serif;
+    line-height: 52px;
+  }
   &.fixed {
     position: fixed;
   }
@@ -44,7 +47,7 @@ header {
   z-index: 10001;
   position: absolute;
   left: 30px;
-  top: 0;
+  top: 10px;
   opacity: 0.6;
   transition-duration: 0.2s;
   &:hover {
@@ -52,7 +55,7 @@ header {
   }
   &.fixed {
     position: fixed;
-    left: 10px;
+    left: 60px;
     width: 60px;
     height: 50px;
     top: 0;
@@ -61,7 +64,7 @@ header {
 
 .demolist {
   position: absolute;
-  padding-top: 50px;
+  padding-top: 60px;
   font-size: 90%;
   box-sizing: border-box;
   width: @navbarWidth;
