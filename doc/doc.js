@@ -32,7 +32,8 @@
 
     var DOCS = [
         { page: "basics", title: "Basic usage", controller: "BasicDocsController" },
-        { page: "datasource", title: "Data source vs. Angular" }
+        { page: "datasource", title: "Data source vs. Angular" },
+        { page: "events", title: "Global events" }
     ];
 
     var app = angular.module("DemoApp", [ "kendo.directives", "ngRoute", "ngSanitize" ]);
@@ -191,7 +192,7 @@
 })();
 
 function getCode(id) {
-    return $("#" + id).html().replace(/^\s*<!--\s*|\s*-->\s*$/g, "");
+    return $("#" + id).html().replace(/^<!--\s*|\s*-->$/g, "");
 }
 
 function makeHtmlForDojo(args) {
