@@ -571,7 +571,7 @@
     if (scope) bindBefore(self, "contentLoad", function(ev){
       //                   tabstrip/panelbar    splitter
       var contentElement = ev.contentElement || ev.pane;
-      compile(ev.contentElement)(scope);
+      compile(contentElement)(scope);
       digest(scope);
     });
   });
