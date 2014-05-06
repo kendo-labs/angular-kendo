@@ -67,7 +67,8 @@
         $scope.docPages = DOCS;
         $scope.$route = $route;
         $scope.$on("kendoRendered", function(){
-            $("#pageview").css({ visibility: "visible" });
+            $("#pageview").css({ visibility: "visible", display: "none" });
+            $("#pageview").fadeIn();
         });
         $scope.$on("$viewContentLoaded", function(){
             $("html, body").scrollTop(0);

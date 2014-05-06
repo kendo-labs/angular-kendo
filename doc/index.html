@@ -33,8 +33,10 @@
 
   <body ng-app="DemoApp" ng-controller="DemoController">
     <header class="fixed">
-      Angular-Kendo.js
-      <span ng-if="$route.current.widget">/ {{ $route.current.title }} widget</span>
+      <div class="title">
+        Angular-Kendo.js
+        <span ng-if="$route.current.widget">/ {{ $route.current.title }} widget</span>
+      </div>
     </header>
     <a class="logolink" href="#/"></a>
     <header class="spacer">A</header>
