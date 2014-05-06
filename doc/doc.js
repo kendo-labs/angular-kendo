@@ -70,12 +70,20 @@ var URLPREFIX = "./doc/";
         $scope.$route = $route;
         $scope.URLPREFIX = URLPREFIX;
         $scope.SHOW_SOURCE = URLPREFIX + "web/show-source.html";
+        var mustFade = false;
         $scope.$on("kendoRendered", function(){
-            $("#pageview").css({ visibility: "visible", display: "none" });
-            $("#pageview").fadeIn();
+            if (mustFade) {
+                $("#pageview").css({ visibility: "visible", display: "none" });
+                $("#pageview").fadeIn();
+                mustFade = false;
+            }
+        });
+        $scope.$on("$routeChangeStart", function(){
+            $("#pageview").fadeOut();
         });
         $scope.$on("$viewContentLoaded", function(){
             $("html, body").scrollTop(0);
+            mustFade = true;
         });
     }]);
 
