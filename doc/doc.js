@@ -66,6 +66,12 @@
         $scope.webDemos = WEB_DEMOS;
         $scope.docPages = DOCS;
         $scope.$route = $route;
+        $scope.$on("kendoRendered", function(){
+            $("#pageview").css({ visibility: "visible" });
+        });
+        $scope.$on("$viewContentLoaded", function(){
+            $("html, body").scrollTop(0);
+        });
     }]);
 
     app.controller("BasicDocsController", [ "$scope", function($scope){
