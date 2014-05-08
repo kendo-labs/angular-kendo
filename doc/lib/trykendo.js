@@ -1,7 +1,7 @@
 (function($, window) {
     var dojo = window.dojo = {
         url: "http://trykendoui.telerik.com/",
-        cdnRoot: 'http://cdn.kendostatic.com/2014.1.416',
+        cdnRoot: '//cdn.kendostatic.com/2014.1.416',
         postSnippet: function (snippet, baseUrl) {
             snippet = dojo.addBaseRedirectTag(snippet, baseUrl);
             snippet = dojo.addConsoleScript(snippet);
