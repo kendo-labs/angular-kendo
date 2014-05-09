@@ -1001,6 +1001,7 @@
     });
 
     defadvice("mobile.ui.VirtualScrollViewContent", "setPageContent", function(page){
+      var self = this.self;
       var scope = angular.element(self.element).scope();
       if (scope) {
         var itemScope = angular.element(page.element).scope();
