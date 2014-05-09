@@ -999,6 +999,30 @@
       }
       return self.page;
     });
+
+    defadvice("mobile.ui.VirtualScrollViewContent", "setPageContent", function(page){
+      var scope = angular.element(self.element).scope();
+      if (scope) {
+        var itemScope = angular.element(page.element).scope();
+        if (itemScope && itemScope !== scope) {
+          destroyScope(page.$angular_scope);
+        }
+      }
+      this.next();
+    });
+
+    defadvice("mobile.ui.ScrollView", AFTER, function(){
+      this.next();
+      var self = this.self;
+      var scope = angular.element(self.element).scope();
+      if (!scope) return;
+      bindBefore(self, "itemChange", function(ev){
+        var itemScope = scope.$new();
+        itemScope.dataItem = ev.data;
+        compile(ev.item)(itemScope);
+        digest(itemScope);
+      });
+    });
   }
 
 }, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
