@@ -1006,7 +1006,7 @@
       if (scope) {
         var itemScope = angular.element(page.element).scope();
         if (itemScope && itemScope !== scope) {
-          destroyScope(page.$angular_scope);
+          destroyScope(itemScope);
         }
       }
       this.next();
