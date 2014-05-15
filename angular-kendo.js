@@ -636,12 +636,6 @@
       var dataSource = widget.dataSource;
       var dirty = false;
       widget.$angular_itemsToCompile().each(function(){
-        // XXX HACK: the tree view will call dataBound multiple
-        // times, sometimes for LI-s containing nested items that
-        // may have been already compiled.  Therefore in this
-        // situation we compile the first div element, which contains
-        // only the template for a single item (both the list item
-	// and the item checkbox if one exists).
         var elementToCompile = $(this);
         if (!elementToCompile.hasClass("ng-scope")) {
           var itemUid = $(this).attr(_UID_);
