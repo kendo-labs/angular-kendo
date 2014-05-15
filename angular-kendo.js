@@ -607,6 +607,20 @@
     }
   });
 
+  defadvice([ "ui.ListView", "mobile.ui.ListView", "ui.TreeView" ], "$angular_itemsToCompile", function(){
+    return this.self.items();
+  });
+
+  defadvice("ui.TreeView", "$angular_itemsToCompile", function(){
+    return this.self.element.find(".k-item div:first-child");
+  });
+
+  defadvice([ "ui.Grid" ], "$angular_itemsToCompile", function(){
+    var self = this.self;
+    if (!self.lockedContent) return self.items();
+    return self.items().add("tr[" + _UID_ + "]", self.lockedContent);
+  });
+
   // for Grid, ListView and TreeView, provide a dataBound handler that
   // recompiles Angular templates.  We need to do this before the
   // widget is initialized so that we catch the first dataBound event.
@@ -621,16 +635,14 @@
       var widget = ev.sender;
       var dataSource = widget.dataSource;
       var dirty = false;
-      widget.items().each(function(){
+      widget.$angular_itemsToCompile().each(function(){
         // XXX HACK: the tree view will call dataBound multiple
         // times, sometimes for LI-s containing nested items that
         // may have been already compiled.  Therefore in this
         // situation we compile the first div element, which contains
         // only the template for a single item (both the list item
 	// and the item checkbox if one exists).
-        var elementToCompile = role == "TreeView"
-          ? $(this).find("div").first()
-          : $(this);
+        var elementToCompile = $(this);
         if (!elementToCompile.hasClass("ng-scope")) {
           var itemUid = $(this).attr(_UID_);
           var item = dataSource.getByUid(itemUid);
@@ -646,6 +658,46 @@
         if (dirty) digest(scope);
       }
     };
+  });
+
+  defadvice([ "ui.Grid", "ui.ListView", "mobile.ui.ListView" ], AFTER, function(){
+    this.next();
+    var self = this.self;
+    var scope = angular.element(self.element).scope();
+    if (!scope) return;
+
+    // itemChange triggers when a single item is changed through our
+    // DataSource mechanism.
+    self.bind("itemChange", function(ev) {
+      var dataSource = ev.sender.dataSource;
+      var itemElement = ev.item[0];
+      var item = ev.item;
+      if ($.isArray(item)) item = item[0];
+      item = $(item);
+      var itemScope = angular.element(item).scope();
+      if (!itemScope || itemScope === scope) {
+        itemScope = scope.$new();
+      }
+      itemScope.dataItem = dataSource.getByUid(item.attr(_UID_));
+      compile(itemElement)(itemScope);
+      digest(itemScope);
+    });
+
+    // dataBinding triggers when new data is loaded.  We use this to
+    // destroy() each item's scope.
+    self.bind("dataBinding", function(ev) {
+      ev.sender.$angular_itemsToCompile().each(function(){
+        var el = $(this);
+        if (el.attr(_UID_)) {
+          var rowScope = angular.element(this).scope();
+          // avoid destroying the widget's own scope
+          // no idea why we get it, but we do.... :(
+          if (rowScope && rowScope !== scope) {
+            destroyScope(rowScope, el);
+          }
+        }
+      });
+    });
   });
 
   // DropDownList
@@ -742,46 +794,6 @@
         var scope = angular.element(this).scope();
         if (scope) {
           destroyScope(scope, this);
-        }
-      });
-    });
-  });
-
-  defadvice([ "ui.Grid", "ui.ListView", "mobile.ui.ListView" ], AFTER, function(){
-    this.next();
-    var self = this.self;
-    var scope = angular.element(self.element).scope();
-    if (!scope) return;
-
-    // itemChange triggers when a single item is changed through our
-    // DataSource mechanism.
-    self.bind("itemChange", function(ev) {
-      var dataSource = ev.sender.dataSource;
-      var itemElement = ev.item[0];
-      var item = ev.item;
-      if ($.isArray(item)) item = item[0];
-      item = $(item);
-      var itemScope = angular.element(item).scope();
-      if (!itemScope || itemScope === scope) {
-        itemScope = scope.$new();
-      }
-      itemScope.dataItem = dataSource.getByUid(item.attr(_UID_));
-      compile(itemElement)(itemScope);
-      digest(itemScope);
-    });
-
-    // dataBinding triggers when new data is loaded.  We use this to
-    // destroy() each item's scope.
-    self.bind("dataBinding", function(ev) {
-      ev.sender.items().each(function(){
-        var el = $(this);
-        if (el.attr(_UID_)) {
-          var rowScope = angular.element(this).scope();
-          // avoid destroying the widget's own scope
-          // no idea why we get it, but we do.... :(
-          if (rowScope && rowScope !== scope) {
-            destroyScope(rowScope, el);
-          }
         }
       });
     });
