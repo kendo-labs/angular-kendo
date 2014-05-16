@@ -210,7 +210,9 @@
               }
               prev_destroy = scope.$on("$destroy", function() {
                 if (widget) {
-                  widget.destroy();
+                  if (widget.element) {
+                    widget.destroy();
+                  }
                   widget = null;
                 }
               });
