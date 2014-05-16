@@ -6,13 +6,11 @@ angular-kendo is a directive for AngularJS that runs an element through Kendo UI
 
 ## Compatibility and Requirements
 
-angular-kendo was designed to work with Kendo UI Web / DataViz and AngularJS version 1.0.4.  Version 1.0.3 of AngularJS is not supported [thanks to this bug](https://github.com/angular/angular.js/issues/1627) that is fixed in 1.0.4.
-
 angular-kendo currently depends on the following libraries:
 
 - [jQuery](http://www.jquery.com) v1.9.1
 - [Kendo UI](http://www.kendoui.com) vCurrent
-- [AngularJS](http://www.angularjs.org) v1.0.5
+- [AngularJS](http://www.angularjs.org) v1.2.1+
 
 angular-kendo has not been tested against any other versions of these libraries. You may find that versions other than these are compatible with angular-kendo, but we make no claims to support those version, nor can we troubleshoot issues that arise when using those versions.
 
