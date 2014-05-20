@@ -110,6 +110,10 @@
     }
   }
 
+  function hasKendoTag(element) {
+    return /^kendo/i.test(element.prop("tagName"));
+  }
+
   module.factory('directiveFactory', ['$timeout', '$parse', '$compile', '$log', function($timeout, $parse, $compile, $log) {
 
     timeout = $timeout;
@@ -127,11 +131,31 @@
         require: [ "?ngModel", "^?form" ],
         scope: false,
 
-        // // XXX: Is this transclusion needed?  We seem to do better without it.
-        // //      https://github.com/kendo-labs/angular-kendo/issues/90
-        //
         transclude: true,
         controller: [ '$scope', '$attrs', '$element', '$transclude', function($scope, $attrs, $element, $transclude) {
+
+          if (hasKendoTag($element)) (function(){
+            var element = $element[0];
+            $attrs.$kendoOrigElement = element.cloneNode(true);
+            var attributes = Array.prototype.slice.call(element.attributes); // guess why we need that. :-\
+            for (var i = 0; i < attributes.length; ++i) {
+              var orig = attributes[i].nodeName;
+              if (!/^(k|ng)-/.test(orig) && !/^(style|class|id)$/.test(orig)) {
+                var name = ("k-" + orig).replace(/-(.)/g, function(s, p){
+                  return p.toUpperCase();
+                });
+                if (!(name in $attrs)) {
+                  $attrs[name] = attributes[i].nodeValue;
+                }
+
+                // we must remove the original attribute!  otherwise some widgets (DropDownList at least) will prefer to
+                // take options from there instead of the options object we actually pass to constructor, ending up with
+                // dataTextField = "'name'" (unevaluated), leading to a SyntaxError: Unexpected string error.
+                element.removeAttribute(orig);
+              }
+            }
+          })();
+
           // Make the element's contents available to the kendo widget to allow creating some widgets from existing elements.
           $transclude($scope, function(clone){
             $element.append(clone);
@@ -158,37 +182,32 @@
             // if k-rebind attribute is provided, rebind the kendo widget when
             // the watched value changes
             if (attrs.kRebind) {
-              var originalElement = $(element)[0].cloneNode(true);
+              var originalElement = attrs.$kendoOrigElement || $(element)[0].cloneNode(true);
               // watch for changes on the expression passed in the k-rebind attribute
-              scope.$watch(attrs.kRebind, function(newValue, oldValue) {
+              var unregister = scope.$watch(attrs.kRebind, function(newValue, oldValue) {
                 if (newValue !== oldValue) {
-                  // create the kendo widget and bind it to the element.
-                  try {
-                    /****************************************************************
-                     // XXX: this is a gross hack that might not even work with all
-                     // widgets.  we need to destroy the current widget and get its
-                     // wrapper element out of the DOM, then make the original element
-                     // visible so we can initialize a new widget on it.
-                     //
-                     // kRebind is probably impossible to get right at the moment.
-                     ****************************************************************/
-                    var _wrapper = $(widget.wrapper)[0];
-                    var _element = $(widget.element)[0];
-                    if (widget) {
-                      widget.destroy();
-                      widget = null;
-                    }
-                    if (_wrapper && _element) {
-                      _wrapper.parentNode.replaceChild(_element, _wrapper);
-                      var clone = originalElement.cloneNode(true);
-                      $(element).replaceWith(clone);
-                      element = $(clone);
-                    }
-                    compile(element)(scope);
-                  } catch(ex) {
-                    console.error(ex);
-                    console.error(ex.stack);
+                  unregister(); // this watcher will be re-added if we compile again!
+
+                  /****************************************************************
+                   // XXX: this is a gross hack that might not even work with all
+                   // widgets.  we need to destroy the current widget and get its
+                   // wrapper element out of the DOM, then make the original element
+                   // visible so we can initialize a new widget on it.
+                   //
+                   // kRebind is probably impossible to get right at the moment.
+                   ****************************************************************/
+
+                  var _wrapper = $(widget.wrapper)[0];
+                  var _element = $(widget.element)[0];
+                  widget.destroy();
+                  widget = null;
+                  if (_wrapper && _element) {
+                    _wrapper.parentNode.replaceChild(_element, _wrapper);
+                    var clone = originalElement.cloneNode(true);
+                    $(element).replaceWith(clone);
+                    element = $(clone);
                   }
+                  compile(element)(scope);
                 }
               }, true); // watch for object equality. Use native or simple values.
             }
@@ -384,16 +403,24 @@
   // create directives for every widget.
   (function(){
     function createDirectives(prefix) {
+      function make(name, widget) {
+        module.directive(name, [
+          "directiveFactory",
+          function(directiveFactory) {
+            return directiveFactory.create(widget);
+          }
+        ]);
+      }
       return function(namespace) {
         angular.forEach(namespace, function(value, key) {
           if (key.match(/^[A-Z]/) && key !== 'Widget') {
             var widget = "kendo" + prefix + key;
-            module.directive(widget, [
-              "directiveFactory",
-              function(directiveFactory) {
-                return directiveFactory.create(widget);
-              }
-            ]);
+            var shortcut = (prefix + key).toLowerCase();
+            shortcut = "kendo" + shortcut.charAt(0).toUpperCase() + shortcut.substr(1);
+            make(widget, widget);
+            if (shortcut != widget) {
+              make(shortcut, widget);
+            }
           }
         });
       }
