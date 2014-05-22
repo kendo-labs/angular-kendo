@@ -17,7 +17,7 @@ a:visited:hover {
   color: #c82;
 }
 header {
-  z-index: 10000;
+  z-index: 800;
   box-sizing: border-box;
   background-color: #777;
   color: #fff;
@@ -137,9 +137,9 @@ header.spacer {
 .mainview .weblinks {
   font-size: 90%;
   background-color: #ddd;
-  float: right;
   border: 1px solid #777;
-  margin: 0 0 1em 1em;
+  margin: 1em;
+  display: inline-block;
 }
 .mainview .weblinks a {
   display: block;
