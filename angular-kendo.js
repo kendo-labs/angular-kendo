@@ -669,7 +669,7 @@
       widget.$angular_itemsToCompile().each(function(){
         var elementToCompile = $(this);
         if (!elementToCompile.hasClass("ng-scope")) {
-          var itemUid = $(this).attr(_UID_);
+          var itemUid = $(this).closest("[" + _UID_ + "]").attr(_UID_);
           var item = dataSource.getByUid(itemUid);
           var itemScope = scope.$new();
           itemScope.dataItem = item;
