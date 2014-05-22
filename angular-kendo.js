@@ -315,7 +315,7 @@
                   if (newValue === oldValue) return;
                   widget.value(newValue);
                 });
-                widget.bind("change", function(){
+                bindBefore(widget, "change", function(){
                   updating = true;
                   setter(scope, widget.value());
                   digest(scope);
