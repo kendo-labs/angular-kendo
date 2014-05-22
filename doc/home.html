@@ -10,7 +10,7 @@ UI Web/DataViz and AngularJS.</p>
 <table class="sample"><tr><td>
 <pre class="code language-markup">
 &lt;!-- markup --&gt;
-&lt;kendo-chart options="pie" /&gt;
+&lt;div kendo-chart k-options="pie"&gt;&lt;/div&gt;
 </pre>
 <br />
 <pre class="code language-javascript">
@@ -33,7 +33,7 @@ $scope.pie = {
 </td><td>
 
 <div ng-controller="MyCtrl">
-  <kendo-chart options="pie" />
+  <div kendo-chart k-options="pie"></div>
 </div>
 
 <script>
