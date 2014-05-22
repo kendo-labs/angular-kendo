@@ -248,8 +248,10 @@
 
                   // delaying with setTimout for cases where the datasource is set thereafter.
                   // https://github.com/kendo-labs/angular-kendo/issues/304
+                  var val = ngModel.$viewValue;
+                  if (val === undefined) val = ngModel.$modelValue;
                   setTimeout(function(){
-                    widget.value(ngModel.$viewValue);
+                    widget.value(val);
                   }, 0);
                 };
 
