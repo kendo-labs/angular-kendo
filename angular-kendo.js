@@ -27,6 +27,7 @@
         TreeView  : 'HierarchicalDataSource',
         Scheduler : 'SchedulerDataSource',
         PanelBar  : '$PLAIN',
+        Menu      : "$PLAIN",
       };
       var toDataSource = function(dataSource, type) {
         if (type == '$PLAIN')
