@@ -66,9 +66,13 @@
             var match = name.match(/^k(On)?([A-Z].*)/);
             if (match) {
               var optionName = match[2].charAt(0).toLowerCase() + match[2].slice(1);
-              if (match[1]) {
+              if (match[1]
+                  && name != "kOnLabel" // XXX: k-on-label can be used on MobileSwitch :-\
+                 ) {
                 options[optionName] = value;
               } else {
+                if (name == "kOnLabel")
+                  optionName = "onLabel"; // XXX: that's awful.
                 options[optionName] = angular.copy(scope.$eval(value));
                 if (options[optionName] === undefined && value.match(/^\w*$/)) {
                   log.warn(widget + '\'s ' + name + ' attribute resolved to undefined. Maybe you meant to use a string literal like: \'' + value + '\'?');
