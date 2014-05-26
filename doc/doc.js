@@ -29,6 +29,7 @@ var URLPREFIX = "./doc/";
         { widget: "TimePicker" },
         { widget: "Tooltip" },
         { widget: "TreeView" },
+        { widget: "Validator" },
         { widget: "Window" },
     ];
 

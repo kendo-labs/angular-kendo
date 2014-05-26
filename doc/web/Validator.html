@@ -1,0 +1,121 @@
+<script type="x/ignore" id="the-html">
+<div ng-controller="MyCtrl">
+  <form kendo-validator class="tickets">
+    <ul>
+
+      <li>
+        <label>
+          <span class="label required">Your name:</span>
+          <input name="fullname" class="k-textbox" placeholder="Full name" required validationMessage="Please enter {0}" />
+        </label>
+      </li>
+
+      <li>
+        <label>
+          <span class="label required">Movie:</span>
+          <input kendo-combo-box name="search" k-data-source="movies" required validationMessage="Please enter {0}" />
+          <span class="k-invalid-msg" data-for="search"></span>
+        </label>
+      </li>
+
+      <li>
+        <label>
+          <span class="label">Start time:</span>
+          <select kendo-drop-down-list name="time" required>
+            <option>14:00</option>
+            <option>15:30</option>
+            <option>17:00</option>
+            <option>20:15</option>
+          </select>
+        </label>
+      </li>
+
+      <li>
+        <label>
+          <span class="label">Amount:</span>
+          <input kendo-numeric-text-box name="amount" type="text" min="1" max="10" value="1" required data-max-msg="Enter value between 1 and 10" />
+          <span class="k-invalid-msg" data-for="amount"></span>
+        </label>
+      </li>
+
+      <li>
+        <label>
+          <span class="label required">Email:</span>
+          <input type="email" name="email" class="k-textbox" placeholder="e.g. myname@example.net" required data-email-msg="Email format is not valid" />
+        </label>
+      </li>
+
+      <li>
+        <label>
+          <span class="label required">Phone:</span>
+          <input type="tel" name="tel" class="k-textbox" pattern="\d{10}" placeholder="Please enter a ten digit phone number" required
+                 validationMessage="Please enter a ten digit phone number"/>
+        </label>
+      </li>
+
+      <li class="accept">
+        <label>
+          <input type="checkbox" name="accept" required validationMessage="Acceptance is required" /> I accept the terms and condition of service
+        </label>
+      </li>
+
+      <li class="accept">
+        <button class="k-button" type="submit">Submit</button>
+      </li>
+
+    </ul>
+  </form>
+  <style>
+    .tickets {
+      display: inline-block;
+    }
+    .tickets ul {
+      list-style-type: none;
+    }
+    .tickets ul li {
+      margin: 0.5em;
+    }
+    .tickets ul li.accept {
+      margin-left: 11em;
+    }
+    .tickets .label {
+      display: inline-block;
+      width: 10em;
+      text-align: right;
+    }
+    .tickets .label.required:before {
+      content: "*";
+      font-weight: bold;
+      color: red;
+    }
+  </style>
+</div>
+</script>
+
+<script id="the-javascript">
+function MyCtrl($scope) {
+  $scope.movies = [
+    "12 Angry Men",
+    "Il buono, il brutto, il cattivo.",
+    "Inception",
+    "One Flew Over the Cuckoo's Nest",
+    "Pulp Fiction",
+    "Schindler's List",
+    "The Dark Knight",
+    "The Godfather",
+    "The Godfather: Part II",
+    "The Shawshank Redemption"
+  ];
+}
+</script>
+
+<p>
+  The Kendo Validator isn't a widget per se, but it can be instantiated and
+  configured just like ordinary widgets.<br />
+
+  Here is a port of
+  the <a href="http://demos.telerik.com/kendo-ui/web/validator/index.html">official
+  Validator demo</a> to Angular-Kendo:
+</p>
+
+<div ng-include src="SHOW_SOURCE"></div>
