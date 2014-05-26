@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" href="./doc/lib/prism/prism.css" />
     <script src="./doc/lib/prism/prism.js" data-manual></script>
+    <script src="http://demos.telerik.com/kendo-ui/content/spa/aeroviewr/js/500px.js"></script>
   </head>
 
   <body ng-app="DemoApp" ng-controller="DemoController">
@@ -52,6 +53,13 @@
       <h1>Web widget demos</h1>
       <ul>
         <li ng-repeat="item in webDemos" class="{{ item.widget == $route.current.widget ? 'current' : '' }}">
+          <a href="#/{{ item.widget }}">{{item.widget}}</a>
+        </li>
+      </ul>
+
+      <h1>Mobile widgets</h1>
+      <ul>
+        <li ng-repeat="item in mobileDemos" class="{{ item.widget == $route.current.widget ? 'current' : '' }}">
           <a href="#/{{ item.widget }}">{{item.widget}}</a>
         </li>
       </ul>
@@ -109,6 +117,11 @@ $HTML
 
   </body>
 </html>--></script>
+
+    <script>
+      _500px.init({ sdk_key: "a3be03a8a98d6e05af17f60d2cf4bf696eb47555" });
+    </script>
+
   </body>
 
 </html>

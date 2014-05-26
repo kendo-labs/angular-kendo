@@ -1,0 +1,34 @@
+<script type="x/ignore" id="the-html">
+<div ng-controller="MyCtrl">
+  <div class="demo-section">
+    <div kendo-mobile-tab-strip k-on-select="select(kendoEvent.item)">
+      <a data-icon="contacts">Profile
+      </a><a data-icon="history">Sales
+      </a><a data-icon="favorites">Rating
+      </a><a data-icon="settings">Settings</a>
+    </div>
+    <div id="console">
+    </div>
+  </div>
+  <style scoped>
+    .demo-section {
+      width: 500px;
+    }
+    #console {
+      margin-top: 10px;
+      height: 300px;
+      overflow: auto;
+    }
+  </style>
+</div>
+</script>
+
+<script id="the-javascript">
+function MyCtrl($scope) {
+  $scope.select = function(item) {
+    $("<div>").appendTo("#console").html("Selected: " + item.text());
+  }
+}
+</script>
+
+<div ng-include src="SHOW_SOURCE"></div>

@@ -255,3 +255,8 @@ footer a:visited {
 .x-ng-cloak {
   display: none !important;
 }
+.demo-section {
+  border: 1px solid #999;
+  padding: 10px;
+  background: #fff;
+}
