@@ -15,7 +15,6 @@ var URLPREFIX = "./doc/";
         { widget: "Grid" },
         { widget: "MaskedTextBox" },
         { widget: "Menu" },
-        { widget: "Mobile" },
         { widget: "MultiSelect" },
         { widget: "Notification" },
         { widget: "NumericTextBox" },
@@ -33,6 +32,21 @@ var URLPREFIX = "./doc/";
         { widget: "Window" },
     ];
 
+    var MOBILE_DEMOS = [
+        { widget: "MobileActionSheet" },
+        { widget: "MobileButton" },
+        { widget: "MobileButtonGroup" },
+        { widget: "MobileDrawer" },
+        { widget: "MobileListView" },
+        { widget: "MobileModalView" },
+        { widget: "MobileNavBar" },
+        { widget: "MobilePopOver" },
+        { widget: "MobileScroller" },
+        { widget: "MobileScrollView" },
+        { widget: "MobileSwitch" },
+        { widget: "MobileTabStrip" },
+    ];
+
     var DOCS = [
         { page: "basics", title: "Basic usage", controller: "BasicDocsController" },
         { page: "datasource", title: "Data source vs. Angular" },
@@ -45,6 +59,15 @@ var URLPREFIX = "./doc/";
         WEB_DEMOS.forEach(function(x){
             var props = {
                 templateUrl: URLPREFIX + "web/" + x.widget + ".html",
+                widget: x.widget,
+                title: x.widget
+            };
+            if (x.controller) props.controller = x.controller;
+            $routeProvider.when("/" + x.widget, props);
+        });
+        MOBILE_DEMOS.forEach(function(x){
+            var props = {
+                templateUrl: URLPREFIX + "mobile/" + x.widget + ".html",
                 widget: x.widget,
                 title: x.widget
             };
@@ -67,10 +90,11 @@ var URLPREFIX = "./doc/";
 
     app.controller("DemoController", [ "$scope", "$route", function($scope, $route){
         $scope.webDemos = WEB_DEMOS;
+        $scope.mobileDemos = MOBILE_DEMOS;
         $scope.docPages = DOCS;
         $scope.$route = $route;
         $scope.URLPREFIX = URLPREFIX;
-        $scope.SHOW_SOURCE = URLPREFIX + "web/show-source.html";
+        $scope.SHOW_SOURCE = URLPREFIX + "show-source.html";
         var mustFade = false;
         $scope.$on("kendoRendered", function(){
             if (mustFade) {
