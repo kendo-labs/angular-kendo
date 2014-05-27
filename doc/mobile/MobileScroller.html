@@ -49,4 +49,131 @@ function MyCtrl($scope) {
 }
 </script>
 
-<div ng-include src="SHOW_SOURCE"></div>
+<h2>Basic MobileScroller sample</h2>
+
+<div class="demo includeHtml" data-code-id="the-html"></div>
+
+<button class="try-kendo" data-js="the-javascript" data-html="the-html">Edit on Kendo UI Dojo</button>
+
+<h3>Source</h3>
+
+<div kendo-tab-strip>
+  <ul>
+    <li class="k-state-active">HTML</li>
+    <li>JavaScript</li>
+  </ul>
+  <div>
+    <pre class="code language-markup" data-code-id="the-html"></pre>
+  </div>
+  <div>
+    <pre class="code language-javascript" data-code-id="the-javascript"></pre>
+  </div>
+</div>
+
+
+
+
+
+
+<h2>Pull to refresh</h2>
+
+<script type="x/ignore" id="the-html2">
+<div ng-controller="MyCtrl2">
+  <div class="demo-section">
+    <div kendo-mobile-scroller="scroller" k-pull-to-refresh="true" k-pull="refresh" style="height: 400px">
+      <div class="title">Pull to refresh</div>
+      <div id="pull-cat" style="background-image: url('{{ imageUrl }}')"></div>
+      <h2 id="pull-to-refresh-clock">Last updated at {{ updateTime | date:'HH:mm:ss' }}</h2>
+    </div>
+  </div>
+  <style scoped>
+    .demo-section {
+      width: 400px;
+    }
+    .demo-section .title {
+      padding: 10px 0 20px 0;
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    #pull-cat {
+      margin: 0 auto 15px;
+      overflow: hidden;
+      width: 18em;
+      height: 18em;
+      border-radius: 1000px;
+      -webkit-border-radius: 1000px;
+      border: 8px solid silver;
+      box-shadow: inset 0 0 5px rgba(0,0,0,.3);
+      -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,.3);
+      background-size: auto 150%;
+      background-position: 50% 50%;
+      background-repeat: no-repeat;
+    }
+    #pull-to-refresh-clock {
+      font-size: 1.2em;
+      padding: 10px 0 0 0;
+      text-align: center;
+    }
+  </style>
+</div>
+</script>
+
+<script id="the-javascript2">
+function MyCtrl2($scope) {
+    var dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "http://api.flickr.com/services/feeds/photos_public.gne",
+                dataType: "jsonp",
+                jsonpCallback: "jsonFlickrFeed",
+                data: {
+                    tags: "cat,face",
+                    format: "json"
+                }
+            }
+        },
+        schema: {
+            data: "items"
+        }
+    });
+    var counter = 0;
+    function update(){
+        if (!dataSource.at(counter + 1)) {
+            counter = 0;
+        }
+        var el = dataSource.at(counter++);
+        var url = el.media.m;
+        $scope.$apply(function(){
+            $scope.imageUrl = url;
+            $scope.updateTime = new Date();
+        });
+    };
+    dataSource.fetch(update);
+    $scope.refresh = function() {
+        update();
+        setTimeout(function() { $scope.scroller.pullHandled(); }, 400);
+    };
+}
+</script>
+
+<div class="demo includeHtml" data-code-id="the-html2"></div>
+
+<button class="try-kendo" data-js="the-javascript2" data-html="the-html2">Edit on Kendo UI Dojo</button>
+
+<h3>Source</h3>
+
+<div kendo-tab-strip>
+  <ul>
+    <li class="k-state-active">HTML</li>
+    <li>JavaScript</li>
+  </ul>
+  <div>
+    <pre class="code language-markup" data-code-id="the-html2"></pre>
+  </div>
+  <div>
+    <pre class="code language-javascript" data-code-id="the-javascript2"></pre>
+  </div>
+</div>
+
+<script> fixSampleCode() </script>
