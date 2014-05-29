@@ -59,7 +59,7 @@
         kRebind     : true,
         kNgModel    : true,
       };
-      return function(scope, element, attrs, widget) {
+      return function(scope, element, attrs, widget, origAttr) {
         var role = widget.replace(/^kendo/, '');
         var options = angular.extend({}, scope.$eval(attrs.kOptions));
         $.each(attrs, function(name, value) {
@@ -95,22 +95,22 @@
           return null;
         }
         var object = ctor.call(element, OPTIONS_NOW = options).data(widget);
-        exposeWidget(object, scope, attrs, widget);
+        exposeWidget(object, scope, attrs, widget, origAttr);
         scope.$emit("kendoWidgetCreated", object);
         return object;
       };
     }())
   };
 
-  function exposeWidget(widget, scope, attrs, kendoWidget) {
-    if (attrs[kendoWidget]) {
+  function exposeWidget(widget, scope, attrs, kendoWidget, origAttr) {
+    if (attrs[origAttr]) {
       // expose the widget object
-      var set = parse(attrs[kendoWidget]).assign;
+      var set = parse(attrs[origAttr]).assign;
       if (set) {
         // set the value of the expression to the kendo widget object to expose its api
         set(scope, widget);
       } else {
-        throw new Error( kendoWidget + ' attribute used but expression in it is not assignable: ' + attrs[kendoWidget]);
+        throw new Error(origAttr + ' attribute used but expression in it is not assignable: ' + attrs[kendoWidget]);
       }
     }
   }
@@ -128,7 +128,7 @@
 
     var KENDO_COUNT = 0;
 
-    var create = function(role) {
+    var create = function(role, origAttr) {
 
       return {
         // Parse the directive for attributes and classes
@@ -217,7 +217,7 @@
               }, true); // watch for object equality. Use native or simple values.
             }
 
-            var widget = factories.widget(scope, element, attrs, role);
+            var widget = factories.widget(scope, element, attrs, role, origAttr);
             setupBindings();
 
             var prev_destroy = null;
@@ -414,7 +414,7 @@
         module.directive(name, [
           "directiveFactory",
           function(directiveFactory) {
-            return directiveFactory.create(widget);
+            return directiveFactory.create(widget, name);
           }
         ]);
       }
