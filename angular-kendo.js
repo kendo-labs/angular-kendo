@@ -1095,6 +1095,12 @@
     });
   }
 
+  defadvice("mobile.ui.Switch", "value", function(){
+    var self = this.self;
+    var ret = self.check.apply(self, arguments);
+    return ret;
+  });
+
 }, typeof define == 'function' && define.amd ? define : function(_, f){ f(jQuery, angular, kendo); });
 
 // Local Variables:
