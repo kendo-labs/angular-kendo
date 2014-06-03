@@ -1008,7 +1008,7 @@
         });
         var destroy = function(ev){
           var editScope = self.$editScope;
-          if (editScope !== scope) {
+          if (editScope && editScope !== scope) {
             destroyScope(editScope, ev.container);
             self.$editScope = null;
           }
