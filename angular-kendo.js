@@ -89,7 +89,7 @@
           options.dataSource = factories.dataSource(scope, element, attrs, role);
         }
 
-        options.$angular = true;
+        options.$angular = [ scope ];
         var ctor = $(element)[widget];
         if (!ctor) {
           console.error("Could not find: " + widget);
@@ -535,6 +535,7 @@
     OPTIONS_NOW = null;
     var self = this.self;
     if (options && options.$angular) {
+      self.$angular_scope = options.$angular[0];
       // call before/after hooks only for widgets instantiated by angular-kendo
       self.$angular_beforeCreate(element, options);
       this.next();
@@ -548,7 +549,7 @@
   defadvice("ui.Widget", BEFORE, function(element, options) {
     var self = this.self;
     if (options && !$.isArray(options)) {
-      var scope = angular.element(element).scope();
+      var scope = self.$angular_scope;
       for (var i = self.events.length; --i >= 0;) {
         var event = self.events[i];
         var handler = options[event];
