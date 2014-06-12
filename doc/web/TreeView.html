@@ -3,6 +3,7 @@
   <div style="position: relative">
     <div kendo-tree-view="tree"
          k-data-source="treeData"
+         k-template="itemTemplate"
          k-on-change="selectedItem = dataItem"></div>
     <div class="sidepane" ng-show="selectedItem">
       Selected: {{selectedItem.text}}
@@ -32,6 +33,12 @@ function MyCtrl($scope) {
     ] },
     { text: "Item 3" }
   ]});
+
+  $scope.itemTemplate = "{{dataItem.text}} <button ng-click='click(dataItem)'>Click</button>";
+
+  $scope.click = function(dataItem) {
+    alert(dataItem.text);
+  };
 
   function makeItem() {
     var txt = kendo.toString(new Date(), "HH:mm:ss");
