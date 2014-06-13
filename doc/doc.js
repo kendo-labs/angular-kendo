@@ -50,7 +50,7 @@ var URLPREFIX = "./doc/";
     var DOCS = [
         { page: "basics", title: "Basic usage", controller: "BasicDocsController" },
         { page: "datasource", title: "Data source vs. Angular" },
-        { page: "events", title: "Global events" }
+        { page: "events", title: "Global events" },
     ];
 
     var app = angular.module("DemoApp", [ "kendo.directives", "ngRoute", "ngSanitize" ]);
@@ -95,20 +95,8 @@ var URLPREFIX = "./doc/";
         $scope.$route = $route;
         $scope.URLPREFIX = URLPREFIX;
         $scope.SHOW_SOURCE = URLPREFIX + "show-source.html";
-        var mustFade = false;
-        $scope.$on("kendoRendered", function(){
-            if (mustFade) {
-                $("#pageview").css({ visibility: "visible", display: "none" });
-                $("#pageview").fadeIn();
-                mustFade = false;
-            }
-        });
-        $scope.$on("$routeChangeStart", function(){
-            $("#pageview").fadeOut();
-        });
         $scope.$on("$viewContentLoaded", function(){
             $("html, body").scrollTop(0);
-            mustFade = true;
         });
     }]);
 
