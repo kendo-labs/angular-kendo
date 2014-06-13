@@ -235,6 +235,117 @@ adding the <code>ng-model</code> attribute.</p>
 </div>
 </td></tr></table>
 
+<h3>“Rebinding” widgets (<code>k-rebind</code>)</h3>
+
+<p>
+  For the time being, widgets don't support automatic refresh when their
+  options changed in the scope.  A special attribute, <code>k-rebind</code>,
+  allows you to specify the name of a variable that will be watched in scope
+  and the widget will rebuild whenever that variable changes.  Here is an
+  example:
+</p>
+
+<table class="sample"><tr><td>
+<pre class="code language-javascript">
+// controller
+function RebindController($scope) {
+  $scope.changeTemplate = function() {
+    $scope.template = "<div>Text is: {{ dataItem.text }}</div>";
+  };
+  $scope.data = [
+    { text: "Foo" },
+    { text: "Bar" },
+    { text: "Baz" }
+  ];
+  $scope.template = "<div>{{ dataItem.text }}</div>";
+}
+</pre>
+<br />
+<pre class="code language-markup">
+&lt;!-- markup --&gt;
+&lt;div kendo-list-view
+     k-data-source="data" k-selectable="true"
+     k-template="template" k-rebind="template"&gt;&lt;/div&gt;
+&lt;button ng-click="changeTemplate()"&gt;Change template!&lt;/button&gt;
+</pre>
+</td><td ng-controller="RebindController">
+<div kendo-list-view
+     k-data-source="data" k-selectable="true"
+     k-template="template" k-rebind="template"></div>
+<button ng-click="changeTemplate()">Change template!</button>
+<script>
+  function RebindController($scope) {
+    $scope.changeTemplate = function() {
+      $scope.template = "<div>Text is: {{ dataItem.text }}</div>";
+    };
+    $scope.data = [
+      { text: "Foo" },
+      { text: "Bar" },
+      { text: "Baz" }
+    ];
+    $scope.template = "<div>{{ dataItem.text }}</div>";
+  }
+</script>
+</td></tr></table>
+
+<h3>Delaying widget initialization (<code>k-ng-delay</code>)</h3>
+
+<p>
+  Sometimes it's desirable to delay a widget initialization until some data
+  is available in scope.  To do this you can use the <code>k-ng-delay</code>
+  attribute, passing to it the name of a variable to watch for.  This is
+  similar to <code>k-rebind</code>, except that the widget is not created at
+  all when the page loads—but only when that variable becomes available.
+  Note that the variable is watched only once—the widget will not update any
+  longer if that variable changes again.  If you need that you can
+  additionally specify <code>k-rebind</code> for the same variable.
+</p>
+
+<p>
+  Example:
+</p>
+
+<table class="sample"><tr><td>
+<pre class="code language-javascript">
+// controller
+function Controller($scope) {
+  $scope.populate = function() {
+    $scope.gridOptions = {
+      columns: [ { field: "text" } ],
+      dataSource: [
+        { text: "Foo" },
+        { text: "Bar" },
+        { text: "Baz" }
+      ]
+    };
+  };
+}
+</pre>
+<br />
+<pre class="code language-markup">
+&lt;!-- markup --&gt;
+&lt;button class="k-button" ng-show="!gridOptions" ng-click="populate()"&gt;Populate!&lt;/button&gt;
+&lt;div kendo-grid k-options="gridOptions" k-ng-delay="gridOptions"&gt;&lt;/div&gt;
+</pre>
+</td><td ng-controller="KNGDelay">
+<button class="k-button" ng-show="!gridOptions" ng-click="populate()">Populate!</button>
+<div kendo-grid k-options="gridOptions" k-ng-delay="gridOptions"></div>
+<script>
+  function KNGDelay($scope) {
+    $scope.populate = function() {
+      $scope.gridOptions = {
+        columns: [ { field: "text" } ],
+        dataSource: [
+          { text: "Foo" },
+          { text: "Bar" },
+          { text: "Baz" }
+        ]
+      };
+    };
+  }
+</script>
+</td></tr></table>
+
 <h2>DropDown Lists are great, but what about REAL widgets?</h2>
 
 <p>Kendo UI includes Grids, TreeViews, MultiSelects, ColorPickers — over
