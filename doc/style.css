@@ -192,7 +192,7 @@ pre.code {
   font-family: "ubuntu mono", "monaco", "consolas", "andale mono", monospace !important;
   border: 1px solid #ccc;
   border-radius: 5px;
-  max-height: 20em;
+  max-height: 25em;
   overflow: auto;
 }
 pre.code code {
