@@ -1,0 +1,228 @@
+<p>
+  The <a href="http://demos.telerik.com/kendo-ui/grid/index">Grid</a> is one
+  of Kendo's most complex widgets.  On this page we will outline some
+  particularities.
+</p>
+
+<h2>The <code>k-on-change</code> attribute</h2>
+
+<p>
+  If you assign a <code>k-on-change</code> event handler, it will be
+  evaluated in a scope containing additional local variables:
+</p>
+
+<ul>
+  <li><code>kendoEvent</code> — the "change" event as triggered by Kendo UI;</li>
+  <li><code>selected</code> — the selected elements (jQuery object);</li>
+  <li><code>data</code> — the selected data items (array of models);</li>
+</ul>
+
+<p>
+  When the grid is not in multiple selection mode, the <code>data</code>
+  above will not be an array but a single data item, and that item is also
+  accessible as <code>dataItem</code>.
+</p>
+
+<p>
+  When cell selection is allowed, an additional <code>columns</code>
+  variable will be present.  It is an array containing the indexes of the
+  columns where cells are selected.
+</p>
+
+<p>
+  The following example allows you to choose the grid's selection mode and
+  then select items in the grid and see what variables are available.
+</p>
+
+<table ng-controller="Ctrl1" class="sample"><tr><td style="width: 70%">
+<pre class="code language-javascript" data-code-id="code1"></pre>
+<br />
+<pre class="code language-markup" data-code-id="html1"></pre>
+</td><td>
+<div class="includeHtml" data-code-id="html1"></div>
+</td></tr></table>
+
+<script id="code1">
+// controller
+function Ctrl1($scope) {
+  var data = new kendo.data.DataSource({
+    data: [
+      { text: "Foo", id: 1 },
+      { text: "Bar", id: 2 },
+      { text: "Baz", id: 3 }
+    ]
+  });
+  $scope.handleChange = function(selected, data, dataItem, columns) {
+    $scope.data = data;
+    $scope.columns = columns;
+    $scope.dataItem = dataItem;
+  };
+  $scope.gridOptions = {
+    dataSource: data,
+    selectable: "row",
+    columns: [
+      { field: "text", title: "Text" },
+      { field: "id", title: "Id" }
+    ]
+  };
+}
+</script>
+
+<script id="html1" type="x/ignore">
+<!-- markup -->
+<label>Select mode: <select kendo-dropdownlist ng-model="gridOptions.selectable">
+  <option value="row">Row</option>
+  <option value="cell">Cell</option>
+  <option value="multiple, row">Multiple, row</option>
+  <option value="multiple, cell">Multiple, cell</option>
+</select></label>
+
+<div kendo-grid k-options="gridOptions" k-rebind="gridOptions.selectable"
+     k-on-change="handleChange(selected, data, dataItem, columns)"></div>
+
+<pre>
+data: {{ data | json }}
+columns: {{ columns | json }}
+<span ng-show="gridOptions.selectable == 'row' || gridOptions.selectable == 'cell'"
+>dataItem: {{ dataItem | json }}</span>
+</pre>
+</script>
+
+
+
+<h2>Dynamically set columns</h2>
+
+<p>
+  When you need to, say, load columns definition from the server, you need
+  to postpone the widget initialization until the data is available, because
+  the Grid doesn't support defining columns after the widget is created.
+  For this, the <code>k-ng-delay</code> attribute comes in handy.  Here is
+  an example (using <code>$timeout</code> to emulate networking — the data
+  is set in scope asynchronously):
+</p>
+
+<table ng-controller="Ctrl2" class="sample"><tr><td style="width: 70%">
+<pre class="code language-javascript" data-code-id="code2"></pre>
+<br />
+<pre class="code language-markup" data-code-id="html2"></pre>
+</td><td>
+<div class="includeHtml" data-code-id="html2"></div>
+</td></tr></table>
+
+<script id="code2">
+// controller
+function Ctrl2($scope, $timeout) {
+  $timeout(function(){
+    $scope.gridOptions = {
+      sortable: true,
+      selectable: true,
+      dataSource: [
+        { text: "Foo", id: 1 },
+        { text: "Bar", id: 2 },
+        { text: "Baz", id: 3 }
+      ],
+      columns: [
+        { field: "text", title: "Text" }
+      ]
+    };
+  }, 500);
+}
+</script>
+
+<script id="html2" type="x/ignore">
+<!-- markup -->
+<div kendo-grid k-options="gridOptions" k-ng-delay="gridOptions"></div>
+</script>
+
+
+
+<h2>Templates</h2>
+
+<p>
+  The Grid supports a lot of user-customizable templates.  You can define
+  the <code><a href="http://docs.telerik.com/kendo-ui/api/web/grid#configuration-rowTemplate">rowTemplate</a></code>
+  if you want to completely customize how each row is displayed, or
+  individual cell templates by adding
+  a <code><a href="http://docs.telerik.com/kendo-ui/api/web/grid#configuration-columns-template">template</a></code>
+  property in your column definitions.  The difference versus plain Kendo,
+  when the Grid is created with the Angular directive the templates can
+  contain live <code ng-non-bindable>{{angular}}</code> bits.
+  Both <code>rowTemplate</code> and <code>columns.template</code> are
+  compiled with Angular in a scope containing a <code>dataItem</code>
+  variable which points to the data model of the current item.  Here is an
+  example for <code>rowTemplate</code>:
+</p>
+
+<table ng-controller="Ctrl3" class="sample"><tr><td style="width: 70%">
+<pre class="code language-javascript" data-code-id="code3"></pre>
+<br />
+<pre class="code language-markup" data-code-id="html3"></pre>
+</td><td>
+<div class="includeHtml" data-code-id="html3"></div>
+</td></tr></table>
+
+<script id="code3">
+// controller
+function Ctrl3($scope) {
+  var data = new kendo.data.DataSource({
+    data: [
+      { text: "Foo", id: 1 },
+      { text: "Bar", id: 2 },
+      { text: "Baz", id: 3 }
+    ]
+  });
+  $scope.gridOptions = {
+    dataSource: data,
+    sortable: true,
+    selectable: true,
+    columns: [
+      { field: "text", title: "Text" },
+      { field: "id", title: "Id" }
+    ],
+    rowTemplate: "<tr data-uid='#: uid #'><td colspan='2' style='text-align: center'>" +
+      "This is <b>{{dataItem.text}}</b> and has ID={{dataItem.id}}" +
+      "</td></tr>"
+  };
+}
+</script>
+
+<script id="html3" type="x/ignore">
+<!-- markup -->
+<p>Select an item to show editor:</p>
+<div kendo-grid k-options="gridOptions" k-on-change="selectedItem = dataItem"></div>
+<div ng-show="selectedItem">
+  <input ng-model="selectedItem.text" />
+  <input ng-model="selectedItem.id" />
+</div>
+</script>
+
+<p>
+  In the above example if you select an item it will display two input
+  fields bound to the selected data model.  You can notice that if you edit
+  the data, the text in the grid will be updated seamlessly, thanks to
+  Angular.  Grid functions like sorting will still work properly.
+</p>
+
+<p class="important">
+  The one thing you must be careful about when
+  using <code>rowTemplate</code> is to include the
+  attribute <code>data-uid="#: uid #"</code> on the toplevel row element, as
+  <a href="http://docs.telerik.com/kendo-ui/api/web/grid#configuration-rowTemplate">described
+  in the Grid documentation</a>.  That <u>cannot</u> use an Angular template
+  like <code ng-non-bindable>data-uid="{{dataItem.uid}}"</code>, because
+  that is compiled <em>after</em> the grid was displayed and the widget will
+  not be able to tell which row belongs to which data item.
+</p>
+
+
+
+<h2><code>detailTemplate</code></h2>
+
+<p>
+  The <code><a href="http://docs.telerik.com/kendo-ui/api/web/grid#configuration-detailTemplate">detailTemplate</a></code>
+  is also compiled in a scope containing the <code>dataItem</code>.  See the
+  <a href="#Grid">Grid demo</a> in this website for an example of using it.
+</p>
+
+
+<script> fixSampleCode() </script>

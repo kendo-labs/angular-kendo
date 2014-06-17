@@ -205,27 +205,27 @@
               var unregister = scope.$watch(attrs.kRebind, function(newValue, oldValue) {
                 if (newValue !== oldValue) {
                   unregister(); // this watcher will be re-added if we compile again!
-
-                  /****************************************************************
-                   // XXX: this is a gross hack that might not even work with all
-                   // widgets.  we need to destroy the current widget and get its
-                   // wrapper element out of the DOM, then make the original element
-                   // visible so we can initialize a new widget on it.
-                   //
-                   // kRebind is probably impossible to get right at the moment.
-                   ****************************************************************/
-
-                  var _wrapper = $(widget.wrapper)[0];
-                  var _element = $(widget.element)[0];
-                  widget.destroy();
-                  widget = null;
-                  if (_wrapper && _element) {
-                    _wrapper.parentNode.replaceChild(_element, _wrapper);
-                    var clone = originalElement.cloneNode(true);
-                    $(element).replaceWith(clone);
-                    element = $(clone);
+                  if (widget) {
+                    /****************************************************************
+                     // XXX: this is a gross hack that might not even work with all
+                     // widgets.  we need to destroy the current widget and get its
+                     // wrapper element out of the DOM, then make the original element
+                     // visible so we can initialize a new widget on it.
+                     //
+                     // kRebind is probably impossible to get right at the moment.
+                     ****************************************************************/
+                    var _wrapper = $(widget.wrapper)[0];
+                    var _element = $(widget.element)[0];
+                    widget.destroy();
+                    widget = null;
+                    if (_wrapper && _element) {
+                      _wrapper.parentNode.replaceChild(_element, _wrapper);
+                      var clone = originalElement.cloneNode(true);
+                      $(element).replaceWith(clone);
+                      element = $(clone);
+                    }
+                    compile(element)(scope);
                   }
-                  compile(element)(scope);
                 }
               }, true); // watch for object equality. Use native or simple values.
             }
