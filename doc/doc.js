@@ -51,7 +51,8 @@ var URLPREFIX = "./doc/";
         { page: "basics", title: "Basic usage", controller: "BasicDocsController" },
         { page: "datasource", title: "Data source vs. Angular" },
         { page: "events", title: "Global events" },
-        { page: "grid-widget", title: "The Grid widget" }
+        { page: "grid-widget", title: "The Grid widget" },
+        { page: "ng-repeat", title: "Notes on ng-repeat" }
     ];
 
     var app = angular.module("DemoApp", [ "kendo.directives", "ngRoute", "ngSanitize" ]);
