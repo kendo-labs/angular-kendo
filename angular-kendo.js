@@ -516,6 +516,8 @@
       }
       klass = x;
     }
+    if (typeof klass === 'undefined')
+      return;
     var origMethod = klass.prototype[methodName];
     klass.prototype[methodName] = function() {
       var self = this, args = arguments;
