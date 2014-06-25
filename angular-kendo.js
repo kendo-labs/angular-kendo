@@ -329,6 +329,9 @@ Also, you need to load angular.js *before* Kendo in order for the directives to 
                 }
 
                 ngModel.$setPristine();
+                if (ngForm) {
+                  ngForm.$setPristine();
+                }
               }
 
               // kNgModel is used for the "logical" value
