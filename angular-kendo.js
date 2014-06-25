@@ -330,7 +330,12 @@ Also, you need to load angular.js *before* Kendo in order for the directives to 
 
                 ngModel.$setPristine();
                 if (ngForm) {
-                  ngForm.$setPristine();
+                  var form = element, top;
+                  while (form.controller("form")) {
+                    top = form.controller("form");
+                    form = form.parent();
+                  }
+                  top.$setPristine();
                 }
               }
 
