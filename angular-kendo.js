@@ -4,6 +4,14 @@
 
   "use strict";
 
+  if (typeof kendo.ui.Widget.fn.angular == "function") {
+    console.log("INFO: You're using a new Kendo UI build!\n\
+Loading angular-kendo.js from https://github.com/kendo-labs/angular-kendo/ is no longer necessary, as the Angular directives are now built-in.\n\
+Just make sure your build includes kendo.angular.js from the Kendo UI sources.\n\
+Also, you need to load angular.js *before* Kendo in order for the directives to be activated.");
+    return;
+  }
+
   var _UID_ = kendo.attr("uid");
 
   var module = angular.module('kendo.directives', []);
@@ -321,6 +329,14 @@
                 }
 
                 ngModel.$setPristine();
+                if (ngForm) {
+                  var form = element, top;
+                  while (form.controller("form")) {
+                    top = form.controller("form");
+                    form = form.parent();
+                  }
+                  top.$setPristine();
+                }
               }
 
               // kNgModel is used for the "logical" value
@@ -373,11 +389,17 @@
                     currClassList.forEach(function(cls){
                       if (prevClassList.indexOf(cls) < 0) {
                         w.classList.add(cls);
+                        if (widget instanceof kendo.ui.ComboBox) { // https://github.com/kendo-labs/angular-kendo/issues/356
+                          widget.input[0].classList.add(cls);
+                        }
                       }
                     });
                     prevClassList.forEach(function(cls){
                       if (currClassList.indexOf(cls) < 0) {
                         w.classList.remove(cls);
+                        if (widget instanceof kendo.ui.ComboBox) { // https://github.com/kendo-labs/angular-kendo/issues/356
+                          widget.input[0].classList.remove(cls);
+                        }
                       }
                     });
                     prevClassList = currClassList;
