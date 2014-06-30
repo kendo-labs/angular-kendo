@@ -23,4 +23,13 @@ function MyCtrl($scope) {
 }
 </script>
 
+<p class="important">
+  In order for AJAX-loaded content to be properly compiled through Angular,
+  the template should define a single root element.  Just embed everything
+  inside a single <code>&lt;div&gt;</code> tag.  The “Lorem ipsum” window
+  contains an angular expression — <code ng-non-bindable>{{hello}}</code> —
+  which is evaluated in the scope defined in controller.  Also, the URL of
+  the template must target the same domain as the containing page.
+</p>
+
 <div ng-include src="SHOW_SOURCE"></div>
