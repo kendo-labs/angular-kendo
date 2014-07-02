@@ -1,3 +1,15 @@
+# DEPRECATED
+
+The Angular-Kendo bindings have been included in [Kendo UI Core](https://github.com/telerik/kendo-ui-core/), and loading `angular-kendo.js` from this repository is no longer necessary.  The [documentation](http://kendo-labs.github.io/angular-kendo/) still applies, with the notice that you must load AngularJS before Kendo UI in order for the directives to be created:
+
+```html
+<script src="jquery.min.js"></script>
+<script src="angular.min.js"></script>
+<script src="kendo.all.min.js"></script>
+```
+
+The complete Kendo version that will contain the Angular bindings will be Q2 2014 ([currently in beta](http://blogs.telerik.com/blogs/14-06-25/kendo-ui-q2-2014-beta-is-here)).
+
 # AngularJS Integration For Kendo UI
 
 ## About angular-kendo
