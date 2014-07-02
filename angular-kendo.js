@@ -661,6 +661,7 @@ Also, you need to load angular.js *before* Kendo in order for the directives to 
     if (self.hint) {
       var scope = angular.element(self.currentTarget).scope();
       if (scope) {
+        self.hint.removeAttr("ng-repeat");
         compile(self.hint)(scope);
         digest(scope);
       }
